@@ -298,15 +298,32 @@
         <span id="toastMessage">Notification Message</span>
     </div>
 
-    <!-- Script Handling Tab switching, LocalStorage Credentials Data Management -->
-    <script>
-        // Set Default Dummy User inside Storage if it's completely empty on first launch
-        if (!localStorage.getItem("userEmail")) {
-            localStorage.setItem("userEmail", "ayush@gmail.com");
-            localStorage.setItem("userPassword", "123456");
-            localStorage.setItem("userName", "Ayush Kumar");
-        }
+    <!-- Firebase SDK (Compat version - plain <script> tags ke sath direct browser me chalta hai) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+    <script>
+        // Aapka Firebase project config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsj5w2rXI4XPubjaeG6lPVbF1RguDKmTU",
+            authDomain: "money-saving-industry.firebaseapp.com",
+            projectId: "money-saving-industry",
+            storageBucket: "money-saving-industry.firebasestorage.app",
+            messagingSenderId: "856815840865",
+            appId: "1:856815840865:web:890a015362d565a9418420"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Login session ko browser me pakka (permanently) save rakhne ke liye
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .catch((err) => console.error("Persistence set karne me error:", err));
+    </script>
+
+    <!-- Script Handling Tab switching, Firebase Auth Register/Login -->
+    <script>
         // Custom Toast Engine function to trigger beautiful themed messages
         function showThemeToast(message, isSuccess = true) {
             const toast = document.getElementById("appToast");
@@ -348,7 +365,7 @@
             }
         }
 
-        // Logic 1: New Account registration verification and save
+        // Logic 1: New Account registration via Firebase Auth (har email ka apna alag, real account)
         function executeRegister() {
             let name = document.getElementById('regName').value.trim();
             let email = document.getElementById('regEmail').value.trim();
@@ -358,45 +375,62 @@
                 showThemeToast("Please fill up all fields to create an account.", false);
                 return;
             }
-
-            // Check if current user is attempting to overwrite with the exact same existing email address
-            let existingEmail = localStorage.getItem("userEmail");
-            if (email === existingEmail) {
-                showThemeToast("This email is already registered! Switch to Sign In.", false);
+            if (pass.length < 6) {
+                showThemeToast("Password kam se kam 6 characters ka hona chahiye.", false);
                 return;
             }
 
-            // Save new user profile credentials data securely inside the browser's permanent database
-            localStorage.setItem("userEmail", email);
-            localStorage.setItem("userPassword", pass);
-            localStorage.setItem("userName", name);
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then((userCredential) => {
+                    let user = userCredential.user;
 
-            showThemeToast("Registration Successful! Please Sign In now.", true);
-            setTimeout(() => {
-                switchTab('signin'); // Shift focus automatically back to login screen
-            }, 1200);
+                    // Naam ko Firebase Auth profile me set karo
+                    user.updateProfile({ displayName: name });
+
+                    // Is user ka apna alag data document Firestore me banao
+                    return db.collection('users').doc(user.uid).set({
+                        name: name,
+                        email: email,
+                        totalIncome: 0,
+                        totalExpense: 0,
+                        transactions: []
+                    });
+                })
+                .then(() => {
+                    showThemeToast("Registration Successful! Please Sign In now.", true);
+                    setTimeout(() => {
+                        switchTab('signin'); // Shift focus automatically back to login screen
+                    }, 1200);
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        showThemeToast("Ye email already register hai! Sign In use karein.", false);
+                    } else {
+                        showThemeToast("Error: " + error.message, false);
+                    }
+                });
         }
 
-        // Logic 2: Live Sign In matching and Dashboard auto-redirection
+        // Logic 2: Live Sign In via Firebase Auth aur Dashboard auto-redirection
         function executeLogin() {
             let emailInput = document.getElementById('loginEmail').value.trim();
             let passInput = document.getElementById('loginPassword').value;
 
-            // Fetch correct data directly from current saved Local Storage keys definitions
-            let savedEmail = localStorage.getItem("userEmail");
-            let savedPassword = localStorage.getItem("userPassword");
-
-            if (emailInput === savedEmail && passInput === savedPassword) {
-                // Modified beautiful text with your new brand name
-                showThemeToast("Access Granted! Welcome back to Money Saving Industry.", true);
-                
-                // Redirection path configuration link opens smoothly after notification slides in
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 1500);
-            } else {
-                showThemeToast("Invalid Credentials! पासवर्ड या ईमेल गलत है।", false);
+            if (!emailInput || !passInput) {
+                showThemeToast("Email aur Password dono bharein.", false);
+                return;
             }
+
+            auth.signInWithEmailAndPassword(emailInput, passInput)
+                .then(() => {
+                    showThemeToast("Access Granted! Welcome back to Money Saving Industry.", true);
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1500);
+                })
+                .catch((error) => {
+                    showThemeToast("Invalid Credentials! पासवर्ड या ईमेल गलत है।", false);
+                });
         }
     </script>
 </body>
