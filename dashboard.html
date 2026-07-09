@@ -1,204 +1,3 @@
-         openAppModal(title, "fa-circle-info", message, false, "", "", function(){});
-            document.getElementById('modalCancelBtn').style.display = "none";
-            setTimeout(() => { document.getElementById('modalCancelBtn').style.display = "inline-block"; }, 100);
-        }
-
-        // Live UI Calculation Redraw Engine System
-        function updateLiveCalculations() {
-            let netBalance = totalIncome - totalExpense;
-            
-            // Text values updates
-            document.getElementById('cardIncome').innerText = "₹" + totalIncome;
-            document.getElementById('cardExpense').innerText = "₹" + totalExpense;
-            
-            // Format handle for negative balance indicator display
-            if(netBalance >= 0) {
-                document.getElementById('cardBalance').innerText = "₹" + netBalance;
-                document.getElementById('ringBalance').innerText = "₹" + netBalance;
-            } else {
-                document.getElementById('cardBalance').innerText = "-₹" + Math.abs(netBalance);
-                document.getElementById('ringBalance').innerText = "-₹" + Math.abs(netBalance);
-            }
-
-            // Progress Circular percentage tracking computation
-            let percent = 0;
-            if(totalIncome > 0) {
-                percent = Math.round((netBalance / totalIncome) * 100);
-                if(percent < 0) percent = 0; // Guardrail locks lower bounds safely
-            }
-            document.getElementById('ringPercent').innerText = percent + "%";
-
-            // SVG Circumference Dash calculation: Total stroke-dasharray = 377
-            let strokeOffset = 377 - (377 * percent) / 100;
-            document.getElementById('ringProgress').style.strokeDashoffset = strokeOffset;
-
-            // Live Analysis dynamic breakdowns synchronization 
-            updateDynamicLiveCards(netBalance);
-        }
-
-        // Renders visual analysis metrics automatically based on states
-        function updateDynamicLiveCards(netBalance) {
-            const container = document.getElementById('analysisContainer');
-            if(totalIncome === 0 && totalExpense === 0) {
-                container.innerHTML = '<div class="analysis-empty">No dynamic analysis cards created yet. Click (+) to add.</div>';
-                return;
-            }
-
-            let savingsStatusClass = netBalance >= 0 ? "positive-val" : "negative-val";
-            let savingsText = netBalance >= 0 ? "Safe Zone" : "Risk Alert";
-
-            container.innerHTML = `
-                <div class="cat-item">
-                    <div class="cat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--green-glow);"><i class="fa-solid fa-percent"></i></div>
-                    <span>Savings Rate</span>
-                    <p class="positive-val">${document.getElementById('ringPercent').innerText}</p>
-                </div>
-                <div class="cat-item">
-                    <div class="cat-icon" style="background: rgba(30, 117, 255, 0.15); color: var(--primary-blue);"><i class="fa-solid fa-shield-halved"></i></div>
-                    <span>Status Tracker</span>
-                    <p class="${savingsStatusClass}">${savingsText}</p>
-                </div>
-            `;
-        }
-
-        // 2. Clear All Data resetting system back to base states
-        function triggerClearAllData() {
-            openAppModal(
-                "Wipe Transactions", 
-                "fa-triangle-exclamation", 
-                "Are you sure you want to wipe out all entries back to ₹0?", 
-                false, "", "", 
-                function(confirmed) {
-                    if(confirmed) {
-                        totalIncome = 0;
-                        totalExpense = 0;
-                        document.getElementById('transactionContainer').innerHTML = "";
-                        document.getElementById('fullLogsContainer').innerHTML = "";
-                        updateLiveCalculations();
-                    }
-                }
-            );
-            document.getElementById('modalTitleIcon').style.color = "var(--red-glow)";
-        }
-
-        // 3. Logout Session Handler Link
-        function triggerLogout() {
-            openAppModal(
-                "End Session", 
-                "fa-right-from-bracket", 
-                "Are you sure you want to log out from this trading layout session?", 
-                false, "", "", 
-                function(confirmed) {
-                    if(confirmed) {
-                        window.location.href = "my_poartfoluo.html";
-                    }
-                }
-            );
-            document.getElementById('modalTitleIcon').style.color = "var(--purple-glow)";
-        }
-
-        // 4. Income addition controller mechanism
-        function customAddIncome() {
-            openAppModal(
-                "Quick Profit Input", 
-                "fa-arrow-trend-up", 
-                "Enter transaction summary identifier tags context specifications description detail:", 
-                true, "Specification Name (e.g., Trading Profit, Bonus):", "Trading Profit", 
-                function(specName) {
-                    if(!specName || !specName.trim()) return;
-                    
-                    setTimeout(() => {
-                        openAppModal(
-                            "Amount Injector", 
-                            "fa-money-bill-wave", 
-                            `Enter amount for [${specName}]:`, 
-                            true, "Amount in INR (₹):", "5000", 
-                            function(amountVal) {
-                                let parsed = parseFloat(amountVal);
-                                if(isNaN(parsed) || parsed <= 0) return;
-                                
-                                // Adds up values cumulatively instead of overwriting 
-                                totalIncome += parsed;
-                                updateLiveCalculations();
-                                
-                                let rowHTML = `
-                                    <div class="tx-row in">
-                                        <div class="tx-left">
-                                            <div class="tx-avatar"><i class="fa-solid fa-arrow-up"></i></div>
-                                            <div class="tx-info"><h5>${specName}</h5><p>Just now • Automated</p></div>
-                                        </div>
-                                        <div class="tx-right">+₹${parsed}</div>
-                                    </div>`;
-                                    
-                                // Prepend row entries nicely into list arrays stack
-                                document.getElementById('transactionContainer').insertAdjacentHTML('afterbegin', rowHTML);
-                                document.getElementById('fullLogsContainer').insertAdjacentHTML('afterbegin', rowHTML);
-                            }
-                        );
-                    }, 150);
-                }
-            );
-        }
-
-        // 5. Expense transaction compiler logger
-        function triggerAddTransactionPrompt() {
-            openAppModal(
-                "Add Transaction Log", 
-                "fa-receipt", 
-                "Enter Name / Specification (e.g., Mobile Charge, Trading Profit):", 
-                true, "Log Name / Description Specifier:", "Mobile Charge", 
-                function(descName) {
-                    if(!descName || !descName.trim()) return;
-                    
-                    setTimeout(() => {
-                        openAppModal(
-                            "Transaction Entry Value", 
-                            "fa-calculator", 
-                            `Set valuation metric ledger criteria index amount tracking input fields for [${descName}]:`, 
-                            true, "Valuation numeric quantity cost entry:", "349", 
-                            function(numericAmt) {
-                                let amt = parseFloat(numericAmt);
-                                if(isNaN(amt) || amt <= 0) return;
-                                
-                                // Accumulates cost metrics safely inside the tracker engine
-                                totalExpense += amt;
-                                updateLiveCalculations();
-                                
-                                let rowExHTML = `
-                                    <div class="tx-row out">
-                                        <div class="tx-left">
-                                            <div class="tx-avatar"><i class="fa-solid fa-arrow-down"></i></div>
-                                            <div class="tx-info"><h5>${descName}</h5><p>Just now • Manual log</p></div>
-                                        </div>
-                                        <div class="tx-right">-₹${amt}</div>
-                                    </div>`;
-                                document.getElementById('transactionContainer').insertAdjacentHTML('afterbegin', rowExHTML);
-                                document.getElementById('fullLogsContainer').insertAdjacentHTML('afterbegin', rowExHTML);
-                            }
-                        );
-                    }, 150);
-                }
-            );
-        }
-
-        // 6. Identity modifier system
-        function triggerProfileNameChange() {
-            let current = document.getElementById('userGreeting').innerText;
-            openAppModal(
-                "Modify Identity", 
-                "fa-user-gear", 
-                "Change profile workspace visual placeholder name signature identifier:", 
-                true, "Enter New Name:", current, 
-                function(newName) {
-                    if(newName && newName.trim()) {
-                        document.getElementById('userGreeting').innerText = newName.trim();
-                    }
-                }
-            );
-        }
-    </script>
-</body>
-</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -792,4 +591,343 @@
             <i class="fa-solid fa-house"></i>
             <span>Dashboard</span>
         </button>
-        <button class="nav-btn" onclick="sw
+        <button class="nav-btn" onclick="switchSection('logs', this)">
+            <i class="fa-solid fa-list"></i>
+            <span>Logs</span>
+        </button>
+        <div class="center-add-btn-wrapper">
+            <div class="center-add-btn" onclick="triggerAddTransactionPrompt()"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <button class="nav-btn" onclick="switchSection('reports', this)">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Reports</span>
+        </button>
+        <button class="nav-btn" onclick="switchSection('settings', this)">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
+        </button>
+    </div>
+
+    <div class="custom-modal-overlay" id="appUniversalModal">
+        <div class="custom-modal-box">
+            <div class="modal-header-title" id="modalTitleArea">
+                <i class="fa-solid fa-circle-question" id="modalTitleIcon" style="color: var(--purple-glow);"></i>
+                <span id="modalTitleText">Confirm Action</span>
+            </div>
+            
+            <div class="modal-group" id="modalInputContainer" style="display: none;">
+                <label id="modalInputLabel">Enter Value:</label>
+                <input type="text" class="modal-input" id="modalInputField" placeholder="">
+            </div>
+            
+            <p id="modalBodyMessage" style="font-size: 13px; color: var(--text-muted); line-height: 1.5;"></p>
+            
+            <div class="modal-actions-wrapper">
+                <button class="modal-btn btn-cancel" id="modalCancelBtn" onclick="closeAppModal()">Cancel</button>
+                <button class="modal-btn btn-confirm" id="modalConfirmBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Real-time Global Calculation Engine Variables
+        let totalIncome = 0;
+        let totalExpense = 0;
+        let transactionsList = []; // Har transaction yahan permanently store hoti hai
+
+        // ================== STORAGE FIX ==================
+        // Data ko localStorage me save karta hai (taaki reload/logout ke baad bhi bana rahe)
+        function saveDataToStorage() {
+            localStorage.setItem('msi_totalIncome', totalIncome);
+            localStorage.setItem('msi_totalExpense', totalExpense);
+            localStorage.setItem('msi_transactions', JSON.stringify(transactionsList));
+        }
+
+        // Page load hote hi purana saved data localStorage se wapas utha leta hai
+        function loadDataFromStorage() {
+            totalIncome = parseFloat(localStorage.getItem('msi_totalIncome')) || 0;
+            totalExpense = parseFloat(localStorage.getItem('msi_totalExpense')) || 0;
+
+            let savedTx = localStorage.getItem('msi_transactions');
+            transactionsList = savedTx ? JSON.parse(savedTx) : [];
+
+            // Saari purani transactions dobara UI me render karo
+            document.getElementById('transactionContainer').innerHTML = "";
+            document.getElementById('fullLogsContainer').innerHTML = "";
+            transactionsList.forEach(tx => renderTransactionRow(tx));
+
+            updateLiveCalculations();
+        }
+
+        // Ek transaction row ka HTML banake dono jagah (Dashboard + Logs) dikhata hai
+        function renderTransactionRow(tx) {
+            let rowHTML = `
+                <div class="tx-row ${tx.type === 'in' ? 'in' : 'out'}">
+                    <div class="tx-left">
+                        <div class="tx-avatar"><i class="fa-solid fa-arrow-${tx.type === 'in' ? 'up' : 'down'}"></i></div>
+                        <div class="tx-info"><h5>${tx.name}</h5><p>${tx.time} • ${tx.type === 'in' ? 'Automated' : 'Manual log'}</p></div>
+                    </div>
+                    <div class="tx-right">${tx.type === 'in' ? '+' : '-'}₹${tx.amount}</div>
+                </div>`;
+            document.getElementById('transactionContainer').insertAdjacentHTML('afterbegin', rowHTML);
+            document.getElementById('fullLogsContainer').insertAdjacentHTML('afterbegin', rowHTML);
+        }
+        // ================== STORAGE FIX END ==================
+
+        // Section tab dynamic switching core logic
+        function switchSection(targetId, element) {
+            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active-section'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('section-' + targetId).classList.add('active-section');
+            if(element) element.classList.add('active');
+        }
+
+        // Dark/Light Theme toggler mechanism
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            
+            const btn = document.getElementById('themeBtn');
+            if(targetTheme === 'light') {
+                btn.className = "fa-solid fa-sun";
+            } else {
+                btn.className = "fa-solid fa-moon";
+            }
+        }
+
+        // Modal opening Core UI Logic trigger
+        function openAppModal(title, iconClass, message, isPrompt, inputLabel, defaultInputValue, onConfirm) {
+            document.getElementById('modalTitleText').innerText = title;
+            document.getElementById('modalTitleIcon').className = "fa-solid " + iconClass;
+            document.getElementById('modalBodyMessage').innerText = message;
+            
+            const inputContainer = document.getElementById('modalInputContainer');
+            const inputField = document.getElementById('modalInputField');
+            
+            if(isPrompt) {
+                inputContainer.style.display = "flex";
+                document.getElementById('modalInputLabel').innerText = inputLabel;
+                inputField.value = defaultInputValue || "";
+            } else {
+                inputContainer.style.display = "none";
+            }
+            
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            
+            newConfirmBtn.addEventListener('click', () => {
+                const capturedValue = inputField.value;
+                closeAppModal();
+                
+                if(isPrompt) {
+                    onConfirm(capturedValue);
+                } else {
+                    onConfirm(true);
+                }
+            });
+
+            document.getElementById('appUniversalModal').classList.add('modal-open');
+        }
+
+        function closeAppModal() {
+            document.getElementById('appUniversalModal').classList.remove('modal-open');
+        }
+
+        function triggerAppAlert(title, message) {
+            openAppModal(title, "fa-circle-info", message, false, "", "", function(){});
+            document.getElementById('modalCancelBtn').style.display = "none";
+            setTimeout(() => { document.getElementById('modalCancelBtn').style.display = "inline-block"; }, 100);
+        }
+
+        // Live UI Calculation Redraw Engine System
+        function updateLiveCalculations() {
+            let netBalance = totalIncome - totalExpense;
+            
+            // Text values updates
+            document.getElementById('cardIncome').innerText = "₹" + totalIncome;
+            document.getElementById('cardExpense').innerText = "₹" + totalExpense;
+            
+            // Format handle for negative balance indicator display
+            if(netBalance >= 0) {
+                document.getElementById('cardBalance').innerText = "₹" + netBalance;
+                document.getElementById('ringBalance').innerText = "₹" + netBalance;
+            } else {
+                document.getElementById('cardBalance').innerText = "-₹" + Math.abs(netBalance);
+                document.getElementById('ringBalance').innerText = "-₹" + Math.abs(netBalance);
+            }
+
+            // Progress Circular percentage tracking computation
+            let percent = 0;
+            if(totalIncome > 0) {
+                percent = Math.round((netBalance / totalIncome) * 100);
+                if(percent < 0) percent = 0; // Guardrail locks lower bounds safely
+            }
+            document.getElementById('ringPercent').innerText = percent + "%";
+
+            // SVG Circumference Dash calculation: Total stroke-dasharray = 377
+            let strokeOffset = 377 - (377 * percent) / 100;
+            document.getElementById('ringProgress').style.strokeDashoffset = strokeOffset;
+
+            // Live Analysis dynamic breakdowns synchronization 
+            updateDynamicLiveCards(netBalance);
+        }
+
+        // Renders visual analysis metrics automatically based on states
+        function updateDynamicLiveCards(netBalance) {
+            const container = document.getElementById('analysisContainer');
+            if(totalIncome === 0 && totalExpense === 0) {
+                container.innerHTML = '<div class="analysis-empty">No dynamic analysis cards created yet. Click (+) to add.</div>';
+                return;
+            }
+
+            let savingsStatusClass = netBalance >= 0 ? "positive-val" : "negative-val";
+            let savingsText = netBalance >= 0 ? "Safe Zone" : "Risk Alert";
+
+            container.innerHTML = `
+                <div class="cat-item">
+                    <div class="cat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--green-glow);"><i class="fa-solid fa-percent"></i></div>
+                    <span>Savings Rate</span>
+                    <p class="positive-val">${document.getElementById('ringPercent').innerText}</p>
+                </div>
+                <div class="cat-item">
+                    <div class="cat-icon" style="background: rgba(30, 117, 255, 0.15); color: var(--primary-blue);"><i class="fa-solid fa-shield-halved"></i></div>
+                    <span>Status Tracker</span>
+                    <p class="${savingsStatusClass}">${savingsText}</p>
+                </div>
+            `;
+        }
+
+        // 2. Clear All Data resetting system back to base states
+        function triggerClearAllData() {
+            openAppModal(
+                "Wipe Transactions", 
+                "fa-triangle-exclamation", 
+                "Are you sure you want to wipe out all entries back to ₹0?", 
+                false, "", "", 
+                function(confirmed) {
+                    if(confirmed) {
+                        totalIncome = 0;
+                        totalExpense = 0;
+                        transactionsList = [];
+                        document.getElementById('transactionContainer').innerHTML = "";
+                        document.getElementById('fullLogsContainer').innerHTML = "";
+                        updateLiveCalculations();
+                        saveDataToStorage(); // localStorage se bhi permanently clear karo
+                    }
+                }
+            );
+            document.getElementById('modalTitleIcon').style.color = "var(--red-glow)";
+        }
+
+        // 3. Logout Session Handler Link
+        function triggerLogout() {
+            openAppModal(
+                "End Session", 
+                "fa-right-from-bracket", 
+                "Are you sure you want to log out from this trading layout session?", 
+                false, "", "", 
+                function(confirmed) {
+                    if(confirmed) {
+                        window.location.href = "my_poartfoluo.html";
+                    }
+                }
+            );
+            document.getElementById('modalTitleIcon').style.color = "var(--purple-glow)";
+        }
+
+        // 4. Income addition controller mechanism
+        function customAddIncome() {
+            openAppModal(
+                "Quick Profit Input", 
+                "fa-arrow-trend-up", 
+                "Enter transaction summary identifier tags context specifications description detail:", 
+                true, "Specification Name (e.g., Trading Profit, Bonus):", "Trading Profit", 
+                function(specName) {
+                    if(!specName || !specName.trim()) return;
+                    
+                    setTimeout(() => {
+                        openAppModal(
+                            "Amount Injector", 
+                            "fa-money-bill-wave", 
+                            `Enter amount for [${specName}]:`, 
+                            true, "Amount in INR (₹):", "5000", 
+                            function(amountVal) {
+                                let parsed = parseFloat(amountVal);
+                                if(isNaN(parsed) || parsed <= 0) return;
+                                
+                                // Adds up values cumulatively instead of overwriting 
+                                totalIncome += parsed;
+                                updateLiveCalculations();
+
+                                // Naya transaction object list me daalo aur permanently save karo
+                                let newTx = { type: 'in', name: specName, amount: parsed, time: 'Just now' };
+                                transactionsList.push(newTx);
+                                renderTransactionRow(newTx);
+                                saveDataToStorage();
+                            }
+                        );
+                    }, 150);
+                }
+            );
+        }
+
+        // 5. Expense transaction compiler logger
+        function triggerAddTransactionPrompt() {
+            openAppModal(
+                "Add Transaction Log", 
+                "fa-receipt", 
+                "Enter Name / Specification (e.g., Mobile Charge, Trading Profit):", 
+                true, "Log Name / Description Specifier:", "Mobile Charge", 
+                function(descName) {
+                    if(!descName || !descName.trim()) return;
+                    
+                    setTimeout(() => {
+                        openAppModal(
+                            "Transaction Entry Value", 
+                            "fa-calculator", 
+                            `Set valuation metric ledger criteria index amount tracking input fields for [${descName}]:`, 
+                            true, "Valuation numeric quantity cost entry:", "349", 
+                            function(numericAmt) {
+                                let amt = parseFloat(numericAmt);
+                                if(isNaN(amt) || amt <= 0) return;
+                                
+                                // Accumulates cost metrics safely inside the tracker engine
+                                totalExpense += amt;
+                                updateLiveCalculations();
+
+                                // Naya transaction object list me daalo aur permanently save karo
+                                let newExTx = { type: 'out', name: descName, amount: amt, time: 'Just now' };
+                                transactionsList.push(newExTx);
+                                renderTransactionRow(newExTx);
+                                saveDataToStorage();
+                            }
+                        );
+                    }, 150);
+                }
+            );
+        }
+
+        // 6. Identity modifier system
+        function triggerProfileNameChange() {
+            let current = document.getElementById('userGreeting').innerText;
+            openAppModal(
+                "Modify Identity", 
+                "fa-user-gear", 
+                "Change profile workspace visual placeholder name signature identifier:", 
+                true, "Enter New Name:", current, 
+                function(newName) {
+                    if(newName && newName.trim()) {
+                        document.getElementById('userGreeting').innerText = newName.trim();
+                    }
+                }
+            );
+        }
+
+        // Page khulte hi (login ke baad ya reload par) saved data wapas load karo
+        window.addEventListener('DOMContentLoaded', loadDataFromStorage);
+    </script>
+</body>
+</html>
