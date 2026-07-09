@@ -629,34 +629,68 @@
         </div>
     </div>
 
+    <!-- Firebase SDK (Compat version - plain <script> tags ke sath direct browser me chalta hai) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Aapka Firebase project config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsj5w2rXI4XPubjaeG6lPVbF1RguDKmTU",
+            authDomain: "money-saving-industry.firebaseapp.com",
+            projectId: "money-saving-industry",
+            storageBucket: "money-saving-industry.firebasestorage.app",
+            messagingSenderId: "856815840865",
+            appId: "1:856815840865:web:890a015362d565a9418420"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        let currentUserId = null; // Login kiye hue user ka unique ID
+    </script>
+
     <script>
         // Real-time Global Calculation Engine Variables
         let totalIncome = 0;
         let totalExpense = 0;
         let transactionsList = []; // Har transaction yahan permanently store hoti hai
 
-        // ================== STORAGE FIX ==================
-        // Data ko localStorage me save karta hai (taaki reload/logout ke baad bhi bana rahe)
+        // ================== STORAGE FIX (Firebase Firestore) ==================
+        // Data ko Firestore me is user ke apne document ke andar save karta hai
         function saveDataToStorage() {
-            localStorage.setItem('msi_totalIncome', totalIncome);
-            localStorage.setItem('msi_totalExpense', totalExpense);
-            localStorage.setItem('msi_transactions', JSON.stringify(transactionsList));
+            if (!currentUserId) return;
+            db.collection('users').doc(currentUserId).set({
+                totalIncome: totalIncome,
+                totalExpense: totalExpense,
+                transactions: transactionsList
+            }, { merge: true });
         }
 
-        // Page load hote hi purana saved data localStorage se wapas utha leta hai
+        // Login hue user ka apna data Firestore se load karta hai (kisi aur ka data kabhi nahi dikhega)
         function loadDataFromStorage() {
-            totalIncome = parseFloat(localStorage.getItem('msi_totalIncome')) || 0;
-            totalExpense = parseFloat(localStorage.getItem('msi_totalExpense')) || 0;
+            if (!currentUserId) return;
+            db.collection('users').doc(currentUserId).get().then((docSnap) => {
+                if (docSnap.exists) {
+                    let data = docSnap.data();
+                    totalIncome = data.totalIncome || 0;
+                    totalExpense = data.totalExpense || 0;
+                    transactionsList = data.transactions || [];
+                } else {
+                    totalIncome = 0;
+                    totalExpense = 0;
+                    transactionsList = [];
+                }
 
-            let savedTx = localStorage.getItem('msi_transactions');
-            transactionsList = savedTx ? JSON.parse(savedTx) : [];
+                // Saari purani transactions dobara UI me render karo
+                document.getElementById('transactionContainer').innerHTML = "";
+                document.getElementById('fullLogsContainer').innerHTML = "";
+                transactionsList.forEach(tx => renderTransactionRow(tx));
 
-            // Saari purani transactions dobara UI me render karo
-            document.getElementById('transactionContainer').innerHTML = "";
-            document.getElementById('fullLogsContainer').innerHTML = "";
-            transactionsList.forEach(tx => renderTransactionRow(tx));
-
-            updateLiveCalculations();
+                updateLiveCalculations();
+            }).catch((err) => {
+                console.error("Data load error:", err);
+            });
         }
 
         // Ek transaction row ka HTML banake dono jagah (Dashboard + Logs) dikhata hai
@@ -831,7 +865,9 @@
                 false, "", "", 
                 function(confirmed) {
                     if(confirmed) {
-                        window.location.href = "my_poartfoluo.html";
+                        auth.signOut().then(() => {
+                            window.location.href = "index.html";
+                        });
                     }
                 }
             );
@@ -921,13 +957,25 @@
                 function(newName) {
                     if(newName && newName.trim()) {
                         document.getElementById('userGreeting').innerText = newName.trim();
+                        if (currentUserId) {
+                            db.collection('users').doc(currentUserId).set({ name: newName.trim() }, { merge: true });
+                        }
                     }
                 }
             );
         }
 
-        // Page khulte hi (login ke baad ya reload par) saved data wapas load karo
-        window.addEventListener('DOMContentLoaded', loadDataFromStorage);
+        // Page khulte hi check karo ki koi valid user login hai ya nahi
+        // Agar login nahi hai to seedha login page par bhej do (security)
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUserId = user.uid;
+                document.getElementById('userGreeting').innerText = user.displayName || "User";
+                loadDataFromStorage(); // Sirf isi user ka apna data load hoga
+            } else {
+                window.location.href = "index.html";
+            }
+        });
     </script>
 </body>
 </html>
