@@ -635,7 +635,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script>
-        // Aapka Firebase project config
+        // Aapka Firebase project config (index.html jaisa hi, same project)
         const firebaseConfig = {
             apiKey: "AIzaSyAsj5w2rXI4XPubjaeG6lPVbF1RguDKmTU",
             authDomain: "money-saving-industry.firebaseapp.com",
@@ -648,6 +648,10 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         let currentUserId = null; // Login kiye hue user ka unique ID
+
+        // Login session ko browser me pakka (permanently) save rakhne ke liye
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .catch((err) => console.error("Persistence set karne me error:", err));
     </script>
 
     <script>
@@ -682,7 +686,6 @@
                     transactionsList = [];
                 }
 
-                // Saari purani transactions dobara UI me render karo
                 document.getElementById('transactionContainer').innerHTML = "";
                 document.getElementById('fullLogsContainer').innerHTML = "";
                 transactionsList.forEach(tx => renderTransactionRow(tx));
@@ -969,10 +972,12 @@
         // Agar login nahi hai to seedha login page par bhej do (security)
         auth.onAuthStateChanged((user) => {
             if (user) {
+                console.log("Login mil gaya:", user.email);
                 currentUserId = user.uid;
                 document.getElementById('userGreeting').innerText = user.displayName || "User";
                 loadDataFromStorage(); // Sirf isi user ka apna data load hoga
             } else {
+                console.log("Koi login nahi mila, index.html par bhej rahe hain");
                 window.location.href = "index.html";
             }
         });
