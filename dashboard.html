@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Logical Trader - Dashboard</title>
+    <title>Money Saving Industry</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -18,9 +18,9 @@
             --purple-glow: #a855f7;
             --modal-overlay: rgba(3, 5, 12, 0.85);
             --input-bg: rgba(255, 255, 255, 0.04);
+            --toast-bg: #10172a;
         }
 
-        /* Light Theme Styles Variables */
         [data-theme="light"] {
             --bg-color: #f4f6fa;
             --panel-bg: #ffffff;
@@ -51,591 +51,445 @@
             padding-bottom: 90px;
         }
 
-        /* App Sections Switcher Logic */
-        .app-section { display: none; }
-        .app-section.active-section { display: block; }
-
-        /* Top Header Navigation Section */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .welcome-text span.brand-lbl {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            color: var(--purple-glow);
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .welcome-text p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .welcome-text h2 {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 18px;
-        }
-
-        .header-actions i {
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-        .header-actions i:hover { color: var(--text-main); }
-
-        /* Upper Grid Overview Cards */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            padding: 20px;
-            gap: 10px;
-        }
-
-        .stat-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 12px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .stat-card.income-clickable {
-            cursor: pointer;
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-        .stat-card.income-clickable:active {
-            transform: scale(0.95);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-meta span {
-            font-size: 10px;
-            color: var(--text-muted);
-        }
-
-        .card-meta .icon {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
+        /* ============ AUTH (LOGIN/REGISTER) SCREEN ============ */
+        #authScreen {
+            display: none;
+            min-height: 100vh;
             justify-content: center;
-            font-size: 10px;
+            align-items: center;
+            padding: 20px;
         }
 
-        .stat-card.income-clickable .icon { background: rgba(16, 185, 129, 0.15); color: var(--green-glow); }
-        .stat-card.expense .icon { background: rgba(239, 68, 68, 0.15); color: var(--red-glow); }
-        .stat-card.balance .icon { background: rgba(30, 117, 255, 0.15); color: var(--primary-blue); }
-
-        .stat-card h3 {
-            font-size: 14px;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        #initLoading {
+            display: flex;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 13px;
         }
 
-        /* Middle Progress Ring Visualizations Container */
-        .chart-box {
+        .login-container {
+            width: 100%;
+            max-width: 420px;
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 24px;
-            margin: 0 20px 20px 20px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
+            padding: 30px 24px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .circle-wrapper {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .logo-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; gap: 12px; }
+        .logo-icon {
+            width: 60px; height: 60px;
+            background: rgba(30, 117, 255, 0.15);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: var(--primary-blue);
+            box-shadow: 0 0 15px rgba(30, 117, 255, 0.3);
         }
+        .brand-title { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; color: var(--text-main); margin-top: 2px; }
 
-        svg {
-            transform: rotate(-90deg);
-            width: 140px;
-            height: 140px;
+        .tabs-row { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 24px; }
+        .tab-btn {
+            flex: 1; background: none; border: none; color: var(--text-muted);
+            padding: 12px; font-size: 16px; font-weight: 600; cursor: pointer;
+            text-align: center; transition: color 0.2s;
         }
+        .tab-btn.active { color: var(--text-main); border-bottom: 2px solid var(--primary-blue); margin-bottom: -2px; }
 
-        circle {
-            fill: none;
-            stroke-width: 10;
+        .form-panel { display: none; flex-direction: column; gap: 16px; }
+        .form-panel.active { display: flex; }
+
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 12px; color: var(--text-muted); }
+        .input-group input {
+            width: 100%; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 14px; color: white; font-size: 14px; outline: none;
+            transition: border-color 0.2s;
         }
+        .input-group input:focus { border-color: var(--primary-blue); }
 
+        .action-btn {
+            width: 100%; background: var(--primary-blue); border: none;
+            border-radius: 12px; padding: 14px; color: white; font-size: 15px;
+            font-weight: 600; cursor: pointer; margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(30, 117, 255, 0.3);
+        }
+        .action-btn:active { transform: scale(0.98); }
+
+        .divider {
+            display: flex; align-items: center; text-align: center;
+            color: var(--text-muted); font-size: 11px; letter-spacing: 1px; margin: 24px 0;
+        }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+
+        .social-stack { display: flex; flex-direction: column; gap: 12px; }
+        .social-btn {
+            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.02); color: white; font-size: 13px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            cursor: pointer; text-decoration: none;
+        }
+        .social-btn.insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); border: none; }
+        .social-btn.fb { background: #1877f2; border: none; }
+        .social-btn.google { background: #ffffff; color: #000000; border: none; }
+
+        .custom-toast {
+            position: fixed; bottom: -80px; left: 50%; transform: translateX(-50%);
+            background: var(--toast-bg); border: 1px solid var(--border-color);
+            padding: 14px 22px; border-radius: 16px; display: flex; align-items: center; gap: 12px;
+            z-index: 999; box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 280px; max-width: 90%;
+        }
+        .custom-toast.toast-show { bottom: 30px; }
+        .custom-toast i { font-size: 16px; }
+        .custom-toast span { font-size: 13px; font-weight: 500; line-height: 1.4; }
+        .toast-success { border-color: rgba(16, 185, 129, 0.3); color: #10b981; }
+        .toast-error { border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
+        .toast-success span, .toast-error span { color: var(--text-main); }
+
+        /* ============ APP (DASHBOARD) SCREEN ============ */
+        #appScreen { display: none; }
+
+        .app-section { display: none; }
+        .app-section.active-section { display: block; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; border-bottom: 1px solid var(--border-color);
+        }
+        .welcome-text span.brand-lbl {
+            font-size: 11px; font-weight: 700; letter-spacing: 0.8px; color: var(--purple-glow);
+            text-transform: uppercase; display: block; margin-bottom: 2px;
+        }
+        .welcome-text p { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .welcome-text h2 { font-size: 20px; font-weight: 700; }
+        .header-actions { display: flex; align-items: center; gap: 16px; font-size: 18px; }
+        .header-actions i { color: var(--text-muted); cursor: pointer; }
+        .header-actions i:hover { color: var(--text-main); }
+
+        .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); padding: 20px; gap: 10px; }
+        .stat-card {
+            background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px;
+            padding: 12px 10px; display: flex; flex-direction: column; gap: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .stat-card.income-clickable { cursor: pointer; border-color: rgba(16, 185, 129, 0.3); }
+        .stat-card.income-clickable:active { transform: scale(0.95); background: rgba(16, 185, 129, 0.1); }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; }
+        .card-meta span { font-size: 10px; color: var(--text-muted); }
+        .card-meta .icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .stat-card.income-clickable .icon { background: rgba(16, 185, 129, 0.15); color: var(--green-glow); }
+        .stat-card.expense .icon { background: rgba(239, 68, 68, 0.15); color: var(--red-glow); }
+        .stat-card.balance .icon { background: rgba(30, 117, 255, 0.15); color: var(--primary-blue); }
+        .stat-card h3 { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .chart-box {
+            background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 24px;
+            margin: 0 20px 20px 20px; padding: 20px; display: flex; flex-direction: column;
+            align-items: center; gap: 16px;
+        }
+        .circle-wrapper { position: relative; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; }
+        svg { transform: rotate(-90deg); width: 140px; height: 140px; }
+        circle { fill: none; stroke-width: 10; }
         circle.bg { stroke: rgba(255,255,255,0.05); }
         [data-theme="light"] circle.bg { stroke: rgba(0,0,0,0.05); }
-
-        circle.progress {
-            stroke: url(#gradientRing);
-            stroke-dasharray: 377;
-            stroke-dashoffset: 377;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-
-        .circle-text {
-            position: absolute;
-            text-align: center;
-        }
-
+        circle.progress { stroke: url(#gradientRing); stroke-dasharray: 377; stroke-dashoffset: 377; transition: stroke-dashoffset 0.5s ease; }
+        .circle-text { position: absolute; text-align: center; }
         .circle-text span { font-size: 10px; color: var(--text-muted); }
         .circle-text h4 { font-size: 18px; font-weight: 700; margin: 2px 0; }
         .circle-text p { font-size: 11px; color: var(--primary-blue); background: rgba(30,117,255,0.1); padding: 2px 6px; border-radius: 8px; display: inline-block; }
 
-        /* Categorized Splits Trackers Sections (Dynamic Analysis) */
-        .categories-title {
-            padding: 0 20px;
-            font-size: 14px;
-            color: var(--text-main);
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-
-        .categories-scroll {
-            display: flex;
-            gap: 12px;
-            padding: 0 20px;
-            overflow-x: auto;
-            min-height: 85px;
-        }
+        .categories-title { padding: 0 20px; font-size: 14px; color: var(--text-main); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .categories-scroll { display: flex; gap: 12px; padding: 0 20px; overflow-x: auto; min-height: 85px; }
         .categories-scroll::-webkit-scrollbar { display: none; }
-
-        .cat-item {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            min-width: 110px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .cat-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            background: rgba(168, 85, 247, 0.15);
-            color: var(--purple-glow);
-        }
-
-        .cat-item span { 
-            font-size: 11px; 
-            color: var(--text-muted);
-            max-width: 90px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .cat-item { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px; min-width: 110px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .cat-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; background: rgba(168, 85, 247, 0.15); color: var(--purple-glow); }
+        .cat-item span { font-size: 11px; color: var(--text-muted); max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .cat-item p { font-size: 12px; font-weight: 700; }
         .cat-item p.positive-val { color: var(--green-glow); }
         .cat-item p.negative-val { color: var(--red-glow); }
+        .analysis-empty, .empty-placeholder { color: var(--text-muted); font-size: 12px; text-align: center; width: 100%; border: 1px dashed var(--border-color); border-radius: 16px; padding: 20px; }
 
-        .analysis-empty, .empty-placeholder {
-            color: var(--text-muted);
-            font-size: 12px;
-            text-align: center;
-            width: 100%;
-            border: 1px dashed var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        /* History Statement Lists Entries styling */
         .history-section { padding: 24px 20px 0 20px; }
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            font-weight: 600;
-        }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-weight: 600; }
         .history-header h4 { font-size: 14px; }
         .history-header span { font-size: 11px; color: var(--red-glow); cursor: pointer; }
-
         .tx-list { display: flex; flex-direction: column; gap: 10px; }
-        .tx-row {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .tx-row { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
         .tx-left { display: flex; align-items: center; gap: 12px; }
-        .tx-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
+        .tx-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .tx-row.in .tx-avatar { background: rgba(16,185,129,0.15); color: var(--green-glow); }
         .tx-row.out .tx-avatar { background: rgba(239,68,68,0.15); color: var(--red-glow); }
-
         .tx-info h5 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
         .tx-info p { font-size: 10px; color: var(--text-muted); }
         .tx-right { font-size: 13px; font-weight: 700; }
         .tx-row.in .tx-right { color: var(--green-glow); }
         .tx-row.out .tx-right { color: var(--red-glow); }
 
-        /* Generic Section Views Layout (Logs, Reports, Settings) */
         .section-view { padding: 20px; }
         .section-view h3 { margin-bottom: 15px; font-size: 18px; }
 
-        /* Fixed Bottom Global Tabbars Elements */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #0b1126;
-            border-top: 1px solid var(--border-color);
-            padding: 10px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
+            position: fixed; bottom: 0; left: 0; right: 0; background: #0b1126;
+            border-top: 1px solid var(--border-color); padding: 10px 24px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
         }
         [data-theme="light"] .bottom-nav { background: #ffffff; }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            cursor: pointer;
-            width: 60px;
-        }
+        .nav-btn { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; cursor: pointer; width: 60px; }
         .nav-btn.active { color: var(--purple-glow); }
         .nav-btn i { font-size: 18px; }
 
-        /* Floating Big Plus Button */
-        .center-add-btn-wrapper {
-            position: relative;
-            width: 60px;
-            height: 40px;
-        }
-
+        .center-add-btn-wrapper { position: relative; width: 60px; height: 40px; }
         .center-add-btn {
-            position: absolute;
-            top: -34px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 54px;
-            height: 54px;
-            background: linear-gradient(135deg, #a855f7 0%, #1e75ff 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: white;
-            border: 4px solid #0b1126;
-            box-shadow: 0 4px 15px rgba(30,117,255,0.4);
-            cursor: pointer;
-            z-index: 110;
+            position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+            width: 54px; height: 54px; background: linear-gradient(135deg, #a855f7 0%, #1e75ff 100%);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: white; border: 4px solid #0b1126;
+            box-shadow: 0 4px 15px rgba(30,117,255,0.4); cursor: pointer; z-index: 110;
         }
         [data-theme="light"] .center-add-btn { border-color: #f4f6fa; }
         .center-add-btn:active { transform: translateX(-50%) scale(0.95); }
 
-        /* 🔥 PREMIUM THEMED MODAL (POP-UP) DESIGN SYSTEM */
         .custom-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--modal-overlay);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            z-index: 200;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.25s ease, visibility 0.25s ease;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--modal-overlay);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 200;
+            opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s ease;
         }
-
-        .custom-modal-overlay.modal-open {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .custom-modal-overlay.modal-open { opacity: 1; visibility: visible; }
         .custom-modal-box {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            width: 100%;
-            max-width: 340px;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            transform: scale(0.9);
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: var(--panel-bg); border: 1px solid var(--border-color); width: 100%;
+            max-width: 340px; border-radius: 24px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transform: scale(0.9); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
-        .custom-modal-overlay.modal-open .custom-modal-box {
-            transform: scale(1);
-        }
-
-        .modal-header-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .modal-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 16px;
-        }
-
-        .modal-group label {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .modal-input {
-            width: 100%;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px 14px;
-            color: var(--text-main);
-            font-size: 14px;
-            outline: none;
-        }
-        .modal-input:focus {
-            border-color: var(--purple-glow);
-        }
-
-        .modal-actions-wrapper {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .modal-btn {
-            border: none;
-            padding: 10px 18px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-
-        .modal-btn.btn-cancel {
-            background: transparent;
-            color: var(--text-muted);
-        }
+        .custom-modal-overlay.modal-open .custom-modal-box { transform: scale(1); }
+        .modal-header-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .modal-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+        .modal-group label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+        .modal-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; color: var(--text-main); font-size: 14px; outline: none; }
+        .modal-input:focus { border-color: var(--purple-glow); }
+        .modal-actions-wrapper { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+        .modal-btn { border: none; padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: 12px; cursor: pointer; }
+        .modal-btn.btn-cancel { background: transparent; color: var(--text-muted); }
         .modal-btn.btn-cancel:active { background: rgba(255,255,255,0.05); }
-
-        .modal-btn.btn-confirm {
-            background: linear-gradient(135deg, #a855f7 0%, #1e75ff 100%);
-            color: white;
-            box-shadow: 0 4px 10px rgba(30,117,255,0.25);
-        }
+        .modal-btn.btn-confirm { background: linear-gradient(135deg, #a855f7 0%, #1e75ff 100%); color: white; box-shadow: 0 4px 10px rgba(30,117,255,0.25); }
         .modal-btn.btn-confirm:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="welcome-text">
-            <span class="brand-lbl">Money Saving Industry</span>
-            <p>Welcome back,</p>
-            <h2 id="userGreeting">Ayush kumar</h2>
-        </div>
-        <div class="header-actions">
-            <i class="fa-solid fa-moon" id="themeBtn" onclick="toggleTheme()" title="Change Theme Mode"></i>
-            <i class="fa-regular fa-bell" onclick="triggerAppAlert('Notification Center', 'Notification Center: Clear & No new updates!')"></i>
-            <i class="fa-solid fa-right-from-bracket" onclick="triggerLogout()" title="Logout Device"></i>
+    <!-- Jab tak Firebase check kar raha hai ki login hai ya nahi -->
+    <div id="initLoading">Loading...</div>
+
+    <!-- ============ AUTH SCREEN (Login/Register) ============ -->
+    <div id="authScreen">
+        <div class="login-container">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+                <div class="brand-title">Money Saving Industry</div>
+            </div>
+
+            <div class="tabs-row">
+                <button class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
+                <button class="tab-btn" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <div class="form-panel active" id="signinPanel">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your registered email" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button class="action-btn" onclick="executeLogin()">LOG IN</button>
+            </div>
+
+            <div class="form-panel" id="registerPanel">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="e.g., Ayush Kumar" required>
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" placeholder="name@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Create Password</label>
+                    <input type="password" id="regPassword" placeholder="Min 6 characters" required>
+                </div>
+                <button class="action-btn" onclick="executeRegister()">CREATE ACCOUNT</button>
+            </div>
+
+            <div class="divider">OR CONNECT WITH</div>
+            <div class="social-stack">
+                <a href="https://www.instagram.com/_ayush_singh_990" target="_blank" class="social-btn insta">
+                    <i class="fa-brands fa-instagram"></i> FOLLOW INSTAGRAM
+                </a>
+                <a href="https://www.facebook.com/" target="_blank" class="social-btn fb">
+                    <i class="fa-brands fa-facebook-f"></i> LOGIN WITH FACEBOOK
+                </a>
+                <a href="https://accounts.google.com/" target="_blank" class="social-btn google">
+                    <i class="fa-brands fa-google"></i> LOGIN WITH GOOGLE
+                </a>
+            </div>
         </div>
     </div>
 
-    <div id="section-dashboard" class="app-section active-section">
-        <div class="cards-grid">
-            <div class="stat-card income-clickable" onclick="customAddIncome()" title="Click to instantly add custom profit">
-                <div class="card-meta"><span>Total Income</span><div class="icon"><i class="fa-solid fa-arrow-up"></i></div></div>
-                <h3 id="cardIncome">₹0</h3>
+    <!-- ============ APP SCREEN (Dashboard) ============ -->
+    <div id="appScreen">
+        <div class="header">
+            <div class="welcome-text">
+                <span class="brand-lbl">Money Saving Industry</span>
+                <p>Welcome back,</p>
+                <h2 id="userGreeting">User</h2>
             </div>
-            <div class="stat-card expense">
-                <div class="card-meta"><span>Total Expense</span><div class="icon"><i class="fa-solid fa-arrow-down"></i></div></div>
-                <h3 id="cardExpense">₹0</h3>
-            </div>
-            <div class="stat-card balance">
-                <div class="card-meta"><span>Net Balance</span><div class="icon"><i class="fa-solid fa-wallet"></i></div></div>
-                <h3 id="cardBalance">₹0</h3>
+            <div class="header-actions">
+                <i class="fa-solid fa-moon" id="themeBtn" onclick="toggleTheme()" title="Change Theme Mode"></i>
+                <i class="fa-regular fa-bell" onclick="triggerAppAlert('Notification Center', 'Notification Center: Clear & No new updates!')"></i>
+                <i class="fa-solid fa-right-from-bracket" onclick="triggerLogout()" title="Logout Device"></i>
             </div>
         </div>
 
-        <div class="chart-box">
-            <div class="circle-wrapper">
-                <svg>
-                    <defs>
-                        <linearGradient id="gradientRing" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#a855f7" />
-                            <stop offset="100%" stop-color="#1e75ff" />
-                        </linearGradient>
-                    </defs>
-                    <circle class="bg" cx="70" cy="70" r="60"></circle>
-                    <circle class="progress" id="ringProgress" cx="70" cy="70" r="60"></circle>
-                </svg>
-                <div class="circle-text">
-                    <span>Net Savings</span>
-                    <h4 id="ringBalance">₹0</h4>
-                    <p id="ringPercent">0%</p>
+        <div id="section-dashboard" class="app-section active-section">
+            <div class="cards-grid">
+                <div class="stat-card income-clickable" onclick="customAddIncome()" title="Click to instantly add custom profit">
+                    <div class="card-meta"><span>Total Income</span><div class="icon"><i class="fa-solid fa-arrow-up"></i></div></div>
+                    <h3 id="cardIncome">₹0</h3>
+                </div>
+                <div class="stat-card expense">
+                    <div class="card-meta"><span>Total Expense</span><div class="icon"><i class="fa-solid fa-arrow-down"></i></div></div>
+                    <h3 id="cardExpense">₹0</h3>
+                </div>
+                <div class="stat-card balance">
+                    <div class="card-meta"><span>Net Balance</span><div class="icon"><i class="fa-solid fa-wallet"></i></div></div>
+                    <h3 id="cardBalance">₹0</h3>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <div class="circle-wrapper">
+                    <svg>
+                        <defs>
+                            <linearGradient id="gradientRing" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#a855f7" />
+                                <stop offset="100%" stop-color="#1e75ff" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="bg" cx="70" cy="70" r="60"></circle>
+                        <circle class="progress" id="ringProgress" cx="70" cy="70" r="60"></circle>
+                    </svg>
+                    <div class="circle-text">
+                        <span>Net Savings</span>
+                        <h4 id="ringBalance">₹0</h4>
+                        <p id="ringPercent">0%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="categories-title">
+                <span>Live Analysis</span>
+                <span style="font-size: 10px; color: var(--text-muted);">Dynamic Breakdown</span>
+            </div>
+            <div class="categories-scroll" id="analysisContainer">
+                <div class="analysis-empty">No dynamic analysis cards created yet. Click (+) to add.</div>
+            </div>
+
+            <div class="history-section">
+                <div class="history-header">
+                    <h4>Recent Transactions</h4>
+                    <span onclick="triggerClearAllData()">Clear All</span>
+                </div>
+                <div class="tx-list" id="transactionContainer"></div>
+            </div>
+        </div>
+
+        <div id="section-logs" class="app-section section-view">
+            <h3><i class="fa-solid fa-list" style="color:var(--purple-glow);"></i> Transaction Logs</h3>
+            <div class="tx-list" id="fullLogsContainer"></div>
+        </div>
+
+        <div id="section-reports" class="app-section section-view">
+            <h3><i class="fa-solid fa-chart-pie" style="color:var(--primary-blue);"></i> Portfolio Analysis</h3>
+            <div class="analysis-empty" style="border-style: solid; text-align: left; padding: 15px; line-height: 1.6;">
+                <strong>Trading Insight Reports:</strong><br>
+                • System is actively tracing Firestore data logs.<br>
+                • Data architecture matches completely with current entries.
+            </div>
+        </div>
+
+        <div id="section-settings" class="app-section section-view">
+            <h3><i class="fa-solid fa-gear" style="color:var(--text-muted);"></i> Profile Settings</h3>
+            <div class="tx-row" style="margin-bottom: 12px; cursor: pointer;" onclick="triggerProfileNameChange()">
+                <div class="tx-left"><h5><i class="fa-solid fa-user-pen"></i> Edit Profile Name</h5></div>
+                <i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i>
+            </div>
+            <div class="tx-row" style="cursor: pointer; border-color: rgba(239, 68, 68, 0.3);" onclick="triggerClearAllData()">
+                <div class="tx-left"><h5 style="color: var(--red-glow);"><i class="fa-solid fa-trash-can"></i> Factory Reset All Data</h5></div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="switchSection('dashboard', this)">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-btn" onclick="switchSection('logs', this)">
+                <i class="fa-solid fa-list"></i>
+                <span>Logs</span>
+            </button>
+            <div class="center-add-btn-wrapper">
+                <div class="center-add-btn" onclick="triggerAddTransactionPrompt()"><i class="fa-solid fa-plus"></i></div>
+            </div>
+            <button class="nav-btn" onclick="switchSection('reports', this)">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Reports</span>
+            </button>
+            <button class="nav-btn" onclick="switchSection('settings', this)">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </button>
+        </div>
+
+        <div class="custom-modal-overlay" id="appUniversalModal">
+            <div class="custom-modal-box">
+                <div class="modal-header-title" id="modalTitleArea">
+                    <i class="fa-solid fa-circle-question" id="modalTitleIcon" style="color: var(--purple-glow);"></i>
+                    <span id="modalTitleText">Confirm Action</span>
+                </div>
+                <div class="modal-group" id="modalInputContainer" style="display: none;">
+                    <label id="modalInputLabel">Enter Value:</label>
+                    <input type="text" class="modal-input" id="modalInputField" placeholder="">
+                </div>
+                <p id="modalBodyMessage" style="font-size: 13px; color: var(--text-muted); line-height: 1.5;"></p>
+                <div class="modal-actions-wrapper">
+                    <button class="modal-btn btn-cancel" id="modalCancelBtn" onclick="closeAppModal()">Cancel</button>
+                    <button class="modal-btn btn-confirm" id="modalConfirmBtn">OK</button>
                 </div>
             </div>
         </div>
-
-        <div class="categories-title">
-            <span>Live Analysis</span>
-            <span style="font-size: 10px; color: var(--text-muted);">Dynamic Breakdown</span>
-        </div>
-        <div class="categories-scroll" id="analysisContainer">
-            <div class="analysis-empty">No dynamic analysis cards created yet. Click (+) to add.</div>
-        </div>
-
-        <div class="history-section">
-            <div class="history-header">
-                <h4>Recent Transactions</h4>
-                <span onclick="triggerClearAllData()">Clear All</span>
-            </div>
-            <div class="tx-list" id="transactionContainer"></div>
-        </div>
     </div>
 
-    <div id="section-logs" class="app-section section-view">
-        <h3><i class="fa-solid fa-list" style="color:var(--purple-glow);"></i> Transaction Logs</h3>
-        <div class="tx-list" id="fullLogsContainer"></div>
+    <!-- Auth screen ke liye toast notification -->
+    <div class="custom-toast" id="appToast">
+        <i id="toastIcon" class="fa-solid"></i>
+        <span id="toastMessage">Notification Message</span>
     </div>
 
-    <div id="section-reports" class="app-section section-view">
-        <h3><i class="fa-solid fa-chart-pie" style="color:var(--primary-blue);"></i> Portfolio Analysis</h3>
-        <div class="analysis-empty" style="border-style: solid; text-align: left; padding: 15px; line-height: 1.6;">
-            <strong>Trading Insight Reports:</strong><br>
-            • System is actively tracing LocalStorage arrays data logs.<br>
-            • Data architecture matches completely with current entries.
-        </div>
-    </div>
-
-    <div id="section-settings" class="app-section section-view">
-        <h3><i class="fa-solid fa-gear" style="color:var(--text-muted);"></i> Profile Settings</h3>
-        <div class="tx-row" style="margin-bottom: 12px; cursor: pointer;" onclick="triggerProfileNameChange()">
-            <div class="tx-left"><h5><i class="fa-solid fa-user-pen"></i> Edit Profile Name</h5></div>
-            <i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i>
-        </div>
-        <div class="tx-row" style="cursor: pointer; border-color: rgba(239, 68, 68, 0.3);" onclick="triggerClearAllData()">
-            <div class="tx-left"><h5 style="color: var(--red-glow);"><i class="fa-solid fa-trash-can"></i> Factory Reset All Data</h5></div>
-        </div>
-    </div>
-
-    <div class="bottom-nav">
-        <button class="nav-btn active" onclick="switchSection('dashboard', this)">
-            <i class="fa-solid fa-house"></i>
-            <span>Dashboard</span>
-        </button>
-        <button class="nav-btn" onclick="switchSection('logs', this)">
-            <i class="fa-solid fa-list"></i>
-            <span>Logs</span>
-        </button>
-        <div class="center-add-btn-wrapper">
-            <div class="center-add-btn" onclick="triggerAddTransactionPrompt()"><i class="fa-solid fa-plus"></i></div>
-        </div>
-        <button class="nav-btn" onclick="switchSection('reports', this)">
-            <i class="fa-solid fa-chart-pie"></i>
-            <span>Reports</span>
-        </button>
-        <button class="nav-btn" onclick="switchSection('settings', this)">
-            <i class="fa-solid fa-gear"></i>
-            <span>Settings</span>
-        </button>
-    </div>
-
-    <div class="custom-modal-overlay" id="appUniversalModal">
-        <div class="custom-modal-box">
-            <div class="modal-header-title" id="modalTitleArea">
-                <i class="fa-solid fa-circle-question" id="modalTitleIcon" style="color: var(--purple-glow);"></i>
-                <span id="modalTitleText">Confirm Action</span>
-            </div>
-            
-            <div class="modal-group" id="modalInputContainer" style="display: none;">
-                <label id="modalInputLabel">Enter Value:</label>
-                <input type="text" class="modal-input" id="modalInputField" placeholder="">
-            </div>
-            
-            <p id="modalBodyMessage" style="font-size: 13px; color: var(--text-muted); line-height: 1.5;"></p>
-            
-            <div class="modal-actions-wrapper">
-                <button class="modal-btn btn-cancel" id="modalCancelBtn" onclick="closeAppModal()">Cancel</button>
-                <button class="modal-btn btn-confirm" id="modalConfirmBtn">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase SDK (Compat version - plain <script> tags ke sath direct browser me chalta hai) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script>
-        // Aapka Firebase project config
         const firebaseConfig = {
             apiKey: "AIzaSyAsj5w2rXI4XPubjaeG6lPVbF1RguDKmTU",
             authDomain: "money-saving-industry.firebaseapp.com",
@@ -647,17 +501,145 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        let currentUserId = null; // Login kiye hue user ka unique ID
+        let currentUserId = null;
+
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .catch((err) => console.error("Persistence set karne me error:", err));
     </script>
 
     <script>
-        // Real-time Global Calculation Engine Variables
+        // ================== TOAST ==================
+        function showThemeToast(message, isSuccess = true) {
+            const toast = document.getElementById("appToast");
+            const icon = document.getElementById("toastIcon");
+            const text = document.getElementById("toastMessage");
+            text.innerText = message;
+            if (isSuccess) {
+                toast.className = "custom-toast toast-success toast-show";
+                icon.className = "fa-solid fa-circle-check";
+            } else {
+                toast.className = "custom-toast toast-error toast-show";
+                icon.className = "fa-solid fa-circle-exclamation";
+            }
+            setTimeout(() => { toast.classList.remove("toast-show"); }, 2500);
+        }
+
+        // ================== AUTH TABS ==================
+        function switchTab(mode) {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const signinPanel = document.getElementById('signinPanel');
+            const registerPanel = document.getElementById('registerPanel');
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            if (mode === 'signin') {
+                tabBtns[0].classList.add('active');
+                signinPanel.classList.add('active');
+                registerPanel.classList.remove('active');
+            } else {
+                tabBtns[1].classList.add('active');
+                registerPanel.classList.add('active');
+                signinPanel.classList.remove('active');
+            }
+        }
+
+        // ================== REGISTER / LOGIN (Firebase Auth) ==================
+        // NOTE: Ab yahan kahin bhi window.location.href se page change nahi hota.
+        // Login/Register safal hone par Firebase khud onAuthStateChanged trigger
+        // karega (neeche), jo authScreen chhipa kar appScreen dikha dega.
+        // Isi wajah se session kabhi "gum" nahi hota - kyunki page kabhi reload
+        // hi nahi hota.
+        function executeRegister() {
+            let name = document.getElementById('regName').value.trim();
+            let email = document.getElementById('regEmail').value.trim();
+            let pass = document.getElementById('regPassword').value;
+
+            if (!name || !email || !pass) {
+                showThemeToast("Please fill up all fields to create an account.", false);
+                return;
+            }
+            if (pass.length < 6) {
+                showThemeToast("Password kam se kam 6 characters ka hona chahiye.", false);
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then((userCredential) => {
+                    let user = userCredential.user;
+                    user.updateProfile({ displayName: name });
+                    return db.collection('users').doc(user.uid).set({
+                        name: name,
+                        email: email,
+                        totalIncome: 0,
+                        totalExpense: 0,
+                        transactions: []
+                    });
+                })
+                .then(() => {
+                    showThemeToast("Registration Successful! Welcome to Money Saving Industry.", true);
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        showThemeToast("Ye email already register hai! Sign In use karein.", false);
+                    } else {
+                        showThemeToast("Error: " + error.message, false);
+                    }
+                });
+        }
+
+        function executeLogin() {
+            let emailInput = document.getElementById('loginEmail').value.trim();
+            let passInput = document.getElementById('loginPassword').value;
+
+            if (!emailInput || !passInput) {
+                showThemeToast("Email aur Password dono bharein.", false);
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(emailInput, passInput)
+                .then(() => {
+                    showThemeToast("Access Granted! Welcome back to Money Saving Industry.", true);
+                })
+                .catch((error) => {
+                    showThemeToast("Invalid Credentials! पासवर्ड या ईमेल गलत है।", false);
+                });
+        }
+
+        // ================== SCREEN SWITCHING (Login <-> Dashboard) ==================
+        function showAppScreen(user) {
+            document.getElementById('initLoading').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            document.getElementById('userGreeting').innerText = user.displayName || "User";
+        }
+
+        function showAuthScreen() {
+            document.getElementById('initLoading').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            // Purane form fields saaf kar do
+            document.getElementById('loginEmail').value = "";
+            document.getElementById('loginPassword').value = "";
+        }
+
+        // Yahi ek jagah hai jo decide karti hai screen kaun dikhna chahiye.
+        // Chahe login ho, register ho, ya seedha refresh ho - hamesha yahi chalega.
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("Login mil gaya:", user.email);
+                currentUserId = user.uid;
+                showAppScreen(user);
+                loadDataFromStorage();
+            } else {
+                console.log("Koi login nahi mila, auth screen dikha rahe hain");
+                currentUserId = null;
+                showAuthScreen();
+            }
+        });
+
+        // ================== DASHBOARD DATA VARIABLES ==================
         let totalIncome = 0;
         let totalExpense = 0;
-        let transactionsList = []; // Har transaction yahan permanently store hoti hai
+        let transactionsList = [];
 
-        // ================== STORAGE FIX (Firebase Firestore) ==================
-        // Data ko Firestore me is user ke apne document ke andar save karta hai
         function saveDataToStorage() {
             if (!currentUserId) return;
             db.collection('users').doc(currentUserId).set({
@@ -667,7 +649,6 @@
             }, { merge: true });
         }
 
-        // Login hue user ka apna data Firestore se load karta hai (kisi aur ka data kabhi nahi dikhega)
         function loadDataFromStorage() {
             if (!currentUserId) return;
             db.collection('users').doc(currentUserId).get().then((docSnap) => {
@@ -681,19 +662,15 @@
                     totalExpense = 0;
                     transactionsList = [];
                 }
-
-                // Saari purani transactions dobara UI me render karo
                 document.getElementById('transactionContainer').innerHTML = "";
                 document.getElementById('fullLogsContainer').innerHTML = "";
                 transactionsList.forEach(tx => renderTransactionRow(tx));
-
                 updateLiveCalculations();
             }).catch((err) => {
                 console.error("Data load error:", err);
             });
         }
 
-        // Ek transaction row ka HTML banake dono jagah (Dashboard + Logs) dikhata hai
         function renderTransactionRow(tx) {
             let rowHTML = `
                 <div class="tx-row ${tx.type === 'in' ? 'in' : 'out'}">
@@ -706,61 +683,47 @@
             document.getElementById('transactionContainer').insertAdjacentHTML('afterbegin', rowHTML);
             document.getElementById('fullLogsContainer').insertAdjacentHTML('afterbegin', rowHTML);
         }
-        // ================== STORAGE FIX END ==================
 
-        // Section tab dynamic switching core logic
+        // ================== DASHBOARD UI LOGIC ==================
         function switchSection(targetId, element) {
             document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active-section'));
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            
             document.getElementById('section-' + targetId).classList.add('active-section');
-            if(element) element.classList.add('active');
+            if (element) element.classList.add('active');
         }
 
-        // Dark/Light Theme toggler mechanism
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', targetTheme);
-            
             const btn = document.getElementById('themeBtn');
-            if(targetTheme === 'light') {
-                btn.className = "fa-solid fa-sun";
-            } else {
-                btn.className = "fa-solid fa-moon";
-            }
+            btn.className = targetTheme === 'light' ? "fa-solid fa-sun" : "fa-solid fa-moon";
         }
 
-        // Modal opening Core UI Logic trigger
         function openAppModal(title, iconClass, message, isPrompt, inputLabel, defaultInputValue, onConfirm) {
             document.getElementById('modalTitleText').innerText = title;
             document.getElementById('modalTitleIcon').className = "fa-solid " + iconClass;
             document.getElementById('modalBodyMessage').innerText = message;
-            
+
             const inputContainer = document.getElementById('modalInputContainer');
             const inputField = document.getElementById('modalInputField');
-            
-            if(isPrompt) {
+
+            if (isPrompt) {
                 inputContainer.style.display = "flex";
                 document.getElementById('modalInputLabel').innerText = inputLabel;
                 inputField.value = defaultInputValue || "";
             } else {
                 inputContainer.style.display = "none";
             }
-            
+
             const confirmBtn = document.getElementById('modalConfirmBtn');
             const newConfirmBtn = confirmBtn.cloneNode(true);
             confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-            
+
             newConfirmBtn.addEventListener('click', () => {
                 const capturedValue = inputField.value;
                 closeAppModal();
-                
-                if(isPrompt) {
-                    onConfirm(capturedValue);
-                } else {
-                    onConfirm(true);
-                }
+                if (isPrompt) { onConfirm(capturedValue); } else { onConfirm(true); }
             });
 
             document.getElementById('appUniversalModal').classList.add('modal-open');
@@ -776,16 +739,12 @@
             setTimeout(() => { document.getElementById('modalCancelBtn').style.display = "inline-block"; }, 100);
         }
 
-        // Live UI Calculation Redraw Engine System
         function updateLiveCalculations() {
             let netBalance = totalIncome - totalExpense;
-            
-            // Text values updates
             document.getElementById('cardIncome').innerText = "₹" + totalIncome;
             document.getElementById('cardExpense').innerText = "₹" + totalExpense;
-            
-            // Format handle for negative balance indicator display
-            if(netBalance >= 0) {
+
+            if (netBalance >= 0) {
                 document.getElementById('cardBalance').innerText = "₹" + netBalance;
                 document.getElementById('ringBalance').innerText = "₹" + netBalance;
             } else {
@@ -793,33 +752,27 @@
                 document.getElementById('ringBalance').innerText = "-₹" + Math.abs(netBalance);
             }
 
-            // Progress Circular percentage tracking computation
             let percent = 0;
-            if(totalIncome > 0) {
+            if (totalIncome > 0) {
                 percent = Math.round((netBalance / totalIncome) * 100);
-                if(percent < 0) percent = 0; // Guardrail locks lower bounds safely
+                if (percent < 0) percent = 0;
             }
             document.getElementById('ringPercent').innerText = percent + "%";
 
-            // SVG Circumference Dash calculation: Total stroke-dasharray = 377
             let strokeOffset = 377 - (377 * percent) / 100;
             document.getElementById('ringProgress').style.strokeDashoffset = strokeOffset;
 
-            // Live Analysis dynamic breakdowns synchronization 
             updateDynamicLiveCards(netBalance);
         }
 
-        // Renders visual analysis metrics automatically based on states
         function updateDynamicLiveCards(netBalance) {
             const container = document.getElementById('analysisContainer');
-            if(totalIncome === 0 && totalExpense === 0) {
+            if (totalIncome === 0 && totalExpense === 0) {
                 container.innerHTML = '<div class="analysis-empty">No dynamic analysis cards created yet. Click (+) to add.</div>';
                 return;
             }
-
             let savingsStatusClass = netBalance >= 0 ? "positive-val" : "negative-val";
             let savingsText = netBalance >= 0 ? "Safe Zone" : "Risk Alert";
-
             container.innerHTML = `
                 <div class="cat-item">
                     <div class="cat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--green-glow);"><i class="fa-solid fa-percent"></i></div>
@@ -834,71 +787,57 @@
             `;
         }
 
-        // 2. Clear All Data resetting system back to base states
         function triggerClearAllData() {
             openAppModal(
-                "Wipe Transactions", 
-                "fa-triangle-exclamation", 
-                "Are you sure you want to wipe out all entries back to ₹0?", 
-                false, "", "", 
+                "Wipe Transactions", "fa-triangle-exclamation",
+                "Are you sure you want to wipe out all entries back to ₹0?", false, "", "",
                 function(confirmed) {
-                    if(confirmed) {
+                    if (confirmed) {
                         totalIncome = 0;
                         totalExpense = 0;
                         transactionsList = [];
                         document.getElementById('transactionContainer').innerHTML = "";
                         document.getElementById('fullLogsContainer').innerHTML = "";
                         updateLiveCalculations();
-                        saveDataToStorage(); // localStorage se bhi permanently clear karo
+                        saveDataToStorage();
                     }
                 }
             );
             document.getElementById('modalTitleIcon').style.color = "var(--red-glow)";
         }
 
-        // 3. Logout Session Handler Link
         function triggerLogout() {
             openAppModal(
-                "End Session", 
-                "fa-right-from-bracket", 
-                "Are you sure you want to log out from this trading layout session?", 
-                false, "", "", 
+                "End Session", "fa-right-from-bracket",
+                "Are you sure you want to log out from this trading layout session?", false, "", "",
                 function(confirmed) {
-                    if(confirmed) {
-                        auth.signOut().then(() => {
-                            window.location.href = "index.html";
-                        });
+                    if (confirmed) {
+                        auth.signOut();
+                        // Page reload/redirect ki koi zarurat nahi -
+                        // onAuthStateChanged khud authScreen dikha dega
                     }
                 }
             );
             document.getElementById('modalTitleIcon').style.color = "var(--purple-glow)";
         }
 
-        // 4. Income addition controller mechanism
         function customAddIncome() {
             openAppModal(
-                "Quick Profit Input", 
-                "fa-arrow-trend-up", 
-                "Enter transaction summary identifier tags context specifications description detail:", 
-                true, "Specification Name (e.g., Trading Profit, Bonus):", "Trading Profit", 
+                "Quick Profit Input", "fa-arrow-trend-up",
+                "Enter transaction summary identifier tags context specifications description detail:",
+                true, "Specification Name (e.g., Trading Profit, Bonus):", "Trading Profit",
                 function(specName) {
-                    if(!specName || !specName.trim()) return;
-                    
+                    if (!specName || !specName.trim()) return;
                     setTimeout(() => {
                         openAppModal(
-                            "Amount Injector", 
-                            "fa-money-bill-wave", 
-                            `Enter amount for [${specName}]:`, 
-                            true, "Amount in INR (₹):", "5000", 
+                            "Amount Injector", "fa-money-bill-wave",
+                            `Enter amount for [${specName}]:`,
+                            true, "Amount in INR (₹):", "5000",
                             function(amountVal) {
                                 let parsed = parseFloat(amountVal);
-                                if(isNaN(parsed) || parsed <= 0) return;
-                                
-                                // Adds up values cumulatively instead of overwriting 
+                                if (isNaN(parsed) || parsed <= 0) return;
                                 totalIncome += parsed;
                                 updateLiveCalculations();
-
-                                // Naya transaction object list me daalo aur permanently save karo
                                 let newTx = { type: 'in', name: specName, amount: parsed, time: 'Just now' };
                                 transactionsList.push(newTx);
                                 renderTransactionRow(newTx);
@@ -910,31 +849,23 @@
             );
         }
 
-        // 5. Expense transaction compiler logger
         function triggerAddTransactionPrompt() {
             openAppModal(
-                "Add Transaction Log", 
-                "fa-receipt", 
-                "Enter Name / Specification (e.g., Mobile Charge, Trading Profit):", 
-                true, "Log Name / Description Specifier:", "Mobile Charge", 
+                "Add Transaction Log", "fa-receipt",
+                "Enter Name / Specification (e.g., Mobile Charge, Trading Profit):",
+                true, "Log Name / Description Specifier:", "Mobile Charge",
                 function(descName) {
-                    if(!descName || !descName.trim()) return;
-                    
+                    if (!descName || !descName.trim()) return;
                     setTimeout(() => {
                         openAppModal(
-                            "Transaction Entry Value", 
-                            "fa-calculator", 
-                            `Set valuation metric ledger criteria index amount tracking input fields for [${descName}]:`, 
-                            true, "Valuation numeric quantity cost entry:", "349", 
+                            "Transaction Entry Value", "fa-calculator",
+                            `Set valuation metric ledger criteria index amount tracking input fields for [${descName}]:`,
+                            true, "Valuation numeric quantity cost entry:", "349",
                             function(numericAmt) {
                                 let amt = parseFloat(numericAmt);
-                                if(isNaN(amt) || amt <= 0) return;
-                                
-                                // Accumulates cost metrics safely inside the tracker engine
+                                if (isNaN(amt) || amt <= 0) return;
                                 totalExpense += amt;
                                 updateLiveCalculations();
-
-                                // Naya transaction object list me daalo aur permanently save karo
                                 let newExTx = { type: 'out', name: descName, amount: amt, time: 'Just now' };
                                 transactionsList.push(newExTx);
                                 renderTransactionRow(newExTx);
@@ -946,16 +877,14 @@
             );
         }
 
-        // 6. Identity modifier system
         function triggerProfileNameChange() {
             let current = document.getElementById('userGreeting').innerText;
             openAppModal(
-                "Modify Identity", 
-                "fa-user-gear", 
-                "Change profile workspace visual placeholder name signature identifier:", 
-                true, "Enter New Name:", current, 
+                "Modify Identity", "fa-user-gear",
+                "Change profile workspace visual placeholder name signature identifier:",
+                true, "Enter New Name:", current,
                 function(newName) {
-                    if(newName && newName.trim()) {
+                    if (newName && newName.trim()) {
                         document.getElementById('userGreeting').innerText = newName.trim();
                         if (currentUserId) {
                             db.collection('users').doc(currentUserId).set({ name: newName.trim() }, { merge: true });
@@ -964,18 +893,6 @@
                 }
             );
         }
-
-        // Page khulte hi check karo ki koi valid user login hai ya nahi
-        // Agar login nahi hai to seedha login page par bhej do (security)
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUserId = user.uid;
-                document.getElementById('userGreeting').innerText = user.displayName || "User";
-                loadDataFromStorage(); // Sirf isi user ka apna data load hoga
-            } else {
-                window.location.href = "index.html";
-            }
-        });
     </script>
 </body>
 </html>
