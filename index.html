@@ -1,403 +1,831 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio - Login & Register</title>
-    <!-- FontAwesome Core Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-color: #070b19;
-            --panel-bg: rgba(16, 22, 45, 0.6);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
-            --text-muted: #7b86a0;
-            --primary-blue: #1e75ff;
-            --red-glow: #ff4d4d;
-            --toast-bg: #10172a;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger — Swing Trade Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0B0E11;
+    --panel:#12161B;
+    --panel-2:#171C22;
+    --line:#232A31;
+    --text:#E8EAED;
+    --muted:#7C8894;
+    --profit:#00C896;
+    --loss:#FF5C5C;
+    --amber:#F0B429;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:76px;
+  }
+  a{color:inherit;}
+  .ticker-wrap{ background:var(--panel-2); border-bottom:1px solid var(--line); overflow:hidden; white-space:nowrap; padding:8px 0; }
+  .ticker{ display:inline-block; white-space:nowrap; animation:scroll-left 30s linear infinite; font-family:var(--mono); font-size:13px; }
+  .ticker span{ margin-right:36px; color:var(--muted); }
+  .ticker span b{ color:var(--text); font-weight:600; margin-right:6px; }
+  .up{color:var(--profit);}
+  .down{color:var(--loss);}
+  @keyframes scroll-left{ 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+  header{ padding:24px 20px 8px; max-width:960px; margin:0 auto; }
+  .brand{ font-family:var(--mono); font-size:12px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; display:flex; align-items:center; gap:8px; }
+  .cat-tag{ font-family:var(--mono); font-size:10px; letter-spacing:1px; padding:2px 8px; border-radius:20px; text-transform:uppercase; font-weight:700; }
+  .cat-swing{background:rgba(240,180,41,0.15); color:var(--amber);}
+  .cat-options{background:rgba(0,200,150,0.15); color:var(--profit);}
+  .cat-intraday{background:rgba(255,92,92,0.15); color:var(--loss);}
+  h1{ margin:6px 0 0; font-size:26px; font-weight:700; letter-spacing:-0.5px; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+  main{ max-width:960px; margin:0 auto; padding:0 20px 40px; }
+  .summary{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:22px 0; }
+  @media(max-width:640px){ .summary{grid-template-columns:1fr;} }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px; }
+  .card .label{ font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .card .value{ font-family:var(--mono); font-size:22px; font-weight:700; }
+  .card .sub{ font-size:12px; color:var(--muted); margin-top:4px; }
 
-        .login-container {
-            width: 100%;
-            max-width: 420px;
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 30px 24px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+  .panel-block{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px; margin-bottom:20px; }
+  .panel-block h2{ margin:0 0 14px; font-size:14px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  canvas#pnlChart{max-height:220px;}
+  canvas#catChart{max-height:200px;}
 
-        .logo-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 30px;
-            gap: 12px;
-        }
+  .toolbar{ display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+  .tabs{display:flex; gap:6px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:3px;}
+  .tab{ padding:7px 14px; border-radius:6px; font-size:13px; color:var(--muted); cursor:pointer; font-weight:500; user-select:none; }
+  .tab.active{background:var(--panel-2); color:var(--text);}
+  .search{ flex:1; min-width:140px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; color:var(--text); font-size:13px; font-family:var(--sans); }
+  .search:focus{outline:none; border-color:var(--amber);}
 
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(30, 117, 255, 0.15);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: var(--primary-blue);
-            box-shadow: 0 0 15px rgba(30, 117, 255, 0.3);
-        }
+  .trade{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; cursor:pointer; transition:transform .15s ease, border-color .15s ease, background-color .15s ease; }
+  .trade:hover{ border-color:#33404a; }
+  .trade:active{ transform:scale(0.98); background-color:var(--panel-2); }
+  .trade .row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; }
+  .trade .top-row{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .trade .stock{ font-weight:700; font-size:16px; }
+  .status-pill{ font-family:var(--mono); font-size:10px; letter-spacing:1px; padding:2px 8px; border-radius:20px; text-transform:uppercase; font-weight:600; }
+  .status-open{background:rgba(240,180,41,0.15); color:var(--amber);}
+  .status-closed-profit{background:rgba(0,200,150,0.15); color:var(--profit);}
+  .status-closed-loss{background:rgba(255,92,92,0.15); color:var(--loss);}
+  .trade .meta{ font-family:var(--mono); font-size:12.5px; color:var(--muted); display:flex; gap:16px; flex-wrap:wrap; margin-top:6px; }
+  .trade .meta b{color:var(--text); font-weight:500;}
+  .trade .pnl-box{ text-align:right; font-family:var(--mono); }
+  .trade .pnl-box .amt{font-size:17px; font-weight:700;}
+  .trade .pnl-box .pct{font-size:12px; color:var(--muted);}
 
-        /* Brand Title Style matched with the theme */
-        .brand-title {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--text-main);
-            margin-top: 2px;
-        }
+  .empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+  .empty-state .big{font-size:32px; margin-bottom:8px;}
 
-        /* Tabs Row setup */
-        .tabs-row {
-            display: flex;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 24px;
-        }
+  .fab{ position:fixed; right:20px; bottom:88px; width:52px; height:52px; border-radius:50%; background:var(--amber); color:#181206; border:none; font-size:26px; font-weight:700; box-shadow:0 6px 18px rgba(0,0,0,0.4); cursor:pointer; z-index:40; display:flex; align-items:center; justify-content:center; }
+  .fab:hover{ filter:brightness(1.08); }
 
-        .tab-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            padding: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            transition: color 0.2s;
-        }
+  .bottom-nav{ position:fixed; left:0; right:0; bottom:0; background:var(--panel-2); border-top:1px solid var(--line); display:flex; z-index:41; padding-bottom:env(safe-area-inset-bottom); }
+  .nav-item{ flex:1; text-align:center; padding:10px 4px 8px; color:var(--muted); cursor:pointer; user-select:none; transition:color .2s ease; }
+  .nav-item .ic{ font-size:19px; display:block; margin-bottom:2px; transition:transform .25s cubic-bezier(.34,1.56,.64,1); }
+  .nav-item .lbl{ font-size:11px; font-weight:600; letter-spacing:0.3px; }
+  .nav-item.active{ color:var(--amber); }
+  .nav-item.active .ic{ filter:drop-shadow(0 0 6px rgba(240,180,41,0.5)); transform:translateY(-2px) scale(1.12); }
+  .nav-item:active .ic{ transform:scale(0.85); }
+  .fab{ transition:transform .15s ease, filter .15s ease; }
+  .fab:active{ transform:scale(0.9); }
 
-        .tab-btn.active {
-            color: var(--text-main);
-            border-bottom: 2px solid var(--primary-blue);
-            margin-bottom: -2px;
-        }
+  .overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:40px 16px 100px; overflow-y:auto; z-index:50;
+    visibility:hidden; opacity:0; pointer-events:none;
+    transition:opacity .28s ease, background-color .28s ease, visibility .28s;
+  }
+  .overlay.show{
+    visibility:visible; opacity:1; pointer-events:auto;
+    background:rgba(0,0,0,0.6);
+  }
+  .modal{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px; width:100%; max-width:460px; padding:22px;
+    transform:scale(0.92) translateY(14px);
+    opacity:0;
+    transition:transform .32s cubic-bezier(.2,.8,.2,1), opacity .28s ease;
+  }
+  .overlay.show .modal{
+    transform:scale(1) translateY(0);
+    opacity:1;
+  }
+  .modal h3{margin:0 0 16px; font-size:16px;}
+  .field{margin-bottom:12px;}
+  .field label{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:6px; }
+  .field input, .field textarea, .field select{ width:100%; background:var(--panel-2); border:1px solid var(--line); border-radius:7px; padding:9px 10px; color:var(--text); font-size:14px; font-family:var(--sans); }
+  .field input:focus, .field textarea:focus, .field select:focus{outline:none; border-color:var(--amber);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .modal-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:16px; flex-wrap:wrap;}
+  .btn-secondary{ background:none; border:1px solid var(--line); color:var(--muted); border-radius:7px; padding:9px 16px; font-size:13px; cursor:pointer; }
+  .btn-primary{ background:var(--amber); border:none; color:#181206; border-radius:7px; padding:9px 16px; font-weight:700; font-size:13px; cursor:pointer; }
+  .btn-danger{ background:none; border:1px solid var(--loss); color:var(--loss); border-radius:7px; padding:9px 16px; font-size:13px; cursor:pointer; }
 
-        /* Forms Layout control */
-        .form-panel {
-            display: none;
-            flex-direction: column;
-            gap: 16px;
-        }
+  .detail-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;}
+  .detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; font-family:var(--mono); font-size:13px; }
+  .detail-grid .dl{ color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px; }
+  .detail-grid .dv{ color:var(--text); font-weight:600; }
+  .detail-pnl{ text-align:center; padding:12px; border-radius:8px; margin:10px 0; font-family:var(--mono); }
+  .detail-pnl .amt{ font-size:24px; font-weight:700; }
+  .detail-notes{ font-size:13px; color:var(--muted); background:var(--panel-2); border-radius:8px; padding:10px; margin-top:8px; }
+  canvas#detailChart{ max-height:180px; margin:10px 0; }
 
-        .form-panel.active { display: flex; }
+  .toast{ position:fixed; bottom:96px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel-2); border:1px solid var(--line); color:var(--text); padding:10px 18px; border-radius:8px; font-size:13px; opacity:0; transition:all .25s ease; z-index:60; }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+  body:not(.unlocked) .ticker-wrap,
+  body:not(.unlocked) header,
+  body:not(.unlocked) main,
+  body:not(.unlocked) .fab,
+  body:not(.unlocked) .bottom-nav{
+    display:none !important;
+  }
 
-        .input-group label {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+  .lock-screen{
+    position:fixed; inset:0; background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; z-index:100;
+  }
+  body.unlocked .lock-screen{ display:none; }
+  .lock-box{
+    width:100%; max-width:340px;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:28px 24px;
+    text-align:center;
+  }
+  .lock-box .lock-icon{ font-size:30px; margin-bottom:10px; }
+  .lock-box h2{ margin:0 0 4px; font-size:18px; }
+  .lock-box .lock-sub{ color:var(--muted); font-size:12.5px; margin-bottom:20px; }
+  .lock-box .field{ text-align:left; }
+  .lock-box .btn-primary{ width:100%; padding:11px; margin-top:6px; }
+  .lock-error{ color:var(--loss); font-size:12.5px; margin-top:10px; min-height:16px; }
 
-        .input-group input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            color: white;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-            border-color: var(--primary-blue);
-        }
-
-        .action-btn {
-            width: 100%;
-            background: var(--primary-blue);
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(30, 117, 255, 0.3);
-        }
-
-        .action-btn:active { transform: scale(0.98); }
-
-        /* Social Connect Divider Style */
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 11px;
-            letter-spacing: 1px;
-            margin: 24px 0;
-        }
-
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .divider:not(:empty)::before { margin-right: .5em; }
-        .divider:not(:empty)::after { margin-left: .5em; }
-
-        /* Social Buttons stack layouts */
-        .social-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .social-btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: rgba(255,255,255,0.02);
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .social-btn.insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); border: none; }
-        .social-btn.fb { background: #1877f2; border: none; }
-        .social-btn.google { background: #ffffff; color: #000000; border: none; }
-
-        /* PREMIUM APP TOAST NOTIFICATION SYSTEM LAYER */
-        .custom-toast {
-            position: fixed;
-            bottom: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--toast-bg);
-            border: 1px solid var(--border-color);
-            padding: 14px 22px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 999;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            min-width: 280px;
-            max-width: 90%;
-        }
-
-        .custom-toast.toast-show { bottom: 30px; }
-        .custom-toast i { font-size: 16px; }
-        .custom-toast span { font-size: 13px; font-weight: 500; line-height: 1.4; }
-        .toast-success { border-color: rgba(16, 185, 129, 0.3); color: #10b981; }
-        .toast-error { border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
-        .toast-success span, .toast-error span { color: var(--text-main); }
-    </style>
+  @media (prefers-reduced-motion: reduce){ .ticker{animation:none;} }
+</style>
 </head>
 <body>
 
-    <div class="login-container">
-        <!-- Brand Logo Area with Money Saving Industry Branding -->
-        <div class="logo-area">
-            <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
-            <div class="brand-title">Money Saving Industry</div>
-        </div>
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-box">
+      <div class="lock-icon">🔒</div>
+      <h2>Ledger</h2>
+      <div class="lock-sub">Apna user ID aur password daalo</div>
+      <div class="field"><label>User ID</label><input type="text" id="lockUser" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="lockPass" autocomplete="current-password"></div>
+      <button class="btn-primary" id="lockSubmitBtn">Unlock</button>
+      <div class="lock-error" id="lockError"></div>
+    </div>
+  </div>
 
-        <!-- Tab Controls Navigation -->
-        <div class="tabs-row">
-            <button class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
-            <button class="tab-btn" onclick="switchTab('register')">Register</button>
-        </div>
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker"><span><b>Ledger</b> add your first open position to see it here →</span></div>
+  </div>
 
-        <!-- SIGN IN PANEL FORM -->
-        <div class="form-panel active" id="signinPanel">
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="loginEmail" placeholder="Enter your registered email" required>
-            </div>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="loginPassword" placeholder="••••••••" required>
-            </div>
-            <button class="action-btn" onclick="executeLogin()">LOG IN</button>
-        </div>
+  <header>
+    <div class="brand" id="sectionBrand">Trade Journal · <span class="cat-tag cat-swing">Swing</span></div>
+    <h1 id="sectionTitle">Swing Trades</h1>
+  </header>
 
-        <!-- REGISTER/SIGN UP PANEL FORM -->
-        <div class="form-panel" id="registerPanel">
-            <div class="input-group">
-                <label>Full Name</label>
-                <input type="text" id="regName" placeholder="e.g., Ayush Kumar" required>
-            </div>
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="regEmail" placeholder="name@example.com" required>
-            </div>
-            <div class="input-group">
-                <label>Create Password</label>
-                <input type="password" id="regPassword" placeholder="Min 6 characters" required>
-            </div>
-            <button class="action-btn" onclick="executeRegister()">CREATE ACCOUNT</button>
+  <main>
+    <div id="categorySection">
+      <div class="toolbar">
+        <div class="tabs" id="tabs">
+          <div class="tab active" data-filter="all">All</div>
+          <div class="tab" data-filter="open">Open</div>
+          <div class="tab" data-filter="closed">Closed</div>
         </div>
-
-        <!-- Bottom Social Links Section -->
-        <div class="divider">OR CONNECT WITH</div>
-
-        <div class="social-stack">
-            <a href="https://www.instagram.com/_ayush_singh_990" target="_blank" class="social-btn insta">
-                <i class="fa-brands fa-instagram"></i> FOLLOW INSTAGRAM
-            </a>
-            <a href="https://www.facebook.com/" target="_blank" class="social-btn fb">
-                <i class="fa-brands fa-facebook-f"></i> LOGIN WITH FACEBOOK
-            </a>
-            <a href="https://accounts.google.com/" target="_blank" class="social-btn google">
-                <i class="fa-brands fa-google"></i> LOGIN WITH GOOGLE
-            </a>
-        </div>
+        <input class="search" id="searchBox" placeholder="Search stock…">
+      </div>
+      <div id="tradeList"></div>
     </div>
 
-    <!-- DYNAMIC APP TOAST NOTIFICATION CONTAINER -->
-    <div class="custom-toast" id="appToast">
-        <i id="toastIcon" class="fa-solid"></i>
-        <span id="toastMessage">Notification Message</span>
+    <div id="overviewSection" style="display:none;">
+      <section class="summary">
+        <div class="card">
+          <div class="label">This month P&L</div>
+          <div class="value" id="statMonthPnl">₹0</div>
+          <div class="sub" id="statMonthLabel">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Open positions</div>
+          <div class="value" id="statOpenCount">0</div>
+          <div class="sub" id="statOpenValue">Invested ₹0</div>
+        </div>
+        <div class="card">
+          <div class="label">Win rate (closed)</div>
+          <div class="value" id="statWinRate">—</div>
+          <div class="sub" id="statTradeCount">0 trades closed</div>
+        </div>
+      </section>
+
+      <div class="panel-block">
+        <h2>Monthly P&L — all categories</h2>
+        <canvas id="pnlChart"></canvas>
+      </div>
+
+      <div class="panel-block">
+        <h2>P&L by category — this month</h2>
+        <canvas id="catChart"></canvas>
+      </div>
+
+      <div class="panel-block">
+        <h2>Backup &amp; Restore</h2>
+        <div style="color:var(--muted); font-size:12.5px; margin-bottom:14px;">
+          Agar app uninstall hui ya data clear hua to sara trade data mit jaayega. Backup lete raho — file download karke Google Drive/WhatsApp mein rakh do.
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-primary" id="exportBtn">⬇ Export data (JSON)</button>
+          <button class="btn-secondary" id="importBtn">⬆ Import / Restore</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json" style="display:none;">
+      </div>
     </div>
+  </main>
 
-    <!-- Script Handling Tab switching, LocalStorage Credentials Data Management -->
-    <script>
-        // Set Default Dummy User inside Storage if it's completely empty on first launch
-        if (!localStorage.getItem("userEmail")) {
-            localStorage.setItem("userEmail", "ayush@gmail.com");
-            localStorage.setItem("userPassword", "123456");
-            localStorage.setItem("userName", "Ayush Kumar");
+  <button class="fab" id="openAddBtn" title="Add trade">+</button>
+
+  <div class="bottom-nav" id="bottomNav">
+    <div class="nav-item active" data-section="swing"><span class="ic">📈</span><span class="lbl">Swing</span></div>
+    <div class="nav-item" data-section="options"><span class="ic">🧾</span><span class="lbl">Options</span></div>
+    <div class="nav-item" data-section="intraday"><span class="ic">⚡</span><span class="lbl">Intraday</span></div>
+    <div class="nav-item" data-section="overview"><span class="ic">🛰️</span><span class="lbl">Live</span></div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h3 id="modalTitle">New trade</h3>
+      <input type="hidden" id="editId">
+      <div class="field">
+        <label>Category</label>
+        <select id="fCategory">
+          <option value="swing">Swing trading</option>
+          <option value="options">Option trading</option>
+          <option value="intraday">Intraday trading</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Stock name</label>
+        <input type="text" id="fStock" placeholder="e.g. RELIANCE">
+      </div>
+      <div class="row2">
+        <div class="field"><label>Entry price (₹)</label><input type="number" step="0.01" id="fEntry"></div>
+        <div class="field"><label>Quantity</label><input type="number" id="fQty"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Entry date</label><input type="date" id="fEntryDate"></div>
+        <div class="field"><label>Target (₹)</label><input type="number" step="0.01" id="fTarget"></div>
+      </div>
+      <div class="field"><label>Stop loss (₹)</label><input type="number" step="0.01" id="fSL"></div>
+
+      <div class="field" id="sameDayWrap" style="display:none;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; letter-spacing:0; font-size:13px; color:var(--text);">
+          <input type="checkbox" id="fSameDayExit" style="width:auto;">
+          Trade same din khula aur band ho gaya (entry + exit ek saath)
+        </label>
+      </div>
+      <div id="sameDayFields" style="display:none;">
+        <div class="row2">
+          <div class="field"><label>Exit price (₹)</label><input type="number" step="0.01" id="fSameExitPrice"></div>
+          <div class="field"><label>Exit date</label><input type="date" id="fSameExitDate"></div>
+        </div>
+        <div id="sameDayPnlPreview" style="display:none; text-align:center; padding:10px; border-radius:8px; margin-bottom:12px; font-family:var(--mono);"></div>
+      </div>
+
+      <div class="field"><label>Notes (optional)</label><textarea id="fNotes" rows="2" placeholder="Setup, reason for entry…"></textarea></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelBtn">Cancel</button>
+        <button class="btn-primary" id="saveBtn">Save trade</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="exitOverlay">
+    <div class="modal">
+      <h3>Exit trade</h3>
+      <input type="hidden" id="exitId">
+      <div class="row2">
+        <div class="field"><label>Exit price (₹)</label><input type="number" step="0.01" id="fExitPrice"></div>
+        <div class="field"><label>Exit date</label><input type="date" id="fExitDate"></div>
+      </div>
+      <div class="field" id="daysHeldPreview" style="color:var(--muted); font-size:12px;"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="exitCancelBtn">Cancel</button>
+        <button class="btn-primary" id="exitSaveBtn">Confirm exit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="detailOverlay">
+    <div class="modal" style="max-width:480px;">
+      <div class="detail-head">
+        <div>
+          <span class="cat-tag" id="dCategoryTag"></span>
+          <h3 id="dStockName" style="margin:6px 0 0;"></h3>
+        </div>
+        <span class="status-pill" id="dStatusPill"></span>
+      </div>
+      <div id="dPnlBox"></div>
+      <canvas id="detailChart"></canvas>
+      <div class="detail-grid">
+        <div><span class="dl">Entry price</span><span class="dv" id="dEntry"></span></div>
+        <div><span class="dl">Quantity</span><span class="dv" id="dQty"></span></div>
+        <div><span class="dl">Entry date</span><span class="dv" id="dEntryDate"></span></div>
+        <div><span class="dl">Target</span><span class="dv" id="dTarget"></span></div>
+        <div><span class="dl">Stop loss</span><span class="dv" id="dSL"></span></div>
+        <div id="dExitWrap" style="display:none;"><span class="dl">Exit price</span><span class="dv" id="dExitPrice"></span></div>
+        <div id="dExitDateWrap" style="display:none;"><span class="dl">Exit date</span><span class="dv" id="dExitDate"></span></div>
+        <div id="dHeldWrap" style="display:none;"><span class="dl">Held for</span><span class="dv" id="dHeld"></span></div>
+      </div>
+      <div class="detail-notes" id="dNotesWrap" style="display:none;"><span id="dNotes"></span></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="detailCloseBtn">Close</button>
+        <button class="btn-danger" id="detailDeleteBtn">Delete</button>
+        <button class="btn-secondary" id="detailExitBtn">Exit trade</button>
+        <button class="btn-primary" id="detailEditBtn">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Lock screen ----------
+  const LOCK_USER = "ayushk92355@gmail.com";
+  const LOCK_PASS = "779355";
+  const SESSION_KEY = "ledger_unlocked";
+
+  function tryUnlock(){
+    const user = document.getElementById("lockUser").value.trim();
+    const pass = document.getElementById("lockPass").value;
+    const errEl = document.getElementById("lockError");
+    if(user === LOCK_USER && pass === LOCK_PASS){
+      sessionStorage.setItem(SESSION_KEY, "1");
+      document.body.classList.add("unlocked");
+      errEl.textContent = "";
+    } else {
+      errEl.textContent = "User ID ya password galat hai";
+    }
+  }
+  document.getElementById("lockSubmitBtn").addEventListener("click", tryUnlock);
+  document.getElementById("lockPass").addEventListener("keydown", e => { if(e.key === "Enter") tryUnlock(); });
+  document.getElementById("lockUser").addEventListener("keydown", e => { if(e.key === "Enter") tryUnlock(); });
+
+  if(sessionStorage.getItem(SESSION_KEY) === "1"){
+    document.body.classList.add("unlocked");
+  }
+
+  const STORAGE_KEY = "ledger_trades_v1";
+  let trades = loadTrades();
+  let currentFilter = "all";
+  let currentSection = "swing";
+  let chart = null, catChart = null, detailChart = null;
+  let activeDetailId = null;
+
+  function loadTrades(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      parsed.forEach(t => { if(!t.category) t.category = "swing"; });
+      return parsed;
+    }catch(e){ console.error("Could not read saved trades:", e); return []; }
+  }
+  function saveTrades(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(trades)); }
+    catch(e){ console.error("Could not save trades:", e); showToast("Could not save — storage might be full"); }
+  }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  function fmtMoney(n){ const sign = n < 0 ? "-" : ""; return sign + "₹" + Math.abs(n).toLocaleString("en-IN", {maximumFractionDigits:2}); }
+  function fmtPct(n){ const sign = n >= 0 ? "+" : ""; return sign + n.toFixed(2) + "%"; }
+  function calcPnl(t){ if(t.status !== "closed") return null; const pnl = (t.exitPrice - t.entryPrice) * t.qty; const pct = ((t.exitPrice - t.entryPrice) / t.entryPrice) * 100; return {pnl, pct}; }
+  function daysBetween(d1, d2){ const a = new Date(d1), b = new Date(d2); return Math.round((b - a) / 86400000); }
+  function monthKey(dateStr){ return dateStr ? dateStr.slice(0,7) : ""; }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  const CAT_LABEL = {swing:"Swing", options:"Options", intraday:"Intraday"};
+  const CAT_TITLE = {swing:"Swing Trades", options:"Option Trades", intraday:"Intraday Trades"};
+
+  function switchSection(section){
+    currentSection = section;
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.section === section));
+    const isOverview = section === "overview";
+    document.getElementById("categorySection").style.display = isOverview ? "none" : "block";
+    document.getElementById("overviewSection").style.display = isOverview ? "block" : "none";
+    document.getElementById("openAddBtn").style.display = isOverview ? "none" : "flex";
+    if(isOverview){
+      document.getElementById("sectionBrand").innerHTML = "Trade Journal · <span class='cat-tag' style='background:rgba(255,255,255,0.08); color:var(--text);'>Live</span>";
+      document.getElementById("sectionTitle").textContent = "This Month, Live";
+      renderOverview();
+    } else {
+      document.getElementById("sectionBrand").innerHTML = `Trade Journal · <span class="cat-tag cat-${section}">${CAT_LABEL[section]}</span>`;
+      document.getElementById("sectionTitle").textContent = CAT_TITLE[section];
+      renderList();
+    }
+    renderTicker();
+  }
+  document.getElementById("bottomNav").addEventListener("click", e => {
+    const item = e.target.closest(".nav-item");
+    if(!item) return;
+    switchSection(item.dataset.section);
+  });
+
+  function renderTicker(){
+    const openTrades = trades.filter(t => t.status === "open");
+    const el = document.getElementById("ticker");
+    if(!openTrades.length){ el.innerHTML = '<span><b>Ledger</b> add your first open position to see it here →</span>'; return; }
+    const items = openTrades.map(t => {
+      const diff = t.target ? (((t.target - t.entryPrice)/t.entryPrice)*100) : 0;
+      const cls = diff >= 0 ? "up" : "down";
+      return `<span><b>${escapeHtml(t.stock)}</b> ${CAT_LABEL[t.category]} · entry ₹${t.entryPrice} · target <span class="${cls}">${fmtPct(diff)}</span></span>`;
+    }).join("");
+    el.innerHTML = items + items;
+  }
+
+  function renderList(){
+    const listEl = document.getElementById("tradeList");
+    const searchTerm = document.getElementById("searchBox").value.trim().toLowerCase();
+    let filtered = trades.filter(t => {
+      if(t.category !== currentSection) return false;
+      if(currentFilter === "open" && t.status !== "open") return false;
+      if(currentFilter === "closed" && t.status !== "closed") return false;
+      if(searchTerm && !t.stock.toLowerCase().includes(searchTerm)) return false;
+      return true;
+    });
+    filtered = filtered.slice().sort((a,b) => (b.entryDate||"").localeCompare(a.entryDate||""));
+    if(!filtered.length){ listEl.innerHTML = `<div class="empty-state"><div class="big">📈</div>Is section mein koi trade nahi.<br>Neeche + dabakar naya trade add karo.</div>`; return; }
+    listEl.innerHTML = filtered.map(t => renderTradeCard(t)).join("");
+    listEl.querySelectorAll(".trade").forEach(card => { card.addEventListener("click", () => openDetailModal(card.dataset.id)); });
+  }
+
+  function renderTradeCard(t){
+    let pillClass = "status-open", pillText = "OPEN", pnlHtml;
+    if(t.status === "closed"){
+      const {pnl, pct} = calcPnl(t);
+      pillClass = pnl >= 0 ? "status-closed-profit" : "status-closed-loss";
+      pillText = pnl >= 0 ? "PROFIT" : "LOSS";
+      pnlHtml = `<div class="pnl-box"><div class="amt" style="color:${pnl>=0 ? 'var(--profit)':'var(--loss)'}">${fmtMoney(pnl)}</div><div class="pct">${fmtPct(pct)}</div></div>`;
+    } else {
+      pnlHtml = `<div class="pnl-box"><div class="amt" style="color:var(--muted); font-size:13px;">Target ₹${t.target || "—"}</div><div class="pct">SL ₹${t.sl || "—"}</div></div>`;
+    }
+    return `
+      <div class="trade" data-id="${t.id}">
+        <div class="row">
+          <div>
+            <div class="top-row"><span class="stock">${escapeHtml(t.stock)}</span><span class="status-pill ${pillClass}">${pillText}</span></div>
+            <div class="meta"><span>Entry <b>₹${t.entryPrice}</b></span><span>Qty <b>${t.qty}</b></span><span>Date <b>${t.entryDate || "—"}</b></span></div>
+          </div>
+          ${pnlHtml}
+        </div>
+      </div>`;
+  }
+
+  function renderOverview(){
+    const now = new Date();
+    const curMonth = now.toISOString().slice(0,7);
+    const closedThisMonth = trades.filter(t => t.status === "closed" && monthKey(t.exitDate) === curMonth);
+    const monthPnl = closedThisMonth.reduce((sum,t) => sum + calcPnl(t).pnl, 0);
+    document.getElementById("statMonthPnl").textContent = fmtMoney(monthPnl);
+    document.getElementById("statMonthPnl").style.color = monthPnl > 0 ? "var(--profit)" : (monthPnl < 0 ? "var(--loss)" : "var(--text)");
+    document.getElementById("statMonthLabel").textContent = now.toLocaleString("en-IN",{month:"long", year:"numeric"});
+    const openTrades = trades.filter(t => t.status === "open");
+    document.getElementById("statOpenCount").textContent = openTrades.length;
+    const invested = openTrades.reduce((s,t) => s + t.entryPrice * t.qty, 0);
+    document.getElementById("statOpenValue").textContent = "Invested " + fmtMoney(invested);
+    const closedAll = trades.filter(t => t.status === "closed");
+    const wins = closedAll.filter(t => calcPnl(t).pnl > 0).length;
+    const winRate = closedAll.length ? ((wins/closedAll.length)*100).toFixed(0)+"%" : "—";
+    document.getElementById("statWinRate").textContent = winRate;
+    document.getElementById("statTradeCount").textContent = closedAll.length + " trades closed";
+    renderMonthlyChart();
+    renderCategoryChart(closedThisMonth);
+  }
+
+  function renderMonthlyChart(){
+    const closed = trades.filter(t => t.status === "closed");
+    const byMonth = {};
+    closed.forEach(t => { const k = monthKey(t.exitDate); byMonth[k] = (byMonth[k] || 0) + calcPnl(t).pnl; });
+    const keys = Object.keys(byMonth).sort();
+    const labels = keys.map(k => { const [y,m] = k.split("-"); return new Date(y, m-1).toLocaleString("en-IN",{month:"short", year:"2-digit"}); });
+    const values = keys.map(k => byMonth[k]);
+    const colors = values.map(v => v >= 0 ? "#00C896" : "#FF5C5C");
+    const ctx = document.getElementById("pnlChart").getContext("2d");
+    if(chart) chart.destroy();
+    chart = new Chart(ctx, { type:"bar", data:{ labels: labels.length ? labels : ["No closed trades yet"], datasets:[{ data: values.length ? values : [0], backgroundColor: colors.length ? colors : ["#232A31"], borderRadius:4, maxBarThickness:36 }] },
+      options:{ plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:(c)=>fmtMoney(c.parsed.y) } } },
+        scales:{ x:{ grid:{display:false}, ticks:{color:"#7C8894", font:{family:"JetBrains Mono", size:11}} }, y:{ grid:{color:"#232A31"}, ticks:{color:"#7C8894", font:{family:"JetBrains Mono", size:11}} } } } });
+  }
+
+  function renderCategoryChart(closedThisMonth){
+    const cats = ["swing","options","intraday"];
+    const byCat = {swing:0, options:0, intraday:0};
+    closedThisMonth.forEach(t => { byCat[t.category] += calcPnl(t).pnl; });
+    const values = cats.map(c => byCat[c]);
+    const colors = values.map(v => v >= 0 ? "#00C896" : "#FF5C5C");
+    const ctx = document.getElementById("catChart").getContext("2d");
+    if(catChart) catChart.destroy();
+    catChart = new Chart(ctx, { type:"bar", data:{ labels:["Swing","Options","Intraday"], datasets:[{ data:values, backgroundColor:colors, borderRadius:4, maxBarThickness:44 }] },
+      options:{ indexAxis:"y", plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:(c)=>fmtMoney(c.parsed.x) } } },
+        scales:{ x:{ grid:{color:"#232A31"}, ticks:{color:"#7C8894", font:{family:"JetBrains Mono", size:11}} }, y:{ grid:{display:false}, ticks:{color:"#7C8894", font:{family:"Inter", size:12}} } } } });
+  }
+
+  let toastTimer = null;
+  function showToast(msg){ const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2400); }
+
+  const overlay = document.getElementById("overlay");
+  function openAddModal(){
+    document.getElementById("modalTitle").textContent = "New trade";
+    document.getElementById("editId").value = "";
+    ["fStock","fEntry","fQty","fEntryDate","fTarget","fSL","fNotes","fSameExitPrice","fSameExitDate"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("fSameDayExit").checked = false;
+    document.getElementById("sameDayFields").style.display = "none";
+    document.getElementById("sameDayPnlPreview").style.display = "none";
+    document.getElementById("fCategory").value = currentSection === "overview" ? "swing" : currentSection;
+    document.getElementById("fEntryDate").value = new Date().toISOString().slice(0,10);
+    refreshSameDayVisibility();
+    overlay.classList.add("show");
+  }
+  function openEditModal(id){
+    const t = trades.find(x => x.id === id);
+    if(!t) return;
+    document.getElementById("modalTitle").textContent = "Edit trade";
+    document.getElementById("editId").value = t.id;
+    document.getElementById("fCategory").value = t.category;
+    document.getElementById("fStock").value = t.stock;
+    document.getElementById("fEntry").value = t.entryPrice;
+    document.getElementById("fQty").value = t.qty;
+    document.getElementById("fEntryDate").value = t.entryDate;
+    document.getElementById("fTarget").value = t.target || "";
+    document.getElementById("fSL").value = t.sl || "";
+    document.getElementById("fNotes").value = t.notes || "";
+    refreshSameDayVisibility();
+    const isSameDayClosed = t.status === "closed" && t.entryDate === t.exitDate && (t.category === "options" || t.category === "intraday");
+    document.getElementById("fSameDayExit").checked = isSameDayClosed;
+    document.getElementById("sameDayFields").style.display = isSameDayClosed ? "block" : "none";
+    document.getElementById("fSameExitPrice").value = isSameDayClosed ? t.exitPrice : "";
+    document.getElementById("fSameExitDate").value = isSameDayClosed ? t.exitDate : "";
+    updateSameDayPnlPreview();
+    overlay.classList.add("show");
+  }
+  function closeAddModal(){ overlay.classList.remove("show"); }
+  document.getElementById("openAddBtn").addEventListener("click", openAddModal);
+  document.getElementById("cancelBtn").addEventListener("click", closeAddModal);
+  overlay.addEventListener("click", e => { if(e.target === overlay) closeAddModal(); });
+
+  function refreshSameDayVisibility(){
+    const cat = document.getElementById("fCategory").value;
+    const showOption = (cat === "options" || cat === "intraday");
+    document.getElementById("sameDayWrap").style.display = showOption ? "block" : "none";
+    if(!showOption){
+      document.getElementById("fSameDayExit").checked = false;
+      document.getElementById("sameDayFields").style.display = "none";
+    }
+  }
+  document.getElementById("fCategory").addEventListener("change", refreshSameDayVisibility);
+  document.getElementById("fSameDayExit").addEventListener("change", (e) => {
+    document.getElementById("sameDayFields").style.display = e.target.checked ? "block" : "none";
+    updateSameDayPnlPreview();
+  });
+
+  function updateSameDayPnlPreview(){
+    const preview = document.getElementById("sameDayPnlPreview");
+    if(!document.getElementById("fSameDayExit").checked){ preview.style.display = "none"; return; }
+    const entryPrice = parseFloat(document.getElementById("fEntry").value);
+    const qty = parseInt(document.getElementById("fQty").value, 10);
+    const exitPrice = parseFloat(document.getElementById("fSameExitPrice").value);
+    if(isNaN(entryPrice) || isNaN(qty) || isNaN(exitPrice)){ preview.style.display = "none"; return; }
+    const pnl = (exitPrice - entryPrice) * qty;
+    const pct = ((exitPrice - entryPrice) / entryPrice) * 100;
+    const isProfit = pnl >= 0;
+    preview.style.display = "block";
+    preview.style.background = isProfit ? "rgba(0,200,150,0.1)" : "rgba(255,92,92,0.1)";
+    preview.innerHTML = `<div style="font-size:20px; font-weight:700; color:${isProfit?'var(--profit)':'var(--loss)'}">${fmtMoney(pnl)}</div><div style="font-size:12px; color:var(--muted);">${fmtPct(pct)} · live calculation</div>`;
+  }
+  ["fEntry","fQty","fSameExitPrice"].forEach(id => {
+    document.getElementById(id).addEventListener("input", updateSameDayPnlPreview);
+  });
+
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    const category = document.getElementById("fCategory").value;
+    const stock = document.getElementById("fStock").value.trim().toUpperCase();
+    const entryPrice = parseFloat(document.getElementById("fEntry").value);
+    const qty = parseInt(document.getElementById("fQty").value, 10);
+    const entryDate = document.getElementById("fEntryDate").value;
+    const target = parseFloat(document.getElementById("fTarget").value) || null;
+    const sl = parseFloat(document.getElementById("fSL").value) || null;
+    const notes = document.getElementById("fNotes").value.trim();
+    const editId = document.getElementById("editId").value;
+    const isSameDay = (category === "options" || category === "intraday") && document.getElementById("fSameDayExit").checked;
+    const sameExitPrice = parseFloat(document.getElementById("fSameExitPrice").value);
+    const sameExitDate = document.getElementById("fSameExitDate").value;
+
+    if(!stock || isNaN(entryPrice) || isNaN(qty) || !entryDate){ showToast("Stock, entry price, quantity aur entry date zaroori hai"); return; }
+    if(isSameDay && (isNaN(sameExitPrice) || !sameExitDate)){ showToast("Same-day exit ke liye exit price aur exit date bharo"); return; }
+
+    let status = "open", exitPrice = null, exitDate = null;
+    if(isSameDay){ status = "closed"; exitPrice = sameExitPrice; exitDate = sameExitDate; }
+
+    if(editId){
+      const t = trades.find(x => x.id === editId);
+      Object.assign(t, {category, stock, entryPrice, qty, entryDate, target, sl, notes, status, exitPrice, exitDate});
+      showToast("Trade update ho gaya");
+    } else {
+      trades.push({ id: uid(), category, stock, entryPrice, qty, entryDate, target, sl, notes, status, exitPrice, exitDate });
+      showToast(isSameDay ? "Trade add ho gaya — same din close bhi ho gaya" : "Trade add ho gaya");
+    }
+    saveTrades();
+    closeAddModal();
+    if(currentSection !== "overview") renderList();
+    renderTicker();
+  });
+
+  const exitOverlay = document.getElementById("exitOverlay");
+  function openExitModal(id){
+    document.getElementById("exitId").value = id;
+    document.getElementById("fExitPrice").value = "";
+    document.getElementById("fExitDate").value = new Date().toISOString().slice(0,10);
+    updateDaysHeldPreview();
+    exitOverlay.classList.add("show");
+  }
+  function closeExitModal(){ exitOverlay.classList.remove("show"); }
+  function updateDaysHeldPreview(){
+    const id = document.getElementById("exitId").value;
+    const t = trades.find(x => x.id === id);
+    const exitDate = document.getElementById("fExitDate").value;
+    const preview = document.getElementById("daysHeldPreview");
+    if(t && exitDate){
+      const days = daysBetween(t.entryDate, exitDate);
+      if(days < 0){
+        preview.textContent = "Exit date entry date se pehle nahi ho sakti";
+      } else if(days === 0){
+        preview.textContent = `Same day trade — entry aur exit dono ${t.entryDate} ko`;
+      } else {
+        preview.textContent = `Trade held for ${days} day${days===1?"":"s"} (${t.entryDate} → ${exitDate})`;
+      }
+    } else { preview.textContent = ""; }
+  }
+  document.getElementById("fExitDate").addEventListener("change", updateDaysHeldPreview);
+  document.getElementById("exitCancelBtn").addEventListener("click", closeExitModal);
+  exitOverlay.addEventListener("click", e => { if(e.target === exitOverlay) closeExitModal(); });
+
+  document.getElementById("exitSaveBtn").addEventListener("click", () => {
+    const id = document.getElementById("exitId").value;
+    const exitPrice = parseFloat(document.getElementById("fExitPrice").value);
+    const exitDate = document.getElementById("fExitDate").value;
+    if(isNaN(exitPrice) || !exitDate){ showToast("Exit price aur exit date zaroori hai"); return; }
+    const t = trades.find(x => x.id === id);
+    if(t){
+      const days = daysBetween(t.entryDate, exitDate);
+      t.status = "closed"; t.exitPrice = exitPrice; t.exitDate = exitDate;
+      saveTrades();
+      showToast(days === 0 ? "Trade closed — same day" : `Trade closed — ${days} din baad`);
+    }
+    closeExitModal();
+    closeDetailModal();
+    if(currentSection !== "overview") renderList(); else renderOverview();
+    renderTicker();
+  });
+
+  const detailOverlay = document.getElementById("detailOverlay");
+  function openDetailModal(id){
+    const t = trades.find(x => x.id === id);
+    if(!t) return;
+    activeDetailId = id;
+    document.getElementById("dCategoryTag").className = "cat-tag cat-" + t.category;
+    document.getElementById("dCategoryTag").textContent = CAT_LABEL[t.category];
+    document.getElementById("dStockName").textContent = t.stock;
+    const pillEl = document.getElementById("dStatusPill");
+    const pnlBox = document.getElementById("dPnlBox");
+    if(t.status === "closed"){
+      const {pnl, pct} = calcPnl(t);
+      pillEl.className = "status-pill " + (pnl >= 0 ? "status-closed-profit" : "status-closed-loss");
+      pillEl.textContent = pnl >= 0 ? "PROFIT" : "LOSS";
+      pnlBox.innerHTML = `<div class="detail-pnl" style="background:${pnl>=0?'rgba(0,200,150,0.1)':'rgba(255,92,92,0.1)'}"><div class="amt" style="color:${pnl>=0?'var(--profit)':'var(--loss)'}">${fmtMoney(pnl)}</div><div style="color:var(--muted); font-size:12px;">${fmtPct(pct)}</div></div>`;
+    } else {
+      pillEl.className = "status-pill status-open";
+      pillEl.textContent = "OPEN";
+      pnlBox.innerHTML = "";
+    }
+    document.getElementById("dEntry").textContent = "₹" + t.entryPrice;
+    document.getElementById("dQty").textContent = t.qty;
+    document.getElementById("dEntryDate").textContent = t.entryDate || "—";
+    document.getElementById("dTarget").textContent = t.target ? "₹"+t.target : "—";
+    document.getElementById("dSL").textContent = t.sl ? "₹"+t.sl : "—";
+    const isClosed = t.status === "closed";
+    document.getElementById("dExitWrap").style.display = isClosed ? "block" : "none";
+    document.getElementById("dExitDateWrap").style.display = isClosed ? "block" : "none";
+    document.getElementById("dHeldWrap").style.display = isClosed ? "block" : "none";
+    if(isClosed){
+      document.getElementById("dExitPrice").textContent = "₹" + t.exitPrice;
+      document.getElementById("dExitDate").textContent = t.exitDate;
+      const heldDays = daysBetween(t.entryDate, t.exitDate);
+      document.getElementById("dHeld").textContent = heldDays === 0 ? "Same day" : (heldDays + " day" + (heldDays===1?"":"s"));
+    }
+    const notesWrap = document.getElementById("dNotesWrap");
+    if(t.notes){ notesWrap.style.display = "block"; document.getElementById("dNotes").textContent = t.notes; } else { notesWrap.style.display = "none"; }
+    document.getElementById("detailExitBtn").style.display = t.status === "open" ? "inline-block" : "none";
+    renderDetailChart(t);
+    detailOverlay.classList.add("show");
+  }
+
+  function renderDetailChart(t){
+    const labels = ["Entry"]; const values = [t.entryPrice]; const colors = ["#7C8894"];
+    if(t.sl){ labels.push("Stop loss"); values.push(t.sl); colors.push("#FF5C5C"); }
+    if(t.target){ labels.push("Target"); values.push(t.target); colors.push("#00C896"); }
+    if(t.status === "closed"){ labels.push("Exit"); values.push(t.exitPrice); colors.push(t.exitPrice >= t.entryPrice ? "#00C896" : "#FF5C5C"); }
+    const ctx = document.getElementById("detailChart").getContext("2d");
+    if(detailChart) detailChart.destroy();
+    detailChart = new Chart(ctx, { type:"bar", data:{ labels, datasets:[{ data: values, backgroundColor: colors, borderRadius:4, maxBarThickness:40 }] },
+      options:{ plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:(c)=>"₹"+c.parsed.y } } },
+        scales:{ x:{ grid:{display:false}, ticks:{color:"#7C8894", font:{family:"Inter", size:11}} }, y:{ grid:{color:"#232A31"}, ticks:{color:"#7C8894", font:{family:"JetBrains Mono", size:11}} } } } });
+  }
+
+  function closeDetailModal(){ detailOverlay.classList.remove("show"); activeDetailId = null; }
+  document.getElementById("detailCloseBtn").addEventListener("click", closeDetailModal);
+  detailOverlay.addEventListener("click", e => { if(e.target === detailOverlay) closeDetailModal(); });
+  document.getElementById("detailEditBtn").addEventListener("click", () => { closeDetailModal(); openEditModal(activeDetailId); });
+  document.getElementById("detailExitBtn").addEventListener("click", () => { const id = activeDetailId; closeDetailModal(); openExitModal(id); });
+  document.getElementById("detailDeleteBtn").addEventListener("click", () => {
+    if(!confirm("Ye trade delete karna hai? Ye undo nahi ho sakta.")) return;
+    trades = trades.filter(x => x.id !== activeDetailId);
+    saveTrades();
+    showToast("Trade delete ho gaya");
+    closeDetailModal();
+    if(currentSection !== "overview") renderList(); else renderOverview();
+    renderTicker();
+  });
+
+  document.getElementById("tabs").addEventListener("click", e => {
+    const tab = e.target.closest(".tab");
+    if(!tab) return;
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    currentFilter = tab.dataset.filter;
+    renderList();
+  });
+  document.getElementById("searchBox").addEventListener("input", renderList);
+
+  // ---------- Backup & Restore ----------
+  document.getElementById("exportBtn").addEventListener("click", () => {
+    if(!trades.length){ showToast("Koi trade nahi hai export karne ke liye"); return; }
+    const blob = new Blob([JSON.stringify(trades, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `ledger-backup-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Backup file download ho gayi");
+  });
+
+  document.getElementById("importBtn").addEventListener("click", () => {
+    document.getElementById("importFile").click();
+  });
+
+  document.getElementById("importFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const imported = JSON.parse(reader.result);
+        if(!Array.isArray(imported)) throw new Error("Invalid format");
+        const replace = confirm(`${imported.length} trades mile backup mein.\n\nOK = purana data replace karo\nCancel = existing trades ke saath jodo (merge)`);
+        if(replace){
+          trades = imported;
+        } else {
+          const existingIds = new Set(trades.map(t => t.id));
+          imported.forEach(t => { if(!existingIds.has(t.id)) trades.push(t); });
         }
+        trades.forEach(t => { if(!t.category) t.category = "swing"; });
+        saveTrades();
+        showToast("Data restore ho gaya");
+        if(currentSection !== "overview") renderList(); else renderOverview();
+        renderTicker();
+      }catch(err){
+        console.error("Import failed:", err);
+        showToast("Ye file valid backup nahi hai");
+      }
+      document.getElementById("importFile").value = "";
+    };
+    reader.readAsText(file);
+  });
 
-        // Custom Toast Engine function to trigger beautiful themed messages
-        function showThemeToast(message, isSuccess = true) {
-            const toast = document.getElementById("appToast");
-            const icon = document.getElementById("toastIcon");
-            const text = document.getElementById("toastMessage");
-
-            text.innerText = message;
-            
-            if (isSuccess) {
-                toast.className = "custom-toast toast-success toast-show";
-                icon.className = "fa-solid fa-circle-check";
-            } else {
-                toast.className = "custom-toast toast-error toast-show";
-                icon.className = "fa-solid fa-circle-exclamation";
-            }
-
-            // Automatically slide back down after 2.5 seconds
-            setTimeout(() => {
-                toast.classList.remove("toast-show");
-            }, 2500);
-        }
-
-        // Handle Form switching interactions
-        function switchTab(mode) {
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const signinPanel = document.getElementById('signinPanel');
-            const registerPanel = document.getElementById('registerPanel');
-
-            tabBtns.forEach(btn => btn.classList.remove('active'));
-
-            if (mode === 'signin') {
-                tabBtns[0].classList.add('active');
-                signinPanel.classList.add('active');
-                registerPanel.classList.remove('active');
-            } else {
-                tabBtns[1].classList.add('active');
-                registerPanel.classList.add('active');
-                signinPanel.classList.remove('active');
-            }
-        }
-
-        // Logic 1: New Account registration verification and save
-        function executeRegister() {
-            let name = document.getElementById('regName').value.trim();
-            let email = document.getElementById('regEmail').value.trim();
-            let pass = document.getElementById('regPassword').value;
-
-            if (!name || !email || !pass) {
-                showThemeToast("Please fill up all fields to create an account.", false);
-                return;
-            }
-
-            // Check if current user is attempting to overwrite with the exact same existing email address
-            let existingEmail = localStorage.getItem("userEmail");
-            if (email === existingEmail) {
-                showThemeToast("This email is already registered! Switch to Sign In.", false);
-                return;
-            }
-
-            // Save new user profile credentials data securely inside the browser's permanent database
-            localStorage.setItem("userEmail", email);
-            localStorage.setItem("userPassword", pass);
-            localStorage.setItem("userName", name);
-
-            showThemeToast("Registration Successful! Please Sign In now.", true);
-            setTimeout(() => {
-                switchTab('signin'); // Shift focus automatically back to login screen
-            }, 1200);
-        }
-
-        // Logic 2: Live Sign In matching and Dashboard auto-redirection
-        function executeLogin() {
-            let emailInput = document.getElementById('loginEmail').value.trim();
-            let passInput = document.getElementById('loginPassword').value;
-
-            // Fetch correct data directly from current saved Local Storage keys definitions
-            let savedEmail = localStorage.getItem("userEmail");
-            let savedPassword = localStorage.getItem("userPassword");
-
-            if (emailInput === savedEmail && passInput === savedPassword) {
-                // Modified beautiful text with your new brand name
-                showThemeToast("Access Granted! Welcome back to Money Saving Industry.", true);
-                
-                // Redirection path configuration link opens smoothly after notification slides in
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 1500);
-            } else {
-                showThemeToast("Invalid Credentials! पासवर्ड या ईमेल गलत है।", false);
-            }
-        }
-    </script>
+  switchSection("swing");
+})();
+</script>
 </body>
 </html>
