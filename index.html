@@ -1,1729 +1,1566 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Khata Pro - Ultimate Ledger</title>
-<style>
-:root {
-  --bg: #f5f7fb; --card: #ffffff; --text: #1a1d29; --sub: #6b7280; --primary: #4f46e5;
-  --primary-light: #eef2ff; --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
-  --border: #e5e7eb; --shadow: 0 2px 8px rgba(0,0,0,0.06); --radius: 16px;
-  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-[data-theme="dark"] {
-  --bg: #0f1419; --card: #1a1f2e; --text: #f1f5f9; --sub: #94a3b8;
-  --primary-light: #1e293b; --border: #2d3748; --shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg); color: var(--text); min-height: 100vh;
-  padding-bottom: 80px; transition: background .3s, color .3s;
-  font-size: 15px;
-}
-.container { max-width: 600px; margin: 0 auto; padding: 16px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khata Pro - Ultimate Ledger</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-/* Header */
-.app-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 4px; margin-bottom: 8px;
-}
-.app-header h1 {
-  font-size: 1.7rem; font-weight: 800;
-  background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.icon-btn {
-  width: 40px; height: 40px; border-radius: 12px; border: none;
-  background: var(--card); color: var(--text); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow); font-size: 1.2rem;
-}
-.icon-btn:active { transform: scale(0.92); }
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #11998e;
+            --danger: #eb3349;
+            --warning: #f7971e;
+            --bg-light: #f5f7fa;
+            --card-light: #ffffff;
+            --text-light: #2d3748;
+            --text-muted-light: #718096;
+            --border-light: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --font-size: 16px;
+        }
 
-/* Cards */
-.card {
-  background: var(--card); border-radius: var(--radius); padding: 18px;
-  margin-bottom: 14px; box-shadow: var(--shadow);
-}
-.card-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        [data-theme="dark"] {
+            --bg-light: #1a202c;
+            --card-light: #2d3748;
+            --text-light: #f7fafc;
+            --text-muted-light: #cbd5e0;
+            --border-light: #4a5568;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
+        }
 
-/* Stats Grid */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.stat-card {
-  padding: 18px; border-radius: var(--radius); color: white;
-  position: relative; overflow: hidden;
-}
-.stat-card.get { background: linear-gradient(135deg, #10b981, #059669); }
-.stat-card.give { background: linear-gradient(135deg, #ef4444, #dc2626); }
-.stat-card.net { background: var(--gradient); grid-column: span 2; }
-.stat-card .emoji { position: absolute; right: 10px; top: 10px; font-size: 1.8rem; opacity: 0.3; }
-.stat-card h3 { font-size: 0.75rem; opacity: 0.9; margin-bottom: 6px; font-weight: 500; }
-.stat-card p { font-size: 1.5rem; font-weight: 800; }
-.stat-card small { font-size: 0.75rem; opacity: 0.85; display: block; margin-top: 4px; }
+        body {
+            background: var(--bg-light);
+            color: var(--text-light);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            padding-bottom: 80px;
+            font-size: var(--font-size);
+        }
 
-/* Buttons */
-.btn {
-  padding: 12px 16px; border: none; border-radius: 12px; font-weight: 600;
-  cursor: pointer; transition: all .2s; display: inline-flex; align-items: center;
-  justify-content: center; gap: 8px; font-size: 0.95rem;
-}
-.btn:active { transform: scale(0.96); }
-.btn-primary { background: var(--primary); color: white; }
-.btn-danger { background: var(--danger); color: white; }
-.btn-success { background: var(--success); color: white; }
-.btn-ghost { background: var(--primary-light); color: var(--primary); }
-.btn-block { width: 100%; padding: 14px; }
-.btn-sm { padding: 8px 12px; font-size: 0.85rem; }
+        body.font-small { --font-size: 14px; }
+        body.font-medium { --font-size: 16px; }
+        body.font-large { --font-size: 18px; }
 
-/* Inputs */
-.input-group { margin-bottom: 14px; }
-.input-group label { display: block; font-size: 0.85rem; color: var(--sub); margin-bottom: 6px; font-weight: 500; }
-input, select, textarea {
-  width: 100%; padding: 13px 14px; border: 1.5px solid var(--border);
-  border-radius: 12px; background: var(--bg); color: var(--text);
-  outline: none; font-size: 1rem; transition: border .2s;
-  font-family: inherit;
-}
-input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--card-light);
+            color: var(--text-light);
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            transition: transform 0.3s;
+            border-left: 4px solid var(--success);
+            max-width: 90%;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.error { border-left-color: var(--danger); }
 
-/* List Items */
-.list-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer;
-  transition: background .15s;
-}
-.list-item:hover { background: var(--primary-light); border-radius: 10px; }
-.list-item:last-child { border-bottom: none; }
-.avatar {
-  width: 46px; height: 46px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  color: white; font-weight: 700; margin-right: 12px; font-size: 1.2rem;
-  flex-shrink: 0;
-}
-.flex { display: flex; align-items: center; }
-.flex-col { display: flex; flex-direction: column; }
-.text-right { text-align: right; }
-.text-danger { color: var(--danger); font-weight: 700; }
-.text-success { color: var(--success); font-weight: 700; }
-.text-sub { color: var(--sub); font-size: 0.85rem; }
+        /* PIN Screen */
+        .pin-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999; color: white;
+        }
+        .pin-screen.hidden { display: none; }
+        .pin-screen h2 { font-size: 28px; margin-bottom: 10px; }
+        .pin-screen p { opacity: 0.9; margin-bottom: 30px; }
+        .pin-display {
+            background: rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 15px;
+            font-size: 32px; letter-spacing: 10px; min-width: 200px; text-align: center;
+            margin-bottom: 30px; backdrop-filter: blur(10px);
+        }
+        .pin-pad { display: grid; grid-template-columns: repeat(3, 70px); gap: 15px; }
+        .pin-btn {
+            width: 70px; height: 70px; border-radius: 50%; border: none;
+            background: rgba(255,255,255,0.2); color: white; font-size: 24px;
+            cursor: pointer; backdrop-filter: blur(10px); transition: all 0.2s;
+        }
+        .pin-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4); }
+        .pin-btn.clear { background: rgba(255,0,0,0.3); }
 
-/* Bottom Nav */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--card); border-top: 1px solid var(--border);
-  display: flex; justify-content: space-around; padding: 8px 4px;
-  z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-}
-.nav-item {
-  display: flex; flex-direction: column; align-items: center;
-  font-size: 0.7rem; color: var(--sub); cursor: pointer;
-  padding: 6px 10px; border-radius: 10px; transition: all .2s;
-  min-width: 50px;
-}
-.nav-item.active { color: var(--primary); }
-.nav-item.active .nav-icon { background: var(--primary-light); }
-.nav-icon {
-  font-size: 1.4rem; margin-bottom: 2px; padding: 6px;
-  border-radius: 10px; transition: all .2s;
-}
-.nav-item span { font-weight: 500; }
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; padding: 20px; display: flex; justify-content: space-between;
+            align-items: center; box-shadow: var(--shadow-lg); position: sticky; top: 0; z-index: 100;
+        }
+        .header h1 { font-size: 22px; display: flex; align-items: center; gap: 10px; }
+        .header-icons { display: flex; gap: 15px; }
+        .header-icons i {
+            font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); transition: all 0.3s;
+        }
+        .header-icons i:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
 
-/* FAB */
-.fab {
-  position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px;
-  border-radius: 50%; background: var(--gradient); color: white;
-  border: none; font-size: 28px; cursor: pointer; z-index: 90;
-  box-shadow: 0 6px 20px rgba(79,70,229,0.4);
-  display: flex; align-items: center; justify-content: center;
-}
-.fab:active { transform: scale(0.9); }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
 
-/* Modal */
-.modal {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  z-index: 200; align-items: flex-end; justify-content: center;
-}
-.modal.active { display: flex; animation: fadeIn .2s; }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-.modal-content {
-  background: var(--card); padding: 24px; border-radius: 24px 24px 0 0;
-  width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto;
-  animation: slideUp .3s;
-}
-@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-.modal-header h3 { font-size: 1.2rem; font-weight: 700; }
-.close-btn {
-  background: var(--bg); border: none; width: 32px; height: 32px;
-  border-radius: 50%; cursor: pointer; color: var(--sub); font-size: 1.2rem;
-}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Pages */
-.page { display: none; animation: fadeIn .3s; }
-.page.active { display: block; }
+        /* Balance Cards */
+        .balance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .balance-card {
+            background: var(--card-light); padding: 20px; border-radius: 15px;
+            box-shadow: var(--shadow); text-align: center; transition: all 0.3s;
+        }
+        .balance-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .balance-card.receive { border-left: 4px solid var(--success); }
+        .balance-card.pay { border-left: 4px solid var(--danger); }
+        .balance-card h3 { font-size: 12px; color: var(--text-muted-light); margin-bottom: 8px; text-transform: uppercase; }
+        .balance-card .amount { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+        .balance-card.receive .amount { color: var(--success); }
+        .balance-card.pay .amount { color: var(--danger); }
+        .balance-card .count { font-size: 12px; color: var(--text-muted-light); }
 
-/* Person Detail Page (Full Screen) */
-.person-page {
-  position: fixed; inset: 0; background: var(--bg); z-index: 150;
-  overflow-y: auto; display: none; animation: slideRight .3s;
-}
-.person-page.active { display: block; }
-@keyframes slideRight { from{transform:translateX(100%)} to{transform:translateX(0)} }
-.person-header {
-  background: var(--gradient); color: white; padding: 20px;
-  padding-top: 16px; position: sticky; top: 0; z-index: 10;
-}
-.person-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.back-btn {
-  background: rgba(255,255,255,0.2); border: none; color: white;
-  width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-}
-.menu-btn {
-  background: rgba(255,255,255,0.2); border: none; color: white;
-  width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
-}
-.person-info { display: flex; align-items: center; gap: 14px; }
-.person-avatar {
-  width: 60px; height: 60px; border-radius: 50%;
-  background: rgba(255,255,255,0.25); display: flex;
-  align-items: center; justify-content: center; font-size: 1.8rem;
-  font-weight: 700; border: 3px solid rgba(255,255,255,0.4);
-}
-.person-name { font-size: 1.3rem; font-weight: 700; }
-.person-phone { font-size: 0.85rem; opacity: 0.9; margin-top: 2px; }
-.person-balance {
-  background: rgba(255,255,255,0.15); padding: 14px; border-radius: 14px;
-  margin-top: 16px; backdrop-filter: blur(10px);
-}
-.person-balance small { font-size: 0.8rem; opacity: 0.9; }
-.person-balance p { font-size: 1.6rem; font-weight: 800; margin-top: 4px; }
+        .net-balance {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; padding: 25px; border-radius: 20px; text-align: center;
+            margin-bottom: 20px; box-shadow: var(--shadow-lg);
+        }
+        .net-balance h3 { font-size: 14px; opacity: 0.9; margin-bottom: 10px; }
+        .net-balance .amount { font-size: 36px; font-weight: bold; }
 
-/* Dropdown Menu */
-.dropdown-menu {
-  position: absolute; top: 60px; right: 20px; background: var(--card);
-  border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  min-width: 220px; z-index: 20; display: none; overflow: hidden;
-  border: 1px solid var(--border);
-}
-.dropdown-menu.active { display: block; animation: fadeIn .2s; }
-.dropdown-item {
-  padding: 13px 16px; cursor: pointer; display: flex; align-items: center;
-  gap: 10px; font-size: 0.9rem; transition: background .15s;
-}
-.dropdown-item:hover { background: var(--primary-light); }
-.dropdown-item.danger { color: var(--danger); }
+        .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .action-btn {
+            background: var(--card-light); border: none; padding: 15px 5px; border-radius: 12px;
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;
+            box-shadow: var(--shadow); transition: all 0.3s; color: var(--text-light);
+        }
+        .action-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .action-btn i { font-size: 22px; color: var(--primary); }
+        .action-btn span { font-size: 11px; font-weight: 600; }
 
-/* Toast */
-.toast {
-  position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%);
-  background: #1a1d29; color: white; padding: 12px 22px; border-radius: 24px;
-  z-index: 500; display: none; font-size: 0.9rem;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3); max-width: 90%;
-}
+        .section-card {
+            background: var(--card-light); border-radius: 15px; padding: 20px;
+            margin-bottom: 15px; box-shadow: var(--shadow);
+        }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .section-header h3 { font-size: 16px; color: var(--text-light); display: flex; align-items: center; gap: 8px; }
+        .section-header a { color: var(--primary); font-size: 13px; text-decoration: none; cursor: pointer; }
 
-/* Empty State */
-.empty {
-  text-align: center; padding: 40px 20px; color: var(--sub);
-}
-.empty-icon { font-size: 3.5rem; margin-bottom: 12px; opacity: 0.5; }
+        .people-list { display: flex; flex-direction: column; gap: 10px; }
+        .person-item {
+            display: flex; align-items: center; padding: 12px;
+            background: var(--bg-light); border-radius: 12px; cursor: pointer; transition: all 0.3s;
+        }
+        [data-theme="dark"] .person-item { background: rgba(255,255,255,0.05); }
+        .person-item:hover { transform: translateX(5px); }
+        .person-avatar {
+            width: 45px; height: 45px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-right: 12px; color: white;
+        }
+        .person-info { flex: 1; }
+        .person-info h4 { font-size: 15px; color: var(--text-light); margin-bottom: 3px; }
+        .person-info p { font-size: 12px; color: var(--text-muted-light); }
+        .person-balance { text-align: right; font-weight: bold; }
+        .person-balance.receive { color: var(--success); }
+        .person-balance.pay { color: var(--danger); }
 
-/* Settings List */
-.setting-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 4px; border-bottom: 1px solid var(--border);
-}
-.setting-item:last-child { border-bottom: none; }
-.setting-info { display: flex; align-items: center; gap: 12px; }
-.setting-icon {
-  width: 38px; height: 38px; border-radius: 10px; background: var(--primary-light);
-  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-}
-.setting-label { font-weight: 500; }
-.setting-desc { font-size: 0.75rem; color: var(--sub); margin-top: 2px; }
+        /* Settings */
+        .settings-group { background: var(--card-light); border-radius: 15px; margin-bottom: 15px; overflow: hidden; box-shadow: var(--shadow); }
+        .settings-group-title {
+            padding: 12px 20px; font-size: 12px; color: var(--text-muted-light);
+            text-transform: uppercase; font-weight: bold; background: var(--bg-light);
+        }
+        [data-theme="dark"] .settings-group-title { background: rgba(255,255,255,0.05); }
+        .settings-item {
+            display: flex; align-items: center; padding: 15px 20px;
+            border-bottom: 1px solid var(--border-light); cursor: pointer; transition: all 0.2s;
+        }
+        .settings-item:last-child { border-bottom: none; }
+        .settings-item:hover { background: rgba(102, 126, 234, 0.05); }
+        .settings-item i.icon {
+            width: 35px; height: 35px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; font-size: 16px;
+        }
+        .settings-item-content { flex: 1; }
+        .settings-item-content h4 { font-size: 15px; color: var(--text-light); margin-bottom: 2px; }
+        .settings-item-content p { font-size: 12px; color: var(--text-muted-light); }
+        .settings-item .arrow { color: var(--text-muted-light); }
 
-/* Toggle Switch */
-.switch { position: relative; display: inline-block; width: 48px; height: 26px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-  position: absolute; cursor: pointer; inset: 0;
-  background: #ccc; transition: .3s; border-radius: 26px;
-}
-.slider:before {
-  position: absolute; content: ""; height: 20px; width: 20px;
-  left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%;
-}
-input:checked + .slider { background: var(--primary); }
-input:checked + .slider:before { transform: translateX(22px); }
+        .toggle {
+            position: relative; width: 50px; height: 26px; background: #ccc;
+            border-radius: 13px; cursor: pointer; transition: all 0.3s;
+        }
+        .toggle.active { background: var(--success); }
+        .toggle::after {
+            content: ''; position: absolute; width: 22px; height: 22px; background: white;
+            border-radius: 50%; top: 2px; left: 2px; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .toggle.active::after { left: 26px; }
 
-/* Type Toggle */
-.type-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
-.type-toggle button {
-  flex: 1; padding: 14px; border: 2px solid var(--border);
-  background: var(--bg); color: var(--text); border-radius: 12px;
-  font-weight: 600; cursor: pointer; transition: all .2s; font-size: 0.95rem;
-}
-.type-toggle button.active-give { background: var(--danger); color: white; border-color: var(--danger); }
-.type-toggle button.active-get { background: var(--success); color: white; border-color: var(--success); }
+        .social-btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 14px; border-radius: 12px; color: white; text-decoration: none;
+            font-weight: bold; margin-bottom: 10px; transition: all 0.3s;
+            border: none; cursor: pointer; font-size: 15px; width: 100%;
+        }
+        .social-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .instagram-btn { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .gmail-btn { background: linear-gradient(45deg, #ea4335, #fbbc05, #34a853, #4285f4); }
 
-/* Transaction Item */
-.tx-item {
-  display: flex; align-items: center; padding: 12px 4px;
-  border-bottom: 1px solid var(--border);
-}
-.tx-item:last-child { border-bottom: none; }
-.tx-icon {
-  width: 42px; height: 42px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.3rem; margin-right: 12px; flex-shrink: 0;
-}
-.tx-icon.give { background: #fee2e2; color: var(--danger); }
-.tx-icon.get { background: #d1fae5; color: var(--success); }
-[data-theme="dark"] .tx-icon.give { background: rgba(239,68,68,0.15); }
-[data-theme="dark"] .tx-icon.get { background: rgba(16,185,129,0.15); }
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content {
+            background: var(--card-light); border-radius: 20px; padding: 25px;
+            width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; color: var(--text-light);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 20px; color: var(--text-light); }
+        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted-light); }
 
-/* Search Bar */
-.search-bar {
-  position: relative; margin-bottom: 14px;
-}
-.search-bar input { padding-left: 42px; }
-.search-bar::before {
-  content: "🔍"; position: absolute; left: 14px; top: 50%;
-  transform: translateY(-50%); font-size: 1rem;
-}
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-muted-light); font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 10px;
+            font-size: 15px; background: var(--bg-light); color: var(--text-light); transition: all 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); }
 
-/* Filter Chips */
-.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
-.chip {
-  padding: 8px 14px; border-radius: 20px; background: var(--card);
-  border: 1.5px solid var(--border); cursor: pointer; font-size: 0.85rem;
-  white-space: nowrap; font-weight: 500; transition: all .2s;
-}
-.chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s;
+            color: white; background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger), #f5576c); }
+        .btn-success { background: linear-gradient(135deg, var(--success), #38ef7d); }
 
-/* Chart */
-.chart-bar { display: flex; align-items: flex-end; height: 140px; gap: 6px; padding: 10px 4px; }
-.bar {
-  flex: 1; background: var(--gradient); border-radius: 6px 6px 0 0;
-  position: relative; min-height: 4px; transition: height .5s;
-}
-.bar-label {
-  position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
-  font-size: 0.7rem; color: var(--sub);
-}
-.bar-value {
-  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-  font-size: 0.7rem; font-weight: 700;
-}
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-light);
+            display: flex; justify-content: space-around; padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            cursor: pointer; padding: 8px 15px; border-radius: 10px; transition: all 0.3s;
+            color: var(--text-muted-light); background: none; border: none; font-size: 11px;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 20px; }
 
-/* Badge */
-.badge {
-  display: inline-block; padding: 3px 8px; border-radius: 10px;
-  font-size: 0.7rem; font-weight: 600; background: var(--primary-light);
-  color: var(--primary);
-}
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted-light); }
+        .empty-state i { font-size: 60px; margin-bottom: 15px; opacity: 0.3; }
+        .empty-state p { font-size: 14px; }
 
-/* Quick Actions */
-.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
-.quick-action {
-  background: var(--card); padding: 14px 8px; border-radius: 14px;
-  text-align: center; cursor: pointer; box-shadow: var(--shadow);
-  transition: transform .2s;
-}
-.quick-action:active { transform: scale(0.95); }
-.quick-action .qa-icon { font-size: 1.6rem; margin-bottom: 4px; }
-.quick-action .qa-label { font-size: 0.75rem; font-weight: 500; color: var(--sub); }
+        .developer-footer {
+            text-align: center; padding: 20px; margin-top: 30px;
+            color: var(--text-muted-light); font-size: 13px; border-top: 1px solid var(--border-light);
+        }
+        .developer-footer i.heart { color: var(--danger); animation: heartbeat 1.5s infinite; }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-/* Section Title */
-.section-title {
-  display: flex; justify-content: space-between; align-items: center;
-  margin: 16px 4px 10px; font-weight: 700; font-size: 0.95rem;
-}
-.section-title a { color: var(--primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .tab {
+            padding: 8px 16px; background: var(--card-light); border: 2px solid var(--border-light);
+            border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;
+            color: var(--text-light); transition: all 0.3s;
+        }
+        .tab.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-color: transparent; }
 
-/* Emoji Picker */
-.emoji-grid {
-  display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
-  margin-bottom: 14px;
-}
-.emoji-option {
-  aspect-ratio: 1; border-radius: 12px; background: var(--bg);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; cursor: pointer; border: 2px solid transparent;
-  transition: all .2s;
-}
-.emoji-option.selected { border-color: var(--primary); background: var(--primary-light); }
+        .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px 0; }
+        .avatar-option {
+            aspect-ratio: 1; border-radius: 50%; background: var(--bg-light);
+            display: flex; align-items: center; justify-content: center; font-size: 28px;
+            cursor: pointer; transition: all 0.3s; border: 3px solid transparent;
+        }
+        .avatar-option:hover, .avatar-option.selected { border-color: var(--primary); transform: scale(1.1); }
 
-/* PIN Screen */
-.pin-screen {
-  position: fixed; inset: 0; background: var(--bg); z-index: 1000;
-  display: none; align-items: center; justify-content: center;
-  flex-direction: column; padding: 20px;
-}
-.pin-screen.active { display: flex; }
-.pin-dots { display: flex; gap: 14px; margin: 30px 0; }
-.pin-dot {
-  width: 16px; height: 16px; border-radius: 50%;
-  border: 2px solid var(--primary); transition: all .2s;
-}
-.pin-dot.filled { background: var(--primary); }
-.pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 320px; width: 100%; }
-.pin-key {
-  aspect-ratio: 1.3; border-radius: 16px; background: var(--card);
-  border: none; font-size: 1.5rem; font-weight: 600; cursor: pointer;
-  color: var(--text); box-shadow: var(--shadow);
-}
-.pin-key:active { transform: scale(0.95); background: var(--primary-light); }
-</style>
+        /* Person Detail Page */
+        .detail-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; padding: 30px 20px; border-radius: 20px; text-align: center;
+            margin-bottom: 20px; box-shadow: var(--shadow-lg);
+        }
+        .detail-avatar {
+            width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center; font-size: 40px;
+            margin: 0 auto 15px; backdrop-filter: blur(10px);
+        }
+        .detail-name { font-size: 22px; font-weight: bold; margin-bottom: 5px; }
+        .detail-phone { opacity: 0.9; font-size: 14px; }
+        .detail-balance {
+            margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.15);
+            border-radius: 12px; backdrop-filter: blur(10px);
+        }
+        .detail-balance .amount { font-size: 28px; font-weight: bold; }
+
+        .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+        .action-grid button {
+            background: var(--card-light); border: none; padding: 12px 5px; border-radius: 10px;
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            color: var(--text-light); font-size: 10px; box-shadow: var(--shadow); transition: all 0.3s;
+        }
+        .action-grid button:hover { transform: translateY(-2px); }
+        .action-grid button i { font-size: 18px; color: var(--primary); }
+
+        .entry-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; background: var(--bg-light); border-radius: 10px; margin-bottom: 8px;
+        }
+        [data-theme="dark"] .entry-item { background: rgba(255,255,255,0.05); }
+        .entry-info { flex: 1; }
+        .entry-info .type { font-size: 12px; color: var(--text-muted-light); }
+        .entry-info .date { font-size: 11px; color: var(--text-muted-light); margin-top: 3px; }
+        .entry-info .note { font-size: 12px; color: var(--text-muted-light); font-style: italic; margin-top: 3px; }
+        .entry-amount { font-weight: bold; font-size: 16px; }
+        .entry-amount.give { color: var(--success); }
+        .entry-amount.take { color: var(--danger); }
+
+        .back-btn {
+            background: none; border: none; color: white; font-size: 20px;
+            cursor: pointer; padding: 5px 10px;
+        }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-card {
+            background: var(--bg-light); padding: 15px; border-radius: 12px; text-align: center;
+        }
+        [data-theme="dark"] .stat-card { background: rgba(255,255,255,0.05); }
+        .stat-card .label { font-size: 11px; color: var(--text-muted-light); margin-bottom: 5px; }
+        .stat-card .value { font-size: 18px; font-weight: bold; }
+
+        @media (max-width: 400px) {
+            .quick-actions, .action-grid { grid-template-columns: repeat(2, 1fr); }
+            .balance-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
-<!-- PIN LOCK SCREEN -->
-<div class="pin-screen" id="pinScreen">
-  <div style="font-size: 3rem; margin-bottom: 10px;">🔐</div>
-  <h2 style="margin-bottom: 8px;">Khata Pro</h2>
-  <p class="text-sub" id="pinMsg">PIN दर्ज करें</p>
-  <div class="pin-dots" id="pinDots">
-    <div class="pin-dot"></div><div class="pin-dot"></div>
-    <div class="pin-dot"></div><div class="pin-dot"></div>
-  </div>
-  <div class="pin-pad">
-    <button class="pin-key" onclick="pinInput(1)">1</button>
-    <button class="pin-key" onclick="pinInput(2)">2</button>
-    <button class="pin-key" onclick="pinInput(3)">3</button>
-    <button class="pin-key" onclick="pinInput(4)">4</button>
-    <button class="pin-key" onclick="pinInput(5)">5</button>
-    <button class="pin-key" onclick="pinInput(6)">6</button>
-    <button class="pin-key" onclick="pinInput(7)">7</button>
-    <button class="pin-key" onclick="pinInput(8)">8</button>
-    <button class="pin-key" onclick="pinInput(9)">9</button>
-    <button class="pin-key" onclick="pinClear()">⌫</button>
-    <button class="pin-key" onclick="pinInput(0)">0</button>
-    <button class="pin-key" style="visibility:hidden"></button>
-  </div>
-  <p style="margin-top: 20px; font-size: 0.8rem; color: var(--sub);">Default PIN: 1234</p>
-</div>
-
-<div class="container">
-  <!-- APP HEADER -->
-  <div class="app-header">
-    <h1>Khata Pro</h1>
-    <div style="display: flex; gap: 8px;">
-      <button class="icon-btn" onclick="toggleTheme()" title="Theme">🌓</button>
-      <button class="icon-btn" onclick="navigate('Settings')" title="Settings">⚙️</button>
-    </div>
-  </div>
-
-  <!-- HOME PAGE -->
-  <div id="pageHome" class="page active">
-    <div class="stats-grid">
-      <div class="stat-card get">
-        <span class="emoji">💰</span>
-        <h3>आपको लेना है</h3>
-        <p id="statGet">₹0</p>
-        <small id="statGetCount">0 लोग</small>
-      </div>
-      <div class="stat-card give">
-        <span class="emoji">💸</span>
-        <h3>आपको देना है</h3>
-        <p id="statGive">₹0</p>
-        <small id="statGiveCount">0 लोग</small>
-      </div>
-      <div class="stat-card net">
-        <span class="emoji">📊</span>
-        <h3>NET BALANCE</h3>
-        <p id="statNet">₹0</p>
-        <small id="statNetLabel">कुल हिसाब</small>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-      <div class="quick-action" onclick="openAddPersonModal()">
-        <div class="qa-icon">➕</div>
-        <div class="qa-label">नया व्यक्ति</div>
-      </div>
-      <div class="quick-action" onclick="navigate('Reports')">
-        <div class="qa-icon">📊</div>
-        <div class="qa-label">रिपोर्ट</div>
-      </div>
-      <div class="quick-action" onclick="navigate('History')">
-        <div class="qa-icon">📜</div>
-        <div class="qa-label">हिस्ट्री</div>
-      </div>
-      <div class="quick-action" onclick="exportJSON()">
-        <div class="qa-icon">💾</div>
-        <div class="qa-label">बैकअप</div>
-      </div>
-    </div>
-
-    <!-- Today's Summary -->
-    <div class="card">
-      <div class="card-title">📅 आज का हिसाब</div>
-      <div id="todaySummary">
-        <p class="text-sub" style="text-align:center; padding: 10px;">आज कोई एंट्री नहीं</p>
-      </div>
-    </div>
-
-    <!-- Top Debtors -->
-    <div class="section-title">
-      <span>🏆 टॉप 5 लेनदार</span>
-      <a onclick="navigate('Contacts')">सभी देखें →</a>
-    </div>
-    <div class="card" style="padding: 8px 14px;">
-      <div id="topDebtors">
-        <p class="text-sub" style="text-align:center; padding: 10px;">कोई डेटा नहीं</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONTACTS PAGE -->
-  <div id="pageContacts" class="page">
-    <div class="card">
-      <div class="card-title">👥 मेरे लोग <span class="badge" id="contactCount">0</span></div>
-      <div class="search-bar">
-        <input type="text" id="searchContact" placeholder="नाम या नंबर से खोजें..." oninput="renderContacts()">
-      </div>
-      <div class="chips" id="groupChips">
-        <div class="chip active" onclick="filterGroup('all', this)">सभी</div>
-        <div class="chip" onclick="filterGroup('Family', this)">👨‍👩‍👧 परिवार</div>
-        <div class="chip" onclick="filterGroup('Business', this)">💼 बिज़नेस</div>
-        <div class="chip" onclick="filterGroup('Friends', this)">🤝 दोस्त</div>
-        <div class="chip" onclick="filterGroup('Other', this)">📌 अन्य</div>
-      </div>
-      <div class="chips">
-        <div class="chip active" onclick="sortContacts('name', this)">A-Z</div>
-        <div class="chip" onclick="sortContacts('recent', this)">हालिया</div>
-        <div class="chip" onclick="sortContacts('balance', this)">बैलेंस</div>
-      </div>
-      <div id="contactsList"></div>
-    </div>
-  </div>
-
-  <!-- REPORTS PAGE -->
-  <div id="pageReports" class="page">
-    <div class="card">
-      <div class="card-title">📊 वित्तीय रिपोर्ट</div>
-      <div class="chips">
-        <div class="chip active" onclick="setReportRange('all', this)">सभी</div>
-        <div class="chip" onclick="setReportRange('week', this)">इस हफ्ते</div>
-        <div class="chip" onclick="setReportRange('month', this)">इस महीने</div>
-        <div class="chip" onclick="setReportRange('year', this)">इस साल</div>
-      </div>
-      <div id="reportSummary"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📈 मासिक कैश फ्लो</div>
-      <div class="chart-bar" id="monthlyChart"></div>
-      <div style="height: 24px;"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🏆 टॉप 5 लेना है</div>
-      <div id="topGet"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">⚠️ टॉप 5 देना है</div>
-      <div id="topGive"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📤 एक्सपोर्ट</div>
-      <button class="btn btn-primary btn-block" onclick="exportCSV()" style="margin-bottom: 8px;">📄 CSV डाउनलोड करें</button>
-      <button class="btn btn-ghost btn-block" onclick="exportJSON()">💾 JSON बैकअप</button>
-    </div>
-  </div>
-
-  <!-- HISTORY PAGE -->
-  <div id="pageHistory" class="page">
-    <div class="card">
-      <div class="card-title">📜 सभी एंट्रीज़ <span class="badge" id="txCount">0</span></div>
-      <div class="search-bar">
-        <input type="text" id="searchTx" placeholder="एंट्री खोजें..." oninput="renderHistory()">
-      </div>
-      <div class="chips">
-        <div class="chip active" onclick="filterTx('all', this)">सभी</div>
-        <div class="chip" onclick="filterTx('give', this)">↑ उधार</div>
-        <div class="chip" onclick="filterTx('get', this)">↓ जमा</div>
-      </div>
-      <div id="historyList"></div>
-    </div>
-  </div>
-
-  <!-- SETTINGS PAGE -->
-  <div id="pageSettings" class="page">
-    <div class="card">
-      <div class="card-title">🎨 Appearance</div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">🌙</div>
-          <div>
-            <div class="setting-label">Dark Mode</div>
-            <div class="setting-desc">आँखों को आराम</div>
-          </div>
+    <!-- PIN Screen -->
+    <div class="pin-screen" id="pinScreen">
+        <h2><i class="fas fa-shield-alt"></i> Khata Pro</h2>
+        <p>PIN दर्ज करें</p>
+        <div class="pin-display" id="pinDisplay">____</div>
+        <div class="pin-pad">
+            <button class="pin-btn" onclick="addPin(1)">1</button>
+            <button class="pin-btn" onclick="addPin(2)">2</button>
+            <button class="pin-btn" onclick="addPin(3)">3</button>
+            <button class="pin-btn" onclick="addPin(4)">4</button>
+            <button class="pin-btn" onclick="addPin(5)">5</button>
+            <button class="pin-btn" onclick="addPin(6)">6</button>
+            <button class="pin-btn" onclick="addPin(7)">7</button>
+            <button class="pin-btn" onclick="addPin(8)">8</button>
+            <button class="pin-btn" onclick="addPin(9)">9</button>
+            <button class="pin-btn clear" onclick="clearPin()"><i class="fas fa-backspace"></i></button>
+            <button class="pin-btn" onclick="addPin(0)">0</button>
+            <button class="pin-btn" onclick="checkPin()" style="background: rgba(0,255,0,0.3)"><i class="fas fa-check"></i></button>
         </div>
-        <label class="switch"><input type="checkbox" id="setDark" onchange="toggleTheme()"><span class="slider"></span></label>
-      </div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">🌐</div>
-          <div>
-            <div class="setting-label">Language</div>
-            <div class="setting-desc">भाषा चुनें</div>
-          </div>
+        <p style="margin-top: 20px; font-size: 12px; opacity: 0.7;">Default PIN: 1234</p>
+    </div>
+
+    <!-- Header -->
+    <div class="header" id="mainHeader">
+        <h1 id="headerTitle"><i class="fas fa-book"></i> Khata Pro</h1>
+        <div class="header-icons">
+            <i class="fas fa-moon" onclick="toggleTheme()" id="themeIcon"></i>
+            <i class="fas fa-cog" onclick="showPage('settings')"></i>
         </div>
-        <select id="setLang" onchange="saveSetting('lang', this.value)" style="width: auto; margin: 0;">
-          <option value="hi">हिंदी</option><option value="en">English</option>
-        </select>
-      </div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">💱</div>
-          <div>
-            <div class="setting-label">Currency</div>
-            <div class="setting-desc">मुद्रा चिन्ह</div>
-          </div>
+    </div>
+
+    <div class="container">
+        <!-- Home Page -->
+        <div class="page active" id="home">
+            <div class="balance-grid">
+                <div class="balance-card receive">
+                    <h3><i class="fas fa-arrow-down"></i> आपको लेना है</h3>
+                    <div class="amount" id="totalReceive">₹0</div>
+                    <div class="count"><span id="receiveCount">0</span> लोग 💸</div>
+                </div>
+                <div class="balance-card pay">
+                    <h3><i class="fas fa-arrow-up"></i> आपको देना है</h3>
+                    <div class="amount" id="totalPay">₹0</div>
+                    <div class="count"><span id="payCount">0</span> लोग 📊</div>
+                </div>
+            </div>
+
+            <div class="net-balance">
+                <h3>NET BALANCE</h3>
+                <div class="amount" id="netBalance">₹0</div>
+                <p style="font-size: 12px; opacity: 0.9; margin-top: 5px;">कुल हिसाब</p>
+            </div>
+
+            <div class="quick-actions">
+                <button class="action-btn" onclick="openAddPersonModal()">
+                    <i class="fas fa-user-plus"></i><span>नया व्यक्ति</span>
+                </button>
+                <button class="action-btn" onclick="showPage('reports')">
+                    <i class="fas fa-chart-line"></i><span>रिपोर्ट</span>
+                </button>
+                <button class="action-btn" onclick="showPage('history')">
+                    <i class="fas fa-history"></i><span>हिस्ट्री</span>
+                </button>
+                <button class="action-btn" onclick="exportData()">
+                    <i class="fas fa-download"></i><span>बैकअप</span>
+                </button>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><h3><i class="fas fa-calendar-day"></i> आज का हिसाब</h3></div>
+                <div id="todayEntries"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-trophy"></i> टॉप 5 लेनदार</h3>
+                    <a onclick="showPage('people')">सभी देखें →</a>
+                </div>
+                <div class="people-list" id="topLenders"></div>
+            </div>
         </div>
-        <select id="setCurrency" onchange="saveSetting('currency', this.value)" style="width: auto; margin: 0;">
-          <option value="₹">₹ INR</option><option value="$">$ USD</option>
-          <option value="€">€ EUR</option><option value="£">£ GBP</option>
-        </select>
-      </div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">🔤</div>
-          <div>
-            <div class="setting-label">Font Size</div>
-            <div class="setting-desc">अक्षरों का आकार</div>
-          </div>
+
+        <!-- People Page -->
+        <div class="page" id="people">
+            <div class="tabs" id="peopleTabs">
+                <div class="tab active" data-filter="all">सभी <span id="totalPeople">0</span></div>
+                <div class="tab" data-filter="family">👨‍👩‍👧 परिवार</div>
+                <div class="tab" data-filter="business">💼 बिज़नेस</div>
+                <div class="tab" data-filter="friend">🤝 दोस्त</div>
+                <div class="tab" data-filter="other">📌 अन्य</div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>👥 मेरे लोग</h3>
+                    <button class="btn" style="width: auto; padding: 8px 15px; font-size: 13px;" onclick="openAddPersonModal()">
+                        <i class="fas fa-plus"></i> नया
+                    </button>
+                </div>
+                <div class="people-list" id="peopleList"></div>
+            </div>
         </div>
-        <select id="setFontSize" onchange="saveSetting('fontSize', this.value)" style="width: auto; margin: 0;">
-          <option value="14px">छोटा</option><option value="15px">मध्यम</option><option value="17px">बड़ा</option>
-        </select>
-      </div>
-    </div>
 
-    <div class="card">
-      <div class="card-title">🔒 Security</div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">🔐</div>
-          <div>
-            <div class="setting-label">App Lock</div>
-            <div class="setting-desc">PIN से ऐप लॉक करें</div>
-          </div>
+        <!-- Person Detail Page -->
+        <div class="page" id="personDetail">
+            <div class="detail-header">
+                <div style="text-align:left; margin-bottom:10px;">
+                    <button class="back-btn" onclick="showPage('people')"><i class="fas fa-arrow-left"></i></button>
+                </div>
+                <div class="detail-avatar" id="detailAvatar">👤</div>
+                <div class="detail-name" id="detailName">-</div>
+                <div class="detail-phone" id="detailPhone">-</div>
+                <div class="detail-balance">
+                    <div style="font-size:12px; opacity:0.9;">बैलेंस</div>
+                    <div class="amount" id="detailBalance">₹0</div>
+                </div>
+            </div>
+
+            <div class="action-grid">
+                <button onclick="openAddEntryModal()"><i class="fas fa-plus-circle"></i><span>नई एंट्री</span></button>
+                <button onclick="openEditPersonModal()"><i class="fas fa-edit"></i><span>एडिट</span></button>
+                <button onclick="openAvatarModal()"><i class="fas fa-smile"></i><span>अवतार</span></button>
+                <button onclick="openCreditLimitModal()"><i class="fas fa-credit-card"></i><span>लिमिट</span></button>
+                <button onclick="toggleFavorite()"><i class="fas fa-star" id="favIcon"></i><span>फेवरेट</span></button>
+                <button onclick="sendWhatsApp()"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></button>
+                <button onclick="sendSMS()"><i class="fas fa-sms"></i><span>SMS</span></button>
+                <button onclick="makeCall()"><i class="fas fa-phone"></i><span>कॉल</span></button>
+                <button onclick="exportPersonData()"><i class="fas fa-file-export"></i><span>एक्सपोर्ट</span></button>
+                <button onclick="archivePerson()"><i class="fas fa-archive"></i><span>आर्काइव</span></button>
+                <button onclick="printStatement()"><i class="fas fa-print"></i><span>प्रिंट</span></button>
+                <button onclick="openNoteModal()"><i class="fas fa-sticky-note"></i><span>नोट</span></button>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="label">कुल उधार दिया</div>
+                    <div class="value" id="statGive" style="color:var(--success)">₹0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">कुल जमा लिया</div>
+                    <div class="value" id="statTake" style="color:var(--danger)">₹0</div>
+                </div>
+            </div>
+
+            <div class="section-card" id="noteSection" style="display:none;">
+                <div class="section-header"><h3><i class="fas fa-sticky-note"></i> नोट</h3></div>
+                <p id="personNote" style="font-size:14px; color:var(--text-muted-light);"></p>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><h3><i class="fas fa-list"></i> हिसाब की लिस्ट</h3></div>
+                <div id="personEntries"></div>
+            </div>
+
+            <button class="btn btn-danger" onclick="deletePerson()" style="margin-top:10px;">
+                <i class="fas fa-trash"></i> व्यक्ति हटाएं
+            </button>
         </div>
-        <label class="switch"><input type="checkbox" id="setLock" onchange="toggleLock()"><span class="slider"></span></label>
-      </div>
-      <div class="setting-item" onclick="changePin()" style="cursor: pointer;">
-        <div class="setting-info">
-          <div class="setting-icon">🔑</div>
-          <div>
-            <div class="setting-label">Change PIN</div>
-            <div class="setting-desc">नया PIN सेट करें</div>
-          </div>
+
+        <!-- Reports Page -->
+        <div class="page" id="reports">
+            <div class="section-card">
+                <div class="section-header"><h3><i class="fas fa-chart-pie"></i> वित्तीय रिपोर्ट</h3></div>
+                <div class="tabs" id="reportTabs">
+                    <div class="tab active" data-period="week">इस हफ्ते</div>
+                    <div class="tab" data-period="month">इस महीने</div>
+                    <div class="tab" data-period="year">इस साल</div>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="label">कुल दिया</div>
+                        <div class="value" id="reportGive" style="color:var(--success)">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">कुल लिया</div>
+                        <div class="value" id="reportTake" style="color:var(--danger)">₹0</div>
+                    </div>
+                </div>
+                <div class="stat-card" style="margin-top:10px;">
+                    <div class="label">कुल एंट्रीज़</div>
+                    <div class="value" id="reportCount">0</div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><h3><i class="fas fa-arrow-down"></i> टॉप 5 लेना है</h3></div>
+                <div class="people-list" id="topReceive"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><h3><i class="fas fa-arrow-up"></i> टॉप 5 देना है</h3></div>
+                <div class="people-list" id="topPay"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header"><h3><i class="fas fa-file-export"></i> एक्सपोर्ट</h3></div>
+                <button class="btn" onclick="exportCSV()" style="margin-bottom:10px;"><i class="fas fa-file-csv"></i> CSV डाउनलोड करें</button>
+                <button class="btn btn-success" onclick="exportData()"><i class="fas fa-download"></i> JSON बैकअप</button>
+            </div>
         </div>
-        <span>›</span>
-      </div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">👆</div>
-          <div>
-            <div class="setting-label">Biometric Lock</div>
-            <div class="setting-desc">फिंगरप्रिंट / Face ID</div>
-          </div>
+
+        <!-- History Page -->
+        <div class="page" id="history">
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-list"></i> सभी एंट्रीज़</h3>
+                    <span id="totalEntries">0</span>
+                </div>
+                <div class="tabs" id="historyTabs">
+                    <div class="tab active" data-filter="all">सभी</div>
+                    <div class="tab" data-filter="give">↑ उधार</div>
+                    <div class="tab" data-filter="take">↓ जमा</div>
+                </div>
+                <div id="historyList"></div>
+            </div>
         </div>
-        <label class="switch"><input type="checkbox" id="setBio" onchange="saveSetting('bio', this.checked)"><span class="slider"></span></label>
-      </div>
-    </div>
 
-    <div class="card">
-      <div class="card-title">🔔 Notifications</div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">🔔</div>
-          <div>
-            <div class="setting-label">Payment Reminders</div>
-            <div class="setting-desc">उधार याद दिलाने के लिए</div>
-          </div>
+        <!-- Settings Page -->
+        <div class="page" id="settings">
+            <div class="settings-group">
+                <div class="settings-group-title">🎨 Appearance</div>
+                <div class="settings-item" onclick="toggleTheme()">
+                    <i class="icon fas fa-moon"></i>
+                    <div class="settings-item-content"><h4>Dark Mode</h4><p>आँखों को आराम</p></div>
+                    <div class="toggle" id="darkModeToggle"></div>
+                </div>
+                <div class="settings-item" onclick="changeLanguage()">
+                    <i class="icon fas fa-language"></i>
+                    <div class="settings-item-content"><h4>Language</h4><p id="langDisplay">भाषा चुनें - हिंदी</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="settings-item" onclick="changeCurrency()">
+                    <i class="icon fas fa-rupee-sign"></i>
+                    <div class="settings-item-content"><h4>Currency</h4><p id="currencyDisplay">मुद्रा - ₹ INR</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="settings-item" onclick="changeFontSize()">
+                    <i class="icon fas fa-text-height"></i>
+                    <div class="settings-item-content"><h4>Font Size</h4><p id="fontDisplay">अक्षरों का आकार - मध्यम</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">🔒 Security</div>
+                <div class="settings-item" onclick="toggleAppLock()">
+                    <i class="icon fas fa-lock"></i>
+                    <div class="settings-item-content"><h4>App Lock</h4><p>PIN से ऐप लॉक करें</p></div>
+                    <div class="toggle active" id="appLockToggle"></div>
+                </div>
+                <div class="settings-item" onclick="openChangePinModal()">
+                    <i class="icon fas fa-key"></i>
+                    <div class="settings-item-content"><h4>Change PIN</h4><p>नया PIN सेट करें</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="settings-item" onclick="toggleBiometric()">
+                    <i class="icon fas fa-fingerprint"></i>
+                    <div class="settings-item-content"><h4>Biometric Lock</h4><p>फिंगरप्रिंट / Face ID</p></div>
+                    <div class="toggle" id="biometricToggle"></div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">🔔 Notifications</div>
+                <div class="settings-item" onclick="togglePaymentReminder()">
+                    <i class="icon fas fa-bell"></i>
+                    <div class="settings-item-content"><h4>Payment Reminders</h4><p>उधार याद दिलाने के लिए</p></div>
+                    <div class="toggle active" id="reminderToggle"></div>
+                </div>
+                <div class="settings-item" onclick="toggleEmailReports()">
+                    <i class="icon fas fa-envelope"></i>
+                    <div class="settings-item-content"><h4>Email Reports</h4><p>साप्ताहिक रिपोर्ट ईमेल पर</p></div>
+                    <div class="toggle" id="emailToggle"></div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">📦 Backup & Restore</div>
+                <div class="settings-item" onclick="exportData()">
+                    <i class="icon fas fa-download"></i>
+                    <div class="settings-item-content"><h4>बैकअप डाउनलोड</h4><p>सारा डेटा सेव करें</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="settings-item" onclick="openRestoreModal()">
+                    <i class="icon fas fa-upload"></i>
+                    <div class="settings-item-content"><h4>रिस्टोर करें</h4><p>बैकअप से डेटा लाएं</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="settings-item" onclick="shareApp()">
+                    <i class="icon fas fa-share-alt"></i>
+                    <div class="settings-item-content"><h4>ऐप शेयर करें</h4><p>दोस्तों को बताएं</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">🌐 Connect With Developer</div>
+                <div style="padding: 15px;">
+                    <a href="https://instagram.com/_ayush_singh_990" target="_blank" class="social-btn instagram-btn">
+                        <i class="fab fa-instagram"></i> Follow on Instagram
+                    </a>
+                    <a href="mailto:ayushk92355@gmail.com" class="social-btn gmail-btn">
+                        <i class="fas fa-envelope"></i> Contact via Gmail
+                    </a>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">ℹ️ About</div>
+                <div class="settings-item">
+                    <i class="icon fas fa-mobile-alt"></i>
+                    <div class="settings-item-content"><h4>Version</h4><p>Khata Pro v2.0</p></div>
+                </div>
+                <div class="settings-item" onclick="rateApp()">
+                    <i class="icon fas fa-star"></i>
+                    <div class="settings-item-content"><h4>Rate Us</h4><p>5 स्टार दें</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="settings-item" onclick="contactSupport()">
+                    <i class="icon fas fa-headset"></i>
+                    <div class="settings-item-content"><h4>Contact Support</h4><p>ayushk92355@gmail.com</p></div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-group-title">⚠️ Danger Zone</div>
+                <div class="settings-item" onclick="clearAllData()">
+                    <i class="icon fas fa-trash" style="background: linear-gradient(135deg, var(--danger), #f5576c);"></i>
+                    <div class="settings-item-content"><h4 style="color: var(--danger);">सारा डेटा मिटाएं</h4><p>यह action वापस नहीं हो सकता</p></div>
+                </div>
+            </div>
+
+            <div class="developer-footer">
+                <p>Made with <i class="fas fa-heart heart"></i> by <strong>Ayush Singh</strong></p>
+                <p style="margin-top: 5px; font-size: 11px;">© 2026 Khata Pro. All Rights Reserved.</p>
+            </div>
         </div>
-        <label class="switch"><input type="checkbox" id="setReminder" onchange="saveSetting('reminder', this.checked)"><span class="slider"></span></label>
-      </div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">📧</div>
-          <div>
-            <div class="setting-label">Email Reports</div>
-            <div class="setting-desc">साप्ताहिक रिपोर्ट ईमेल पर</div>
-          </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-item active" data-page="home" onclick="showPage('home')">
+            <i class="fas fa-home"></i><span>होम</span>
+        </button>
+        <button class="nav-item" data-page="people" onclick="showPage('people')">
+            <i class="fas fa-users"></i><span>लोग</span>
+        </button>
+        <button class="nav-item" data-page="reports" onclick="showPage('reports')">
+            <i class="fas fa-chart-pie"></i><span>रिपोर्ट</span>
+        </button>
+        <button class="nav-item" data-page="history" onclick="showPage('history')">
+            <i class="fas fa-history"></i><span>हिस्ट्री</span>
+        </button>
+        <button class="nav-item" data-page="settings" onclick="showPage('settings')">
+            <i class="fas fa-cog"></i><span>सेटिंग</span>
+        </button>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="addPersonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>➕ नया व्यक्ति जोड़ें</h3>
+                <button class="close-btn" onclick="closeModal('addPersonModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>🎭 अवतार/इमोजी चुनें</label>
+                <div class="avatar-grid" id="avatarGrid">
+                    <div class="avatar-option selected" data-avatar="👤">👤</div>
+                    <div class="avatar-option" data-avatar="👨">👨</div>
+                    <div class="avatar-option" data-avatar="👩">👩</div>
+                    <div class="avatar-option" data-avatar="🧑">🧑</div>
+                    <div class="avatar-option" data-avatar="👴">👴</div>
+                    <div class="avatar-option" data-avatar="👵">👵</div>
+                    <div class="avatar-option" data-avatar="🧔">🧔</div>
+                    <div class="avatar-option" data-avatar="👸">👸</div>
+                    <div class="avatar-option" data-avatar="🤵">🤵</div>
+                    <div class="avatar-option" data-avatar="💼">💼</div>
+                    <div class="avatar-option" data-avatar="🏪">🏪</div>
+                    <div class="avatar-option" data-avatar="🛒">🛒</div>
+                </div>
+            </div>
+            <div class="form-group"><label>नाम *</label><input type="text" id="personName" placeholder="व्यक्ति का नाम"></div>
+            <div class="form-group"><label>मोबाइल नंबर</label><input type="tel" id="personPhone" placeholder="10 digit number"></div>
+            <div class="form-group">
+                <label>ग्रुप</label>
+                <select id="personGroup">
+                    <option value="other">📌 अन्य</option>
+                    <option value="family">👨‍👩‍👧 परिवार</option>
+                    <option value="friend">🤝 दोस्त</option>
+                    <option value="business">💼 बिज़नेस</option>
+                </select>
+            </div>
+            <button class="btn" onclick="savePerson()">✓ सेव करें</button>
         </div>
-        <label class="switch"><input type="checkbox" id="setEmail" onchange="saveSetting('email', this.checked)"><span class="slider"></span></label>
-      </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">📦 Backup & Restore</div>
-      <button class="btn btn-primary btn-block" onclick="exportJSON()" style="margin-bottom: 8px;">💾 बैकअप डाउनलोड</button>
-      <button class="btn btn-ghost btn-block" onclick="document.getElementById('importFile').click()" style="margin-bottom: 8px;">📂 रिस्टोर करें</button>
-      <input type="file" id="importFile" style="display:none" accept=".json" onchange="importJSON(event)">
-      <button class="btn btn-ghost btn-block" onclick="shareApp()">📤 ऐप शेयर करें</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">ℹ️ About</div>
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-icon">📱</div>
-          <div>
-            <div class="setting-label">Version</div>
-            <div class="setting-desc">Khata Pro v2.0</div>
-          </div>
+    <div class="modal" id="editPersonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ व्यक्ति एडिट करें</h3>
+                <button class="close-btn" onclick="closeModal('editPersonModal')">&times;</button>
+            </div>
+            <div class="form-group"><label>नाम *</label><input type="text" id="editName" placeholder="नाम"></div>
+            <div class="form-group"><label>मोबाइल नंबर</label><input type="tel" id="editPhone" placeholder="10 digit"></div>
+            <div class="form-group">
+                <label>ग्रुप</label>
+                <select id="editGroup">
+                    <option value="other">📌 अन्य</option>
+                    <option value="family">👨‍👩‍👧 परिवार</option>
+                    <option value="friend">🤝 दोस्त</option>
+                    <option value="business">💼 बिज़नेस</option>
+                </select>
+            </div>
+            <button class="btn" onclick="updatePerson()">✓ अपडेट करें</button>
         </div>
-      </div>
-      <div class="setting-item" onclick="rateApp()" style="cursor: pointer;">
-        <div class="setting-info">
-          <div class="setting-icon">⭐</div>
-          <div>
-            <div class="setting-label">Rate Us</div>
-            <div class="setting-desc">5 स्टार दें</div>
-          </div>
+    </div>
+
+    <div class="modal" id="addEntryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💰 नई एंट्री</h3>
+                <button class="close-btn" onclick="closeModal('addEntryModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>किस तरह की एंट्री?</label>
+                <select id="entryType">
+                    <option value="give">↑ उधार दिया (लेना है)</option>
+                    <option value="take">↓ जमा लिया (देना है)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>रकम (Amount) *</label><input type="number" id="entryAmount" placeholder="₹ 0"></div>
+            <div class="form-group"><label>तारीख</label><input type="date" id="entryDate"></div>
+            <div class="form-group"><label>नोट (Optional)</label><textarea id="entryNote" rows="3" placeholder="कोई नोट लिखें..."></textarea></div>
+            <button class="btn" onclick="saveEntry()">✓ एंट्री सेव करें</button>
         </div>
-        <span>›</span>
-      </div>
-      <div class="setting-item" onclick="showToast('📧 support@khata.pro')" style="cursor: pointer;">
-        <div class="setting-info">
-          <div class="setting-icon">💬</div>
-          <div>
-            <div class="setting-label">Contact Support</div>
-            <div class="setting-desc">help@khata.pro</div>
-          </div>
+    </div>
+
+    <div class="modal" id="changePinModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔑 नया PIN सेट करें</h3>
+                <button class="close-btn" onclick="closeModal('changePinModal')">&times;</button>
+            </div>
+            <div class="form-group"><label>पुराना PIN</label><input type="password" id="oldPin" maxlength="4" placeholder="4 अंक"></div>
+            <div class="form-group"><label>नया PIN (4 अंक)</label><input type="password" id="newPin" maxlength="4" placeholder="4 अंक"></div>
+            <div class="form-group"><label>नया PIN दोबारा</label><input type="password" id="confirmPin" maxlength="4" placeholder="4 अंक"></div>
+            <button class="btn" onclick="changePin()">✓ PIN बदलें</button>
         </div>
-        <span>›</span>
-      </div>
     </div>
 
-    <div class="card" style="border: 2px solid var(--danger);">
-      <div class="card-title" style="color: var(--danger);">⚠️ Danger Zone</div>
-      <button class="btn btn-danger btn-block" onclick="clearAllData()">🗑️ सारा डेटा मिटाएं</button>
-    </div>
-  </div>
-</div>
-
-<!-- FAB -->
-<button class="fab" onclick="openAddPersonModal()">+</button>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="nav-item active" onclick="navigate('Home', this)">
-    <div class="nav-icon">🏠</div>
-    <span>होम</span>
-  </div>
-  <div class="nav-item" onclick="navigate('Contacts', this)">
-    <div class="nav-icon">👥</div>
-    <span>लोग</span>
-  </div>
-  <div class="nav-item" onclick="navigate('Reports', this)">
-    <div class="nav-icon">📊</div>
-    <span>रिपोर्ट</span>
-  </div>
-  <div class="nav-item" onclick="navigate('History', this)">
-    <div class="nav-icon">📜</div>
-    <span>हिस्ट्री</span>
-  </div>
-  <div class="nav-item" onclick="navigate('Settings', this)">
-    <div class="nav-icon">⚙️</div>
-    <span>सेटिंग</span>
-  </div>
-</div>
-
-<!-- PERSON DETAIL PAGE (Full Screen) -->
-<div class="person-page" id="personPage">
-  <div class="person-header">
-    <div class="person-header-top">
-      <button class="back-btn" onclick="closePersonPage()">←</button>
-      <button class="menu-btn" onclick="togglePersonMenu(event)">⋮</button>
-    </div>
-    <div class="dropdown-menu" id="personMenu">
-      <div class="dropdown-item" onclick="editPerson()">✏️ व्यक्ति एडिट करें</div>
-      <div class="dropdown-item" onclick="changePersonEmoji()">🎭 इमोजी/अवतार बदलें</div>
-      <div class="dropdown-item" onclick="setCreditLimit()">💳 क्रेडिट लिमिट सेट करें</div>
-      <div class="dropdown-item" onclick="toggleFavorite()">⭐ फेवरेट में जोड़ें</div>
-      <div class="dropdown-item" onclick="shareWhatsApp()">📱 WhatsApp पर भेजें</div>
-      <div class="dropdown-item" onclick="shareSMS()">💬 SMS भेजें</div>
-      <div class="dropdown-item" onclick="callPerson()">📞 कॉल करें</div>
-      <div class="dropdown-item" onclick="exportPersonCSV()">📄 इसका डेटा एक्सपोर्ट</div>
-      <div class="dropdown-item" onclick="archivePerson()">📦 आर्काइव करें</div>
-      <div class="dropdown-item" onclick="printStatement()">🖨️ स्टेटमेंट प्रिंट</div>
-      <div class="dropdown-item" onclick="addNoteToPerson()">📝 नोट जोड़ें</div>
-      <div class="dropdown-item danger" onclick="deletePerson()">🗑️ व्यक्ति हटाएं</div>
-    </div>
-    <div class="person-info">
-      <div class="person-avatar" id="pAvatar">R</div>
-      <div>
-        <div class="person-name" id="pName">Name</div>
-        <div class="person-phone" id="pPhone">📞 Phone</div>
-      </div>
-    </div>
-    <div class="person-balance">
-      <small id="pBalLabel">आपको लेना है</small>
-      <p id="pBalance">₹0</p>
-    </div>
-  </div>
-
-  <div style="padding: 16px;">
-    <button class="btn btn-primary btn-block" onclick="openTxModal()" style="margin-bottom: 16px; padding: 16px;">
-      ➕ नई एंट्री जोड़ें
-    </button>
-
-    <!-- Person Stats -->
-    <div class="stats-grid" style="margin-bottom: 16px;">
-      <div class="stat-card give" style="padding: 14px;">
-        <h3 style="font-size: 0.7rem;">कुल उधार दिया</h3>
-        <p id="pTotalGive" style="font-size: 1.2rem;">₹0</p>
-      </div>
-      <div class="stat-card get" style="padding: 14px;">
-        <h3 style="font-size: 0.7rem;">कुल जमा लिया</h3>
-        <p id="pTotalGet" style="font-size: 1.2rem;">₹0</p>
-      </div>
-    </div>
-
-    <!-- Person Note -->
-    <div class="card" id="personNoteCard" style="display: none;">
-      <div class="card-title">📝 नोट</div>
-      <p id="personNoteText" style="color: var(--sub); font-size: 0.9rem;"></p>
-    </div>
-
-    <!-- Transaction History -->
-    <div class="section-title">
-      <span>💼 हिसाब की लिस्ट</span>
-      <span class="badge" id="pTxCount">0</span>
-    </div>
-    <div class="card" style="padding: 8px 14px;">
-      <div id="personTxList"></div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: Add Person -->
-<div id="modalPerson" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="personModalTitle">➕ नया व्यक्ति जोड़ें</h3>
-      <button class="close-btn" onclick="closeModal('modalPerson')">×</button>
-    </div>
-    <input type="hidden" id="editPersonId">
-    
-    <label class="input-group">
-      <span>🎭 अवतार/इमोजी चुनें</span>
-    </label>
-    <div class="emoji-grid" id="emojiPicker">
-      <div class="emoji-option selected" data-emoji="👤" onclick="selectEmoji(this)">👤</div>
-      <div class="emoji-option" data-emoji="👨" onclick="selectEmoji(this)">👨</div>
-      <div class="emoji-option" data-emoji="👩" onclick="selectEmoji(this)">👩</div>
-      <div class="emoji-option" data-emoji="🧑" onclick="selectEmoji(this)">🧑</div>
-      <div class="emoji-option" data-emoji="👴" onclick="selectEmoji(this)">👴</div>
-      <div class="emoji-option" data-emoji="👵" onclick="selectEmoji(this)">👵</div>
-      <div class="emoji-option" data-emoji="🧔" onclick="selectEmoji(this)">🧔</div>
-      <div class="emoji-option" data-emoji="👸" onclick="selectEmoji(this)">👸</div>
-      <div class="emoji-option" data-emoji="🤵" onclick="selectEmoji(this)">🤵</div>
-      <div class="emoji-option" data-emoji="💼" onclick="selectEmoji(this)">💼</div>
-      <div class="emoji-option" data-emoji="🏪" onclick="selectEmoji(this)">🏪</div>
-      <div class="emoji-option" data-emoji="🛒" onclick="selectEmoji(this)">🛒</div>
-    </div>
-
-    <div class="input-group">
-      <label>नाम *</label>
-      <input type="text" id="pNameInput" placeholder="जैसे: राहुल शर्मा">
-    </div>
-    <div class="input-group">
-      <label>मोबाइल नंबर</label>
-      <input type="tel" id="pPhoneInput" placeholder="10 अंकों का नंबर" maxlength="10">
-    </div>
-    <div class="input-group">
-      <label>ग्रुप</label>
-      <select id="pGroupInput">
-        <option value="Other">📌 अन्य</option>
-        <option value="Family">👨‍👩‍👧 परिवार</option>
-        <option value="Friends">🤝 दोस्त</option>
-        <option value="Business">💼 बिज़नेस</option>
-      </select>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="savePerson()">✓ सेव करें</button>
-  </div>
-</div>
-
-<!-- MODAL: Add Transaction -->
-<div id="modalTx" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>💰 नई एंट्री</h3>
-      <button class="close-btn" onclick="closeModal('modalTx')">×</button>
-    </div>
-    <p id="txPersonLabel" style="color: var(--primary); font-weight: 600; margin-bottom: 14px;"></p>
-    <input type="hidden" id="txPersonId">
-    
-    <label class="input-group"><span>किस तरह की एंट्री?</span></label>
-    <div class="type-toggle">
-      <button id="btnGive" class="active-give" onclick="setTxType('give')">↑ उधार दिया</button>
-      <button id="btnGet" onclick="setTxType('get')">↓ जमा लिया</button>
-    </div>
-
-    <div class="input-group">
-      <label>रकम (Amount) *</label>
-      <input type="number" id="txAmount" placeholder="₹ कितने रुपये?" inputmode="numeric">
-    </div>
-    <div class="input-group">
-      <label>तारीख</label>
-      <input type="date" id="txDate">
-    </div>
-    <div class="input-group">
-      <label>नोट (Optional)</label>
-      <textarea id="txNote" placeholder="जैसे: सामान का बिल" rows="2"></textarea>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveTx()">✓ एंट्री सेव करें</button>
-  </div>
-</div>
-
-<!-- MODAL: Change PIN -->
-<div id="modalPin" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>🔑 नया PIN सेट करें</h3>
-      <button class="close-btn" onclick="closeModal('modalPin')">×</button>
-    </div>
-    <div class="input-group">
-      <label>पुराना PIN</label>
-      <input type="password" id="oldPin" maxlength="4" placeholder="••••">
-    </div>
-    <div class="input-group">
-      <label>नया PIN (4 अंक)</label>
-      <input type="password" id="newPin" maxlength="4" placeholder="••••">
-    </div>
-    <div class="input-group">
-      <label>नया PIN दोबारा</label>
-      <input type="password" id="confirmPin" maxlength="4" placeholder="••••">
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveNewPin()">✓ PIN बदलें</button>
-  </div>
-</div>
-
-<!-- MODAL: Emoji Change -->
-<div id="modalEmoji" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>🎭 नया अवतार चुनें</h3>
-      <button class="close-btn" onclick="closeModal('modalEmoji')">×</button>
-    </div>
-    <div class="emoji-grid" id="emojiPicker2"></div>
-  </div>
-</div>
-
-<!-- MODAL: Credit Limit -->
-<div id="modalLimit" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>💳 क्रेडिट लिमिट</h3>
-      <button class="close-btn" onclick="closeModal('modalLimit')">×</button>
-    </div>
-    <div class="input-group">
-      <label>अधिकतम उधार सीमा (₹)</label>
-      <input type="number" id="creditLimitInput" placeholder="जैसे: 50000">
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveCreditLimit()">✓ सेव करें</button>
-  </div>
-</div>
-
-<!-- MODAL: Note -->
-<div id="modalNote" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>📝 नोट जोड़ें</h3>
-      <button class="close-btn" onclick="closeModal('modalNote')">×</button>
-    </div>
-    <div class="input-group">
-      <label>व्यक्ति के बारे में नोट</label>
-      <textarea id="personNoteInput" rows="4" placeholder="जैसे: दुकान का मालिक, भरोसेमंद..."></textarea>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="savePersonNote()">✓ सेव करें</button>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// ============ STATE ============
-let state = {
-  persons: [], transactions: [],
-  settings: {
-    theme: 'light', currency: '₹', lang: 'hi', fontSize: '15px',
-    lock: false, pin: '1234', bio: false, reminder: false, email: false
-  }
-};
-let currentPersonId = null;
-let currentTxType = 'give';
-let currentFilter = 'all';
-let currentGroup = 'all';
-let currentSort = 'name';
-let currentTxFilter = 'all';
-let currentReportRange = 'all';
-let selectedEmoji = '👤';
-let pinBuffer = '';
-let pinMode = 'unlock'; // unlock | setOld | setNew
-
-const ALL_EMOJIS = ['👤','👨','👩','🧑','👴','👵','🧔','👸','🤵','💼','🏪','🛒','👨‍💼','👩‍💼','👨‍🌾','👩‍🌾','👨‍🍳','👩‍🍳','👨‍🏫','👩‍🏫','👨‍⚕️','👩‍⚕️','🧒','👶','🦸','🦹','🧙','🧚','🤠','🥷','🎅','🤶'];
-
-// ============ STORAGE ============
-function loadState() {
-  const s = localStorage.getItem('khataProV3');
-  if (s) state = JSON.parse(s);
-}
-function saveState() { localStorage.setItem('khataProV3', JSON.stringify(state)); }
-function saveSetting(k, v) { state.settings[k] = v; saveState(); applySettings(); showToast('✓ सेव हो गया'); }
-
-// ============ UTILS ============
-function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
-function fmt(n) { return state.settings.currency + Number(n).toLocaleString('en-IN'); }
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.innerText = msg; t.style.display = 'block';
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => t.style.display = 'none', 2200);
-}
-function getColor(str) {
-  const colors = ['#ef4444','#f97316','#10b981','#06b6d4','#2563eb','#8b5cf6','#ec4899','#14b8a6','#f59e0b','#6366f1'];
-  let h = 0; for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
-  return colors[Math.abs(h) % colors.length];
-}
-function formatDate(d) {
-  const dt = new Date(d);
-  return dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
-}
-function getBalance(pid) {
-  return state.transactions.filter(t => t.personId === pid)
-    .reduce((a, t) => a + (t.type === 'give' ? t.amount : -t.amount), 0);
-}
-function getLastActivity(pid) {
-  const txs = state.transactions.filter(t => t.personId === pid);
-  if (txs.length === 0) return 0;
-  return Math.max(...txs.map(t => new Date(t.date).getTime()));
-}
-
-// ============ THEME & SETTINGS ============
-function toggleTheme() {
-  state.settings.theme = state.settings.theme === 'light' ? 'dark' : 'light';
-  saveState(); applySettings();
-}
-function applySettings() {
-  document.documentElement.setAttribute('data-theme', state.settings.theme);
-  document.documentElement.style.fontSize = state.settings.fontSize;
-  document.getElementById('setDark').checked = state.settings.theme === 'dark';
-  document.getElementById('setLang').value = state.settings.lang;
-  document.getElementById('setCurrency').value = state.settings.currency;
-  document.getElementById('setFontSize').value = state.settings.fontSize;
-  document.getElementById('setLock').checked = state.settings.lock;
-  document.getElementById('setBio').checked = state.settings.bio;
-  document.getElementById('setReminder').checked = state.settings.reminder;
-  document.getElementById('setEmail').checked = state.settings.email;
-}
-
-// ============ NAVIGATION ============
-function navigate(page, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page' + page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (el) {
-    el.classList.add('active');
-  } else {
-    const idx = ['Home','Contacts','Reports','History','Settings'].indexOf(page);
-    if (idx >= 0) document.querySelectorAll('.nav-item')[idx].classList.add('active');
-  }
-  window.scrollTo(0, 0);
-  if (page === 'Reports') renderReports();
-  if (page === 'History') renderHistory();
-  if (page === 'Contacts') renderContacts();
-  if (page === 'Home') renderHome();
-}
-
-// ============ PIN LOCK ============
-function showPinScreen(mode) {
-  pinMode = mode;
-  pinBuffer = '';
-  updatePinDots();
-  document.getElementById('pinMsg').innerText = 
-    mode === 'unlock' ? 'PIN दर्ज करें' : 
-    mode === 'setOld' ? 'पुराना PIN दर्ज करें' : 'नया PIN दर्ज करें';
-  document.getElementById('pinScreen').classList.add('active');
-}
-function pinInput(n) {
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += n;
-  updatePinDots();
-  if (pinBuffer.length === 4) setTimeout(validatePin, 200);
-}
-function pinClear() {
-  pinBuffer = pinBuffer.slice(0, -1);
-  updatePinDots();
-}
-function updatePinDots() {
-  document.querySelectorAll('#pinDots .pin-dot').forEach((d, i) => {
-    d.classList.toggle('filled', i < pinBuffer.length);
-  });
-}
-function validatePin() {
-  if (pinMode === 'unlock') {
-    if (pinBuffer === state.settings.pin) {
-      document.getElementById('pinScreen').classList.remove('active');
-    } else {
-      showToast('❌ गलत PIN!');
-      pinBuffer = '';
-      updatePinDots();
-    }
-  }
-}
-function toggleLock() {
-  state.settings.lock = document.getElementById('setLock').checked;
-  saveState();
-  if (state.settings.lock) showToast('🔒 App Lock ON');
-  else showToast('🔓 App Lock OFF');
-}
-function changePin() {
-  document.getElementById('oldPin').value = '';
-  document.getElementById('newPin').value = '';
-  document.getElementById('confirmPin').value = '';
-  document.getElementById('modalPin').classList.add('active');
-}
-function saveNewPin() {
-  const old = document.getElementById('oldPin').value;
-  const n1 = document.getElementById('newPin').value;
-  const n2 = document.getElementById('confirmPin').value;
-  if (old !== state.settings.pin) return showToast('❌ पुराना PIN गलत है');
-  if (n1.length !== 4 || !/^\d{4}$/.test(n1)) return showToast('❌ PIN 4 अंक का होना चाहिए');
-  if (n1 !== n2) return showToast('❌ नया PIN मेल नहीं खाया');
-  state.settings.pin = n1;
-  saveState();
-  closeModal('modalPin');
-  showToast('✓ PIN बदल दिया गया!');
-}
-
-// ============ ADD PERSON ============
-function openAddPersonModal() {
-  document.getElementById('editPersonId').value = '';
-  document.getElementById('personModalTitle').innerText = '➕ नया व्यक्ति जोड़ें';
-  document.getElementById('pNameInput').value = '';
-  document.getElementById('pPhoneInput').value = '';
-  document.getElementById('pGroupInput').value = 'Other';
-  selectedEmoji = '👤';
-  document.querySelectorAll('#emojiPicker .emoji-option').forEach(e => {
-    e.classList.toggle('selected', e.dataset.emoji === '👤');
-  });
-  document.getElementById('modalPerson').classList.add('active');
-  setTimeout(() => document.getElementById('pNameInput').focus(), 300);
-}
-function selectEmoji(el) {
-  document.querySelectorAll('#emojiPicker .emoji-option').forEach(e => e.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedEmoji = el.dataset.emoji;
-}
-function savePerson() {
-  const name = document.getElementById('pNameInput').value.trim();
-  const phone = document.getElementById('pPhoneInput').value.trim();
-  const group = document.getElementById('pGroupInput').value;
-  if (!name) return showToast('⚠️ नाम डालना ज़रूरी है!');
-  
-  const id = document.getElementById('editPersonId').value;
-  if (id) {
-    const p = state.persons.find(x => x.id === id);
-    p.name = name; p.phone = phone; p.group = group; p.emoji = selectedEmoji;
-  } else {
-    state.persons.push({
-      id: uid(), name, phone, group, emoji: selectedEmoji,
-      createdAt: Date.now(), favorite: false, archived: false,
-      creditLimit: 0, note: ''
-    });
-  }
-  saveState();
-  closeModal('modalPerson');
-  renderAll();
-  showToast('✓ व्यक्ति सेव हो गया!');
-}
-
-// ============ CONTACTS LIST ============
-function filterGroup(g, el) {
-  currentGroup = g;
-  document.querySelectorAll('#groupChips .chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderContacts();
-}
-function sortContacts(s, el) {
-  currentSort = s;
-  el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderContacts();
-}
-function renderContacts() {
-  const search = (document.getElementById('searchContact').value || '').toLowerCase();
-  let list = state.persons.filter(p => !p.archived);
-  if (currentGroup !== 'all') list = list.filter(p => p.group === currentGroup);
-  if (search) list = list.filter(p => p.name.toLowerCase().includes(search) || (p.phone && p.phone.includes(search)));
-  
-  if (currentSort === 'name') list.sort((a,b) => a.name.localeCompare(b.name));
-  else if (currentSort === 'recent') list.sort((a,b) => getLastActivity(b.id) - getLastActivity(a.id));
-  else if (currentSort === 'balance') list.sort((a,b) => Math.abs(getBalance(b.id)) - Math.abs(getBalance(a.id)));
-  
-  document.getElementById('contactCount').innerText = list.length;
-  const container = document.getElementById('contactsList');
-  
-  if (list.length === 0) {
-    container.innerHTML = `<div class="empty">
-      <div class="empty-icon">👥</div>
-      <p>${state.persons.length === 0 ? 'कोई व्यक्ति नहीं है<br><strong>+ बटन दबाकर जोड़ें</strong>' : 'कोई रिज़ल्ट नहीं'}</p>
-    </div>`;
-    return;
-  }
-  
-  container.innerHTML = list.map(p => {
-    const bal = getBalance(p.id);
-    const color = getColor(p.name);
-    const balText = bal === 0 ? 'कोई हिसाब नहीं' : (bal > 0 ? 'लेना है' : 'देना है');
-    const balClass = bal > 0 ? 'text-success' : bal < 0 ? 'text-danger' : 'text-sub';
-    const fav = p.favorite ? '⭐ ' : '';
-    return `<div class="list-item" onclick="openPersonPage('${p.id}')">
-      <div class="flex">
-        <div class="avatar" style="background:${color}; font-size: 1.5rem;">${p.emoji || p.name.charAt(0).toUpperCase()}</div>
-        <div class="flex-col">
-          <strong>${fav}${p.name}</strong>
-          <small class="text-sub">${p.phone || 'नंबर नहीं'} • ${p.group}</small>
+    <div class="modal" id="avatarModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🎭 नया अवतार चुनें</h3>
+                <button class="close-btn" onclick="closeModal('avatarModal')">&times;</button>
+            </div>
+            <div class="avatar-grid" id="avatarModalGrid"></div>
+            <button class="btn" onclick="saveAvatar()">✓ सेव करें</button>
         </div>
-      </div>
-      <div class="text-right ${balClass}">
-        <strong>${bal === 0 ? '—' : fmt(Math.abs(bal))}</strong><br>
-        <small>${balText}</small>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ============ PERSON DETAIL PAGE ============
-function openPersonPage(pid) {
-  currentPersonId = pid;
-  const p = state.persons.find(x => x.id === pid);
-  if (!p) return;
-  
-  document.getElementById('pAvatar').innerText = p.emoji || p.name.charAt(0).toUpperCase();
-  document.getElementById('pAvatar').style.background = getColor(p.name);
-  document.getElementById('pName').innerText = (p.favorite ? '⭐ ' : '') + p.name;
-  document.getElementById('pPhone').innerText = p.phone ? '📞 ' + p.phone : 'कोई नंबर नहीं';
-  
-  if (p.note) {
-    document.getElementById('personNoteCard').style.display = 'block';
-    document.getElementById('personNoteText').innerText = p.note;
-  } else {
-    document.getElementById('personNoteCard').style.display = 'none';
-  }
-  
-  updatePersonBalance();
-  renderPersonTx();
-  document.getElementById('personPage').classList.add('active');
-  document.getElementById('personMenu').classList.remove('active');
-}
-function closePersonPage() {
-  document.getElementById('personPage').classList.remove('active');
-  renderAll();
-}
-function updatePersonBalance() {
-  const bal = getBalance(currentPersonId);
-  document.getElementById('pBalance').innerText = bal === 0 ? '₹0' : fmt(Math.abs(bal));
-  document.getElementById('pBalLabel').innerText = 
-    bal > 0 ? 'आपको लेना है' : bal < 0 ? 'आपको देना है' : 'कोई हिसाब नहीं';
-  
-  const txs = state.transactions.filter(t => t.personId === currentPersonId);
-  const totalGive = txs.filter(t => t.type === 'give').reduce((a,t) => a + t.amount, 0);
-  const totalGet = txs.filter(t => t.type === 'get').reduce((a,t) => a + t.amount, 0);
-  document.getElementById('pTotalGive').innerText = fmt(totalGive);
-  document.getElementById('pTotalGet').innerText = fmt(totalGet);
-}
-function renderPersonTx() {
-  const txs = state.transactions.filter(t => t.personId === currentPersonId)
-    .sort((a,b) => new Date(b.date) - new Date(a.date));
-  document.getElementById('pTxCount').innerText = txs.length;
-  const container = document.getElementById('personTxList');
-  
-  if (txs.length === 0) {
-    container.innerHTML = `<div class="empty">
-      <div class="empty-icon">📭</div>
-      <p>अभी कोई एंट्री नहीं<br>ऊपर बटन दबाकर जोड़ें</p>
-    </div>`;
-    return;
-  }
-  
-  container.innerHTML = txs.map(t => `
-    <div class="tx-item">
-      <div class="tx-icon ${t.type}">${t.type === 'give' ? '↑' : '↓'}</div>
-      <div class="flex-col" style="flex: 1;">
-        <strong class="${t.type === 'give' ? 'text-danger' : 'text-success'}">
-          ${t.type === 'give' ? 'उधार दिया' : 'जमा लिया'} ${fmt(t.amount)}
-        </strong>
-        <small class="text-sub">${formatDate(t.date)} ${t.note ? '• ' + t.note : ''}</small>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="deleteTx('${t.id}')">🗑</button>
     </div>
-  `).join('');
-}
 
-// ============ 3-DOT MENU ACTIONS ============
-function togglePersonMenu(e) {
-  e.stopPropagation();
-  document.getElementById('personMenu').classList.toggle('active');
-}
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('#personMenu') && !e.target.closest('.menu-btn')) {
-    document.getElementById('personMenu').classList.remove('active');
-  }
-});
-
-function editPerson() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  document.getElementById('editPersonId').value = p.id;
-  document.getElementById('personModalTitle').innerText = '✏️ व्यक्ति एडिट करें';
-  document.getElementById('pNameInput').value = p.name;
-  document.getElementById('pPhoneInput').value = p.phone || '';
-  document.getElementById('pGroupInput').value = p.group || 'Other';
-  selectedEmoji = p.emoji || '👤';
-  document.querySelectorAll('#emojiPicker .emoji-option').forEach(e => {
-    e.classList.toggle('selected', e.dataset.emoji === selectedEmoji);
-  });
-  document.getElementById('personMenu').classList.remove('active');
-  document.getElementById('modalPerson').classList.add('active');
-}
-function changePersonEmoji() {
-  document.getElementById('personMenu').classList.remove('active');
-  const grid = document.getElementById('emojiPicker2');
-  grid.innerHTML = ALL_EMOJIS.map(e => 
-    `<div class="emoji-option" onclick="applyEmoji('${e}')">${e}</div>`
-  ).join('');
-  document.getElementById('modalEmoji').classList.add('active');
-}
-function applyEmoji(e) {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  p.emoji = e;
-  saveState();
-  closeModal('modalEmoji');
-  openPersonPage(currentPersonId);
-  showToast('✓ अवतार बदल दिया');
-}
-function setCreditLimit() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  document.getElementById('creditLimitInput').value = p.creditLimit || '';
-  document.getElementById('personMenu').classList.remove('active');
-  document.getElementById('modalLimit').classList.add('active');
-}
-function saveCreditLimit() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  p.creditLimit = parseFloat(document.getElementById('creditLimitInput').value) || 0;
-  saveState();
-  closeModal('modalLimit');
-  showToast('✓ क्रेडिट लिमिट सेव');
-}
-function toggleFavorite() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  p.favorite = !p.favorite;
-  saveState();
-  document.getElementById('personMenu').classList.remove('active');
-  openPersonPage(currentPersonId);
-  showToast(p.favorite ? '⭐ फेवरेट में जोड़ा' : 'फेवरेट से हटाया');
-}
-function shareWhatsApp() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  const bal = getBalance(currentPersonId);
-  const txs = state.transactions.filter(t => t.personId === currentPersonId);
-  const give = txs.filter(t => t.type === 'give').reduce((a,t) => a + t.amount, 0);
-  const get = txs.filter(t => t.type === 'get').reduce((a,t) => a + t.amount, 0);
-  const msg = `नमस्ते ${p.name} जी,\n\n*आज तक का हिसाब:*\n\n` +
-    `कुल उधार दिया: ${fmt(give)}\n` +
-    `कुल जमा लिया: ${fmt(get)}\n` +
-    `━━━━━━━━━━━━━━━\n` +
-    `${bal >= 0 ? 'आपको देना है' : 'मुझे देना है'}: *${fmt(Math.abs(bal))}*\n\n` +
-    `_Khata Pro से भेजा गया_`;
-  const phone = p.phone ? '91' + p.phone.replace(/\D/g, '') : '';
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-  document.getElementById('personMenu').classList.remove('active');
-}
-function shareSMS() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  const bal = getBalance(currentPersonId);
-  const msg = `Hi ${p.name}, आपका balance: ${fmt(Math.abs(bal))} (${bal >= 0 ? 'देना' : 'लेना'})`;
-  window.location.href = `sms:${p.phone || ''}?body=${encodeURIComponent(msg)}`;
-  document.getElementById('personMenu').classList.remove('active');
-}
-function callPerson() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  if (!p.phone) return showToast('⚠️ नंबर नहीं है');
-  window.location.href = `tel:${p.phone}`;
-  document.getElementById('personMenu').classList.remove('active');
-}
-function exportPersonCSV() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  const txs = state.transactions.filter(t => t.personId === currentPersonId);
-  let csv = `Name,${p.name}\nPhone,${p.phone || ''}\n\nDate,Type,Amount,Note\n`;
-  txs.forEach(t => {
-    csv += `${t.date},${t.type === 'give' ? 'Udhar' : 'Jama'},${t.amount},"${t.note || ''}"\n`;
-  });
-  downloadFile(csv, `${p.name}_khata.csv`, 'text/csv');
-  document.getElementById('personMenu').classList.remove('active');
-  showToast('✓ एक्सपोर्ट हो गया');
-}
-function archivePerson() {
-  if (!confirm('इस व्यक्ति को आर्काइव करें? (होम पेज पर नहीं दिखेगा)')) return;
-  const p = state.persons.find(x => x.id === currentPersonId);
-  p.archived = true;
-  saveState();
-  document.getElementById('personMenu').classList.remove('active');
-  closePersonPage();
-  showToast('✓ आर्काइव हो गया');
-}
-function printStatement() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  const bal = getBalance(currentPersonId);
-  const txs = state.transactions.filter(t => t.personId === currentPersonId);
-  let html = `<h2>${p.name} - Statement</h2><p>Phone: ${p.phone || 'N/A'}</p><hr><table border="1" cellpadding="8">
-    <tr><th>Date</th><th>Type</th><th>Amount</th><th>Note</th></tr>`;
-  txs.forEach(t => {
-    html += `<tr><td>${formatDate(t.date)}</td><td>${t.type === 'give' ? 'Udhar' : 'Jama'}</td>
-      <td>${fmt(t.amount)}</td><td>${t.note || '-'}</td></tr>`;
-  });
-  html += `</table><hr><h3>Balance: ${fmt(Math.abs(bal))} (${bal >= 0 ? 'Lena' : 'Dena'})</h3>`;
-  const w = window.open('', '_blank');
-  w.document.write(html);
-  w.document.close();
-  w.print();
-  document.getElementById('personMenu').classList.remove('active');
-}
-function addNoteToPerson() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  document.getElementById('personNoteInput').value = p.note || '';
-  document.getElementById('personMenu').classList.remove('active');
-  document.getElementById('modalNote').classList.add('active');
-}
-function savePersonNote() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  p.note = document.getElementById('personNoteInput').value.trim();
-  saveState();
-  closeModal('modalNote');
-  openPersonPage(currentPersonId);
-  showToast('✓ नोट सेव हो गया');
-}
-function deletePerson() {
-  if (!confirm('⚠️ यह व्यक्ति और इसकी सारी एंट्रीज़ हमेशा के लिए हट जाएंगी। पक्का?')) return;
-  state.persons = state.persons.filter(p => p.id !== currentPersonId);
-  state.transactions = state.transactions.filter(t => t.personId !== currentPersonId);
-  saveState();
-  document.getElementById('personMenu').classList.remove('active');
-  closePersonPage();
-  renderAll();
-  showToast('✓ हटा दिया गया');
-}
-
-// ============ TRANSACTIONS ============
-function openTxModal() {
-  const p = state.persons.find(x => x.id === currentPersonId);
-  document.getElementById('txPersonId').value = currentPersonId;
-  document.getElementById('txPersonLabel').innerText = '👤 ' + p.name;
-  document.getElementById('txAmount').value = '';
-  document.getElementById('txNote').value = '';
-  document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
-  setTxType('give');
-  document.getElementById('modalTx').classList.add('active');
-  setTimeout(() => document.getElementById('txAmount').focus(), 300);
-}
-function setTxType(type) {
-  currentTxType = type;
-  document.getElementById('btnGive').className = type === 'give' ? 'active-give' : '';
-  document.getElementById('btnGet').className = type === 'get' ? 'active-get' : '';
-}
-function saveTx() {
-  const amount = parseFloat(document.getElementById('txAmount').value);
-  if (!amount || amount <= 0) return showToast('⚠️ सही रकम डालें!');
-  state.transactions.push({
-    id: uid(),
-    personId: document.getElementById('txPersonId').value,
-    type: currentTxType,
-    amount: amount,
-    date: document.getElementById('txDate').value,
-    note: document.getElementById('txNote').value.trim(),
-    createdAt: Date.now()
-  });
-  saveState();
-  closeModal('modalTx');
-  updatePersonBalance();
-  renderPersonTx();
-  showToast('✓ एंट्री सेव हो गई!');
-}
-function deleteTx(tid) {
-  if (!confirm('यह एंट्री हटा दें?')) return;
-  state.transactions = state.transactions.filter(t => t.id !== tid);
-  saveState();
-  updatePersonBalance();
-  renderPersonTx();
-  showToast('✓ हटा दी गई');
-}
-
-// ============ HOME ============
-function renderHome() {
-  const totalGive = state.transactions.filter(t => t.type === 'give').reduce((a,t) => a + t.amount, 0);
-  const totalGet = state.transactions.filter(t => t.type === 'get').reduce((a,t) => a + t.amount, 0);
-  const net = totalGet - totalGive;
-  
-  const getPeople = state.persons.filter(p => getBalance(p.id) > 0).length;
-  const givePeople = state.persons.filter(p => getBalance(p.id) < 0).length;
-  
-  document.getElementById('statGet').innerText = fmt(totalGet);
-  document.getElementById('statGive').innerText = fmt(totalGive);
-  document.getElementById('statNet').innerText = fmt(Math.abs(net));
-  document.getElementById('statGetCount').innerText = getPeople + ' लोग';
-  document.getElementById('statGiveCount').innerText = givePeople + ' लोग';
-  document.getElementById('statNetLabel').innerText = net >= 0 ? 'कुल लेना बाकी' : 'कुल देना बाकी';
-  
-  // Today's summary
-  const today = new Date().toISOString().split('T')[0];
-  const todayTx = state.transactions.filter(t => t.date === today);
-  const todayGive = todayTx.filter(t => t.type === 'give').reduce((a,t) => a + t.amount, 0);
-  const todayGet = todayTx.filter(t => t.type === 'get').reduce((a,t) => a + t.amount, 0);
-  document.getElementById('todaySummary').innerHTML = todayTx.length === 0 ? 
-    `<p class="text-sub" style="text-align:center; padding: 10px;">आज कोई एंट्री नहीं</p>` :
-    `<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-      <div><small class="text-sub">आज उधार दिया</small><br><strong class="text-danger">${fmt(todayGive)}</strong></div>
-      <div><small class="text-sub">आज जमा लिया</small><br><strong class="text-success">${fmt(todayGet)}</strong></div>
-      <div style="grid-column: span 2;"><small class="text-sub">कुल एंट्रीज़</small><br><strong>${todayTx.length}</strong></div>
-    </div>`;
-  
-  // Top 5 debtors
-  const top = state.persons.map(p => ({ name: p.name, emoji: p.emoji, bal: getBalance(p.id), id: p.id }))
-    .filter(x => x.bal > 0).sort((a,b) => b.bal - a.bal).slice(0, 5);
-  document.getElementById('topDebtors').innerHTML = top.length === 0 ? 
-    `<p class="text-sub" style="text-align:center; padding: 10px;">कोई लेनदार नहीं</p>` :
-    top.map(x => `
-      <div class="list-item" onclick="openPersonPage('${x.id}')">
-        <div class="flex">
-          <div class="avatar" style="background:${getColor(x.name)}; font-size: 1.3rem;">${x.emoji || x.name.charAt(0)}</div>
-          <strong>${x.name}</strong>
+    <div class="modal" id="creditLimitModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💳 क्रेडिट लिमिट</h3>
+                <button class="close-btn" onclick="closeModal('creditLimitModal')">&times;</button>
+            </div>
+            <div class="form-group"><label>अधिकतम उधार सीमा (₹)</label><input type="number" id="creditLimit" placeholder="0 = कोई लिमिट नहीं"></div>
+            <button class="btn" onclick="saveCreditLimit()">✓ सेव करें</button>
         </div>
-        <strong class="text-success">${fmt(x.bal)}</strong>
-      </div>
-    `).join('');
-}
-
-// ============ REPORTS ============
-function setReportRange(r, el) {
-  currentReportRange = r;
-  el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderReports();
-}
-function renderReports() {
-  let txs = state.transactions;
-  const now = new Date();
-  if (currentReportRange === 'week') {
-    const weekAgo = new Date(now.getTime() - 7*24*60*60*1000);
-    txs = txs.filter(t => new Date(t.date) >= weekAgo);
-  } else if (currentReportRange === 'month') {
-    txs = txs.filter(t => {
-      const d = new Date(t.date);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    });
-  } else if (currentReportRange === 'year') {
-    txs = txs.filter(t => new Date(t.date).getFullYear() === now.getFullYear());
-  }
-  
-  const give = txs.filter(t => t.type === 'give').reduce((a,t) => a + t.amount, 0);
-  const get = txs.filter(t => t.type === 'get').reduce((a,t) => a + t.amount, 0);
-  const net = get - give;
-  
-  document.getElementById('reportSummary').innerHTML = `
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-      <div><small class="text-sub">कुल उधार</small><br><strong class="text-danger">${fmt(give)}</strong></div>
-      <div><small class="text-sub">कुल जमा</small><br><strong class="text-success">${fmt(get)}</strong></div>
     </div>
-    <div style="padding: 12px; background: var(--primary-light); border-radius: 12px; text-align: center;">
-      <small class="text-sub">Net Balance</small><br>
-      <strong style="font-size: 1.3rem; color: ${net >= 0 ? 'var(--success)' : 'var(--danger)'}">
-        ${fmt(Math.abs(net))} ${net >= 0 ? '(लेना)' : '(देना)'}
-      </strong>
+
+    <div class="modal" id="noteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 नोट जोड़ें</h3>
+                <button class="close-btn" onclick="closeModal('noteModal')">&times;</button>
+            </div>
+            <div class="form-group"><label>व्यक्ति के बारे में नोट</label><textarea id="personNoteInput" rows="4" placeholder="नोट लिखें..."></textarea></div>
+            <button class="btn" onclick="saveNote()">✓ सेव करें</button>
+        </div>
     </div>
-    <div style="margin-top: 10px; text-align: center;"><small class="text-sub">${txs.length} एंट्रीज़</small></div>
-  `;
-  
-  // Monthly chart
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const currentMonth = now.getMonth();
-  const chartData = [];
-  for (let i = 5; i >= 0; i--) {
-    const m = (currentMonth - i + 12) % 12;
-    const year = now.getFullYear() - (currentMonth - i < 0 ? 1 : 0);
-    const sum = state.transactions.filter(t => {
-      const d = new Date(t.date);
-      return d.getMonth() === m && d.getFullYear() === year;
-    }).reduce((a,t) => a + (t.type === 'get' ? t.amount : -t.amount), 0);
-    chartData.push({ month: months[m], val: Math.abs(sum) });
-  }
-  const maxVal = Math.max(...chartData.map(d => d.val), 1);
-  document.getElementById('monthlyChart').innerHTML = chartData.map(d => `
-    <div class="bar" style="height: ${(d.val / maxVal) * 100}%;">
-      <span class="bar-value">${d.val > 0 ? fmt(d.val).replace(state.settings.currency, '') : ''}</span>
-      <span class="bar-label">${d.month}</span>
+
+    <div class="modal" id="restoreModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📂 रिस्टोर करें</h3>
+                <button class="close-btn" onclick="closeModal('restoreModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>JSON बैकअप फाइल चुनें</label>
+                <input type="file" id="restoreFile" accept=".json">
+            </div>
+            <button class="btn" onclick="restoreData()">✓ रिस्टोर करें</button>
+        </div>
     </div>
-  `).join('');
-  
-  // Top 5
-  const topGet = state.persons.map(p => ({ name: p.name, emoji: p.emoji, bal: getBalance(p.id), id: p.id }))
-    .filter(x => x.bal > 0).sort((a,b) => b.bal - a.bal).slice(0, 5);
-  const topGive = state.persons.map(p => ({ name: p.name, emoji: p.emoji, bal: getBalance(p.id), id: p.id }))
-    .filter(x => x.bal < 0).sort((a,b) => a.bal - b.bal).slice(0, 5);
-  
-  document.getElementById('topGet').innerHTML = topGet.length === 0 ? 
-    `<p class="text-sub" style="text-align:center; padding: 10px;">कोई नहीं</p>` :
-    topGet.map(x => `
-      <div class="list-item" onclick="openPersonPage('${x.id}')">
-        <div class="flex">
-          <div class="avatar" style="background:${getColor(x.name)}; font-size: 1.3rem;">${x.emoji || x.name.charAt(0)}</div>
-          <strong>${x.name}</strong>
-        </div>
-        <strong class="text-success">${fmt(x.bal)}</strong>
-      </div>
-    `).join('');
-  
-  document.getElementById('topGive').innerHTML = topGive.length === 0 ? 
-    `<p class="text-sub" style="text-align:center; padding: 10px;">कोई नहीं</p>` :
-    topGive.map(x => `
-      <div class="list-item" onclick="openPersonPage('${x.id}')">
-        <div class="flex">
-          <div class="avatar" style="background:${getColor(x.name)}; font-size: 1.3rem;">${x.emoji || x.name.charAt(0)}</div>
-          <strong>${x.name}</strong>
-        </div>
-        <strong class="text-danger">${fmt(Math.abs(x.bal))}</strong>
-      </div>
-    `).join('');
-}
 
-// ============ HISTORY ============
-function filterTx(f, el) {
-  currentTxFilter = f;
-  el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderHistory();
-}
-function renderHistory() {
-  const search = (document.getElementById('searchTx').value || '').toLowerCase();
-  let txs = [...state.transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
-  if (currentTxFilter !== 'all') txs = txs.filter(t => t.type === currentTxFilter);
-  if (search) {
-    txs = txs.filter(t => {
-      const p = state.persons.find(x => x.id === t.personId);
-      return (p && p.name.toLowerCase().includes(search)) || (t.note && t.note.toLowerCase().includes(search));
-    });
-  }
-  
-  document.getElementById('txCount').innerText = txs.length;
-  const container = document.getElementById('historyList');
-  
-  if (txs.length === 0) {
-    container.innerHTML = `<div class="empty">
-      <div class="empty-icon">📭</div>
-      <p>कोई एंट्री नहीं</p>
-    </div>`;
-    return;
-  }
-  
-  container.innerHTML = txs.map(t => {
-    const p = state.persons.find(x => x.id === t.personId);
-    if (!p) return '';
-    return `
-      <div class="tx-item" onclick="openPersonPage('${p.id}')">
-        <div class="tx-icon ${t.type}">${t.type === 'give' ? '↑' : '↓'}</div>
-        <div class="flex-col" style="flex: 1;">
-          <strong>${p.name}</strong>
-          <small class="text-sub">${formatDate(t.date)} ${t.note ? '• ' + t.note : ''}</small>
-        </div>
-        <strong class="${t.type === 'give' ? 'text-danger' : 'text-success'}">
-          ${t.type === 'give' ? '-' : '+'}${fmt(t.amount)}
-        </strong>
-      </div>
-    `;
-  }).join('');
-}
+    <script>
+        // App State
+        let currentPin = '';
+        let savedPin = localStorage.getItem('khataPin') || '1234';
+        let people = JSON.parse(localStorage.getItem('khataPeople') || '[]');
+        let entries = JSON.parse(localStorage.getItem('khataEntries') || '[]');
+        let currentPersonId = null;
+        let selectedAvatar = '👤';
+        let newAvatar = '👤';
+        let currentFilter = 'all';
+        let currentHistoryFilter = 'all';
+        let currentReportPeriod = 'week';
 
-// ============ EXPORT ============
-function downloadFile(content, filename, type) {
-  const blob = new Blob([content], { type });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-}
-function exportCSV() {
-  let csv = 'Date,Person,Type,Amount,Note\n';
-  state.transactions.forEach(t => {
-    const p = state.persons.find(x => x.id === t.personId);
-    csv += `${t.date},"${p ? p.name : 'Unknown'}",${t.type === 'give' ? 'Udhar' : 'Jama'},${t.amount},"${t.note || ''}"\n`;
-  });
-  downloadFile(csv, 'khata_report.csv', 'text/csv');
-  showToast('✓ CSV डाउनलोड हो गया');
-}
-function exportJSON() {
-  downloadFile(JSON.stringify(state, null, 2), 'khata_backup_' + new Date().toISOString().split('T')[0] + '.json', 'application/json');
-  showToast('✓ बैकअप डाउनलोड हो गया');
-}
-function importJSON(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    try {
-      state = JSON.parse(ev.target.result);
-      saveState(); applySettings(); renderAll();
-      showToast('✓ डेटा रिस्टोर हो गया!');
-    } catch (err) { showToast('❌ गलत फाइल!'); }
-  };
-  reader.readAsText(file);
-}
-function clearAllData() {
-  if (!confirm('⚠️ सारा डेटा हमेशा के लिए मिट जाएगा! पहले बैकअप ले लें। पक्का?')) return;
-  if (!confirm('🔥 आखिरी चेतावनी! यह वापस नहीं आएगा।')) return;
-  state.persons = []; state.transactions = [];
-  saveState(); renderAll();
-  showToast('✓ सारा डेटा मिटा दिया');
-}
-function shareApp() {
-  const msg = 'Khata Pro App use karo - best udhar ledger app!';
-  if (navigator.share) {
-    navigator.share({ title: 'Khata Pro', text: msg, url: location.href });
-  } else {
-    showToast('📋 Link copied!');
-  }
-}
-function rateApp() { showToast('⭐ धन्यवाद!'); }
+        // Settings
+        let settings = JSON.parse(localStorage.getItem('khataSettings') || '{}');
+        settings.appLock = settings.appLock !== false;
+        settings.biometric = settings.biometric || false;
+        settings.reminder = settings.reminder !== false;
+        settings.emailReports = settings.emailReports || false;
+        settings.language = settings.language || 'hi';
+        settings.currency = settings.currency || 'INR';
+        settings.fontSize = settings.fontSize || 'medium';
 
-// ============ MODALS ============
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        // Toast
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.toggle('error', isError);
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
 
-// ============ INIT ============
-function renderAll() {
-  renderHome();
-  renderContacts();
-  renderHistory();
-}
+        // PIN Functions
+        function addPin(num) {
+            if (currentPin.length < 4) { currentPin += num; updatePinDisplay(); }
+        }
+        function clearPin() { currentPin = currentPin.slice(0, -1); updatePinDisplay(); }
+        function updatePinDisplay() {
+            const display = '____';
+            document.getElementById('pinDisplay').textContent =
+                currentPin.split('').map(() => '•').join('') + display.slice(currentPin.length);
+        }
+        function checkPin() {
+            if (currentPin === savedPin) {
+                document.getElementById('pinScreen').classList.add('hidden');
+                showToast('✅ लॉगिन सफल!');
+            } else {
+                showToast('❌ गलत PIN!', true);
+                currentPin = '';
+                updatePinDisplay();
+            }
+        }
 
-loadState();
-applySettings();
-renderAll();
+        // Theme
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                body.removeAttribute('data-theme');
+                document.getElementById('themeIcon').className = 'fas fa-moon';
+                document.getElementById('darkModeToggle').classList.remove('active');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                document.getElementById('themeIcon').className = 'fas fa-sun';
+                document.getElementById('darkModeToggle').classList.add('active');
+            }
+            localStorage.setItem('khataTheme', isDark ? 'light' : 'dark');
+        }
 
-// Show PIN screen if lock enabled
-if (state.settings.lock) {
-  showPinScreen('unlock');
-}
-</script>
+        // Load theme
+        if (localStorage.getItem('khataTheme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeIcon').className = 'fas fa-sun';
+            document.getElementById('darkModeToggle').classList.add('active');
+        }
+
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => {
+                n.classList.toggle('active', n.dataset.page === pageId);
+            });
+            window.scrollTo(0, 0);
+            if (pageId === 'home') updateHome();
+            if (pageId === 'people') updatePeopleList();
+            if (pageId === 'reports') updateReports();
+            if (pageId === 'history') updateHistory();
+            if (pageId === 'settings') updateSettingsUI();
+        }
+
+        // Modal Functions
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function openAddPersonModal() {
+            document.getElementById('personName').value = '';
+            document.getElementById('personPhone').value = '';
+            document.getElementById('personGroup').value = 'other';
+            selectedAvatar = '👤';
+            document.querySelectorAll('#avatarGrid .avatar-option').forEach(o => o.classList.remove('selected'));
+            document.querySelector('#avatarGrid .avatar-option').classList.add('selected');
+            openModal('addPersonModal');
+        }
+        function openEditPersonModal() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p) return;
+            document.getElementById('editName').value = p.name;
+            document.getElementById('editPhone').value = p.phone || '';
+            document.getElementById('editGroup').value = p.group;
+            openModal('editPersonModal');
+        }
+        function openAddEntryModal() {
+            if (!currentPersonId) { showToast('पहले व्यक्ति चुनें!', true); return; }
+            document.getElementById('entryAmount').value = '';
+            document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('entryNote').value = '';
+            document.getElementById('entryType').value = 'give';
+            openModal('addEntryModal');
+        }
+        function openChangePinModal() {
+            document.getElementById('oldPin').value = '';
+            document.getElementById('newPin').value = '';
+            document.getElementById('confirmPin').value = '';
+            openModal('changePinModal');
+        }
+        function openAvatarModal() {
+            const grid = document.getElementById('avatarModalGrid');
+            const avatars = ['👤','👨','👩','🧑','👴','👵','🧔','👸','🤵','💼','🏪','🛒','👨‍🎓','👩‍🎓','🧒'];
+            const p = people.find(x => x.id === currentPersonId);
+            newAvatar = p ? p.avatar : '👤';
+            grid.innerHTML = avatars.map(a => `<div class="avatar-option ${a===newAvatar?'selected':''}" data-avatar="${a}">${a}</div>`).join('');
+            grid.querySelectorAll('.avatar-option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    grid.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    newAvatar = this.dataset.avatar;
+                });
+            });
+            openModal('avatarModal');
+        }
+        function openCreditLimitModal() {
+            const p = people.find(x => x.id === currentPersonId);
+            document.getElementById('creditLimit').value = p?.creditLimit || '';
+            openModal('creditLimitModal');
+        }
+        function openNoteModal() {
+            const p = people.find(x => x.id === currentPersonId);
+            document.getElementById('personNoteInput').value = p?.note || '';
+            openModal('noteModal');
+        }
+        function openRestoreModal() { openModal('restoreModal'); }
+
+        // Save Person
+        function savePerson() {
+            const name = document.getElementById('personName').value.trim();
+            const phone = document.getElementById('personPhone').value.trim();
+            const group = document.getElementById('personGroup').value;
+            if (!name) { showToast('कृपया नाम दर्ज करें!', true); return; }
+            const selected = document.querySelector('#avatarGrid .avatar-option.selected');
+            const avatar = selected ? selected.dataset.avatar : '👤';
+            const person = {
+                id: Date.now(), name, phone, group, avatar,
+                favorite: false, creditLimit: 0, note: '',
+                archived: false, createdAt: new Date().toISOString()
+            };
+            people.push(person);
+            saveData();
+            closeModal('addPersonModal');
+            updateUI();
+            showToast('✅ व्यक्ति जोड़ा गया!');
+        }
+
+        function updatePerson() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p) return;
+            const name = document.getElementById('editName').value.trim();
+            if (!name) { showToast('नाम ज़रूरी है!', true); return; }
+            p.name = name;
+            p.phone = document.getElementById('editPhone').value.trim();
+            p.group = document.getElementById('editGroup').value;
+            saveData();
+            closeModal('editPersonModal');
+            showPersonDetail(currentPersonId);
+            showToast('✅ अपडेट हो गया!');
+        }
+
+        function saveEntry() {
+            const type = document.getElementById('entryType').value;
+            const amount = parseFloat(document.getElementById('entryAmount').value);
+            const date = document.getElementById('entryDate').value;
+            const note = document.getElementById('entryNote').value;
+            if (!amount || amount <= 0) { showToast('सही रकम दर्ज करें!', true); return; }
+            const entry = {
+                id: Date.now(), personId: currentPersonId, type, amount,
+                date: date || new Date().toISOString().split('T')[0],
+                note, createdAt: new Date().toISOString()
+            };
+            entries.push(entry);
+            saveData();
+            closeModal('addEntryModal');
+            showPersonDetail(currentPersonId);
+            showToast('✅ एंट्री सेव हुई!');
+        }
+
+        function changePin() {
+            const oldPin = document.getElementById('oldPin').value;
+            const newPin = document.getElementById('newPin').value;
+            const confirmPin = document.getElementById('confirmPin').value;
+            if (oldPin !== savedPin) { showToast('पुराना PIN गलत!', true); return; }
+            if (newPin.length !== 4) { showToast('4 अंक का PIN!', true); return; }
+            if (newPin !== confirmPin) { showToast('PIN मेल नहीं खा रहा!', true); return; }
+            savedPin = newPin;
+            localStorage.setItem('khataPin', newPin);
+            closeModal('changePinModal');
+            showToast('✅ PIN बदल दिया!');
+        }
+
+        function saveAvatar() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (p) { p.avatar = newAvatar; saveData(); showPersonDetail(currentPersonId); showToast('✅ अवतार बदला!'); }
+            closeModal('avatarModal');
+        }
+
+        function saveCreditLimit() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (p) {
+                p.creditLimit = parseFloat(document.getElementById('creditLimit').value) || 0;
+                saveData();
+                showToast('✅ लिमिट सेव हुई!');
+            }
+            closeModal('creditLimitModal');
+        }
+
+        function saveNote() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (p) {
+                p.note = document.getElementById('personNoteInput').value;
+                saveData();
+                showPersonDetail(currentPersonId);
+                showToast('✅ नोट सेव हुआ!');
+            }
+            closeModal('noteModal');
+        }
+
+        function toggleFavorite() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (p) {
+                p.favorite = !p.favorite;
+                saveData();
+                showPersonDetail(currentPersonId);
+                showToast(p.favorite ? '⭐ फेवरेट में जोड़ा!' : 'फेवरेट से हटाया!');
+            }
+        }
+
+        function sendWhatsApp() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p || !p.phone) { showToast('फोन नंबर नहीं है!', true); return; }
+            const balance = getPersonBalance(currentPersonId);
+            const msg = balance >= 0
+                ? `नमस्ते ${p.name} जी, आप पर ₹${Math.abs(balance)} देने हैं। कृपया चुकता करें।`
+                : `नमस्ते ${p.name} जी, मुझे आपसे ₹${Math.abs(balance)} लेने हैं।`;
+            window.open(`https://wa.me/91${p.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function sendSMS() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p || !p.phone) { showToast('फोन नंबर नहीं है!', true); return; }
+            const balance = getPersonBalance(currentPersonId);
+            const msg = balance >= 0
+                ? `आप पर ₹${Math.abs(balance)} देने हैं।`
+                : `मुझे आपसे ₹${Math.abs(balance)} लेने हैं।`;
+            window.location.href = `sms:${p.phone}?body=${encodeURIComponent(msg)}`;
+        }
+
+        function makeCall() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p || !p.phone) { showToast('फोन नंबर नहीं है!', true); return; }
+            window.location.href = `tel:${p.phone}`;
+        }
+
+        function exportPersonData() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p) return;
+            const personEntries = entries.filter(e => e.personId === currentPersonId);
+            const data = { person: p, entries: personEntries, exportDate: new Date().toISOString() };
+            downloadJSON(data, `Khata_${p.name}_${new Date().toISOString().split('T')[0]}.json`);
+            showToast('✅ एक्सपोर्ट हो गया!');
+        }
+
+        function archivePerson() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p) return;
+            if (confirm(`"${p.name}" को आर्काइव करें?`)) {
+                p.archived = !p.archived;
+                saveData();
+                showPersonDetail(currentPersonId);
+                showToast(p.archived ? '📦 आर्काइव किया!' : 'आर्काइव से हटाया!');
+            }
+        }
+
+        function printStatement() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p) return;
+            const personEntries = entries.filter(e => e.personId === currentPersonId);
+            const balance = getPersonBalance(currentPersonId);
+            let html = `<html><head><title>${p.name} - Statement</title><style>body{font-family:Arial;padding:20px}h1{color:#667eea}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#667eea;color:white}.give{color:green}.take{color:red}</style></head><body>`;
+            html += `<h1>Khata Pro - Statement</h1>`;
+            html += `<p><strong>नाम:</strong> ${p.name}</p>`;
+            html += `<p><strong>फोन:</strong> ${p.phone || '-'}</p>`;
+            html += `<p><strong>बैलेंस:</strong> ₹${Math.abs(balance)} (${balance>=0?'लेना है':'देना है'})</p>`;
+            html += `<table><tr><th>तारीख</th><th>प्रकार</th><th>रकम</th><th>नोट</th></tr>`;
+            personEntries.forEach(e => {
+                html += `<tr><td>${e.date}</td><td class="${e.type}">${e.type==='give'?'उधार दिया':'जमा लिया'}</td><td>₹${e.amount}</td><td>${e.note||'-'}</td></tr>`;
+            });
+            html += `</table><p style="margin-top:30px;text-align:center;color:#777">Generated by Khata Pro - Made with ❤️ by Ayush Singh</p></body></html>`;
+            const w = window.open('', '_blank');
+            w.document.write(html);
+            w.document.close();
+            w.print();
+        }
+
+        function deletePerson() {
+            const p = people.find(x => x.id === currentPersonId);
+            if (!p) return;
+            if (confirm(`"${p.name}" और सभी एंट्रीज़ हमेशा के लिए मिटा दें?`)) {
+                people = people.filter(x => x.id !== currentPersonId);
+                entries = entries.filter(e => e.personId !== currentPersonId);
+                saveData();
+                currentPersonId = null;
+                showPage('people');
+                showToast('✅ व्यक्ति हटा दिया!');
+            }
+        }
+
+        // Person Detail
+        function showPersonDetail(id) {
+            currentPersonId = id;
+            const p = people.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('detailAvatar').textContent = p.avatar;
+            document.getElementById('detailName').textContent = p.name + (p.favorite ? ' ⭐' : '') + (p.archived ? ' 📦' : '');
+            document.getElementById('detailPhone').textContent = p.phone || 'कोई फोन नहीं';
+            const balance = getPersonBalance(id);
+            const balEl = document.getElementById('detailBalance');
+            balEl.textContent = `₹${Math.abs(balance)} ${balance >= 0 ? '(आपको लेना है)' : '(आपको देना है)'}`;
+            document.getElementById('favIcon').style.color = p.favorite ? '#f7971e' : 'white';
+
+            // Stats
+            const personEntries = entries.filter(e => e.personId === id);
+            const give = personEntries.filter(e => e.type === 'give').reduce((s,e) => s + e.amount, 0);
+            const take = personEntries.filter(e => e.type === 'take').reduce((s,e) => s + e.amount, 0);
+            document.getElementById('statGive').textContent = '₹' + give.toLocaleString('en-IN');
+            document.getElementById('statTake').textContent = '₹' + take.toLocaleString('en-IN');
+
+            // Note
+            if (p.note) {
+                document.getElementById('noteSection').style.display = 'block';
+                document.getElementById('personNote').textContent = p.note;
+            } else {
+                document.getElementById('noteSection').style.display = 'none';
+            }
+
+            // Entries
+            const list = document.getElementById('personEntries');
+            if (personEntries.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>कोई एंट्री नहीं</p></div>';
+            } else {
+                list.innerHTML = personEntries.sort((a,b) => new Date(b.date) - new Date(a.date)).map(e => `
+                    <div class="entry-item">
+                        <div class="entry-info">
+                            <div class="type">${e.type === 'give' ? '↑ उधार दिया' : '↓ जमा लिया'}</div>
+                            <div class="date">${formatDate(e.date)}</div>
+                            ${e.note ? `<div class="note">📝 ${e.note}</div>` : ''}
+                        </div>
+                        <div class="entry-amount ${e.type}">₹${e.amount.toLocaleString('en-IN')}</div>
+                    </div>
+                `).join('');
+            }
+
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('personDetail').classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        }
+
+        function getPersonBalance(id) {
+            const personEntries = entries.filter(e => e.personId === id);
+            let balance = 0;
+            personEntries.forEach(e => {
+                if (e.type === 'give') balance += e.amount;
+                else balance -= e.amount;
+            });
+            return balance;
+        }
+
+        // Update Home
+        function updateHome() {
+            let totalReceive = 0, totalPay = 0, receiveCount = 0, payCount = 0;
+            people.forEach(p => {
+                const bal = getPersonBalance(p.id);
+                if (bal > 0) { totalReceive += bal; receiveCount++; }
+                else if (bal < 0) { totalPay += Math.abs(bal); payCount++; }
+            });
+            document.getElementById('totalReceive').textContent = '₹' + totalReceive.toLocaleString('en-IN');
+            document.getElementById('totalPay').textContent = '₹' + totalPay.toLocaleString('en-IN');
+            document.getElementById('netBalance').textContent = '₹' + (totalReceive - totalPay).toLocaleString('en-IN');
+            document.getElementById('receiveCount').textContent = receiveCount;
+            document.getElementById('payCount').textContent = payCount;
+
+            // Today entries
+            const today = new Date().toISOString().split('T')[0];
+            const todayEnt = entries.filter(e => e.date === today);
+            const todayDiv = document.getElementById('todayEntries');
+            if (todayEnt.length === 0) {
+                todayDiv.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-check"></i><p>आज कोई एंट्री नहीं</p></div>';
+            } else {
+                todayDiv.innerHTML = todayEnt.map(e => {
+                    const p = people.find(x => x.id === e.personId);
+                    return `<div class="entry-item"><div class="entry-info"><div class="type">${p?.name || 'अज्ञात'}</div><div class="date">${e.type==='give'?'↑ दिया':'↓ लिया'}</div></div><div class="entry-amount ${e.type}">₹${e.amount}</div></div>`;
+                }).join('');
+            }
+
+            // Top lenders
+            const top = [...people].map(p => ({...p, balance: getPersonBalance(p.id)}))
+                .filter(p => p.balance !== 0)
+                .sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance))
+                .slice(0, 5);
+            const topDiv = document.getElementById('topLenders');
+            if (top.length === 0) {
+                topDiv.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>कोई डेटा नहीं</p></div>';
+            } else {
+                topDiv.innerHTML = top.map(p => `
+                    <div class="person-item" onclick="showPersonDetail(${p.id})">
+                        <div class="person-avatar">${p.avatar}</div>
+                        <div class="person-info"><h4>${p.name}</h4><p>${p.balance>=0?'लेना है':'देना है'}</p></div>
+                        <div class="person-balance ${p.balance>=0?'receive':'pay'}">₹${Math.abs(p.balance).toLocaleString('en-IN')}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Update People List
+        function updatePeopleList() {
+            document.getElementById('totalPeople').textContent = people.filter(p => !p.archived).length;
+            const filtered = currentFilter === 'all'
+                ? people.filter(p => !p.archived)
+                : people.filter(p => p.group === currentFilter && !p.archived);
+            const list = document.getElementById('peopleList');
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>कोई व्यक्ति नहीं</p></div>';
+            } else {
+                list.innerHTML = filtered.map(p => {
+                    const bal = getPersonBalance(p.id);
+                    return `
+                        <div class="person-item" onclick="showPersonDetail(${p.id})">
+                            <div class="person-avatar">${p.avatar}</div>
+                            <div class="person-info">
+                                <h4>${p.name} ${p.favorite?'⭐':''}</h4>
+                                <p>${p.phone || 'No phone'} • ${p.group}</p>
+                            </div>
+                            <div class="person-balance ${bal>=0?'receive':'pay'}">₹${Math.abs(bal).toLocaleString('en-IN')}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // People tabs
+        document.getElementById('peopleTabs').addEventListener('click', e => {
+            if (e.target.classList.contains('tab')) {
+                document.querySelectorAll('#peopleTabs .tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                updatePeopleList();
+            }
+        });
+
+        // Reports
+        function updateReports() {
+            const now = new Date();
+            let startDate;
+            if (currentReportPeriod === 'week') startDate = new Date(now.getTime() - 7*24*60*60*1000);
+            else if (currentReportPeriod === 'month') startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            else startDate = new Date(now.getFullYear(), 0, 1);
+
+            const periodEntries = entries.filter(e => new Date(e.date) >= startDate);
+            const give = periodEntries.filter(e => e.type === 'give').reduce((s,e) => s+e.amount, 0);
+            const take = periodEntries.filter(e => e.type === 'take').reduce((s,e) => s+e.amount, 0);
+            document.getElementById('reportGive').textContent = '₹' + give.toLocaleString('en-IN');
+            document.getElementById('reportTake').textContent = '₹' + take.toLocaleString('en-IN');
+            document.getElementById('reportCount').textContent = periodEntries.length;
+
+            // Top receive
+            const topReceive = [...people].map(p => ({...p, balance: getPersonBalance(p.id)}))
+                .filter(p => p.balance > 0).sort((a,b) => b.balance - a.balance).slice(0, 5);
+            const trDiv = document.getElementById('topReceive');
+            trDiv.innerHTML = topReceive.length === 0
+                ? '<div class="empty-state"><i class="fas fa-inbox"></i><p>कोई डेटा नहीं</p></div>'
+                : topReceive.map(p => `<div class="person-item" onclick="showPersonDetail(${p.id})"><div class="person-avatar">${p.avatar}</div><div class="person-info"><h4>${p.name}</h4></div><div class="person-balance receive">₹${p.balance.toLocaleString('en-IN')}</div></div>`).join('');
+
+            // Top pay
+            const topPay = [...people].map(p => ({...p, balance: getPersonBalance(p.id)}))
+                .filter(p => p.balance < 0).sort((a,b) => a.balance - b.balance).slice(0, 5);
+            const tpDiv = document.getElementById('topPay');
+            tpDiv.innerHTML = topPay.length === 0
+                ? '<div class="empty-state"><i class="fas fa-inbox"></i><p>कोई डेटा नहीं</p></div>'
+                : topPay.map(p => `<div class="person-item" onclick="showPersonDetail(${p.id})"><div class="person-avatar">${p.avatar}</div><div class="person-info"><h4>${p.name}</h4></div><div class="person-balance pay">₹${Math.abs(p.balance).toLocaleString('en-IN')}</div></div>`).join('');
+        }
+
+        document.getElementById('reportTabs').addEventListener('click', e => {
+            if (e.target.classList.contains('tab')) {
+                document.querySelectorAll('#reportTabs .tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                currentReportPeriod = e.target.dataset.period;
+                updateReports();
+            }
+        });
+
+        // History
+        function updateHistory() {
+            document.getElementById('totalEntries').textContent = entries.length;
+            const filtered = currentHistoryFilter === 'all' ? entries : entries.filter(e => e.type === currentHistoryFilter);
+            const list = document.getElementById('historyList');
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>कोई एंट्री नहीं</p></div>';
+            } else {
+                list.innerHTML = filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).map(e => {
+                    const p = people.find(x => x.id === e.personId);
+                    return `
+                        <div class="entry-item" onclick="showPersonDetail(${e.personId})" style="cursor:pointer;">
+                            <div class="entry-info">
+                                <div class="type">${p?.name || 'अज्ञात'} • ${e.type==='give'?'↑ दिया':'↓ लिया'}</div>
+                                <div class="date">${formatDate(e.date)}</div>
+                                ${e.note ? `<div class="note">📝 ${e.note}</div>` : ''}
+                            </div>
+                            <div class="entry-amount ${e.type}">₹${e.amount.toLocaleString('en-IN')}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        document.getElementById('historyTabs').addEventListener('click', e => {
+            if (e.target.classList.contains('tab')) {
+                document.querySelectorAll('#historyTabs .tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                currentHistoryFilter = e.target.dataset.filter;
+                updateHistory();
+            }
+        });
+
+        // Settings
+        function updateSettingsUI() {
+            document.getElementById('appLockToggle').classList.toggle('active', settings.appLock);
+            document.getElementById('biometricToggle').classList.toggle('active', settings.biometric);
+            document.getElementById('reminderToggle').classList.toggle('active', settings.reminder);
+            document.getElementById('emailToggle').classList.toggle('active', settings.emailReports);
+            const langNames = {hi:'हिंदी', en:'English'};
+            document.getElementById('langDisplay').textContent = 'भाषा - ' + (langNames[settings.language] || 'हिंदी');
+            const currNames = {INR:'₹ INR', USD:'$ USD', EUR:'€ EUR', GBP:'£ GBP'};
+            document.getElementById('currencyDisplay').textContent = 'मुद्रा - ' + (currNames[settings.currency] || '₹ INR');
+            const fontNames = {small:'छोटा', medium:'मध्यम', large:'बड़ा'};
+            document.getElementById('fontDisplay').textContent = 'अक्षरों का आकार - ' + (fontNames[settings.fontSize] || 'मध्यम');
+        }
+
+        function toggleAppLock() {
+            settings.appLock = !settings.appLock;
+            saveSettings();
+            updateSettingsUI();
+            showToast(settings.appLock ? '🔒 App Lock ON' : '🔓 App Lock OFF');
+        }
+        function toggleBiometric() {
+            settings.biometric = !settings.biometric;
+            saveSettings();
+            updateSettingsUI();
+            showToast(settings.biometric ? '👆 Biometric ON' : 'Biometric OFF');
+        }
+        function togglePaymentReminder() {
+            settings.reminder = !settings.reminder;
+            saveSettings();
+            updateSettingsUI();
+            showToast(settings.reminder ? '🔔 Reminders ON' : 'Reminders OFF');
+        }
+        function toggleEmailReports() {
+            settings.emailReports = !settings.emailReports;
+            saveSettings();
+            updateSettingsUI();
+            showToast(settings.emailReports ? '📧 Email Reports ON' : 'Email Reports OFF');
+        }
+        function changeLanguage() {
+            settings.language = settings.language === 'hi' ? 'en' : 'hi';
+            saveSettings();
+            updateSettingsUI();
+            showToast('✅ भाषा बदली!');
+        }
+        function changeCurrency() {
+            const order = ['INR','USD','EUR','GBP'];
+            const idx = order.indexOf(settings.currency);
+            settings.currency = order[(idx + 1) % order.length];
+            saveSettings();
+            updateSettingsUI();
+            showToast('✅ मुद्रा बदली!');
+        }
+        function changeFontSize() {
+            const order = ['small','medium','large'];
+            const idx = order.indexOf(settings.fontSize);
+            settings.fontSize = order[(idx + 1) % order.length];
+            document.body.classList.remove('font-small','font-medium','font-large');
+            document.body.classList.add('font-' + settings.fontSize);
+            saveSettings();
+            updateSettingsUI();
+            showToast('✅ Font size बदला!');
+        }
+
+        function rateApp() { showToast('⭐ धन्यवाद! आपने 5 स्टार दिए!'); }
+        function contactSupport() { window.location.href = 'mailto:ayushk92355@gmail.com'; }
+        function shareApp() {
+            const shareData = {
+                title: 'Khata Pro',
+                text: 'Khata Pro - Ultimate Ledger App by Ayush Singh',
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).then(() => showToast('✅ शेयर हो गया!'))
+                    .catch(() => showToast('शेयर रद्द किया', true));
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                showToast('🔗 Link कॉपी हो गया!');
+            }
+        }
+
+        // Backup/Restore
+        function exportData() {
+            const data = { people, entries, settings, exportDate: new Date().toISOString() };
+            downloadJSON(data, `KhataPro_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            showToast('✅ बैकअप डाउनलोड हुआ!');
+        }
+        function downloadJSON(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename; a.click();
+            URL.revokeObjectURL(url);
+        }
+        function restoreData() {
+            const file = document.getElementById('restoreFile').files[0];
+            if (!file) { showToast('फाइल चुनें!', true); return; }
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.people) people = data.people;
+                    if (data.entries) entries = data.entries;
+                    if (data.settings) { settings = {...settings, ...data.settings}; saveSettings(); }
+                    saveData();
+                    closeModal('restoreModal');
+                    updateUI();
+                    showToast('✅ रिस्टोर सफल!');
+                } catch (err) { showToast('❌ Invalid file!', true); }
+            };
+            reader.readAsText(file);
+        }
+        function exportCSV() {
+            let csv = 'Person Name,Phone,Group,Type,Amount,Date,Note\n';
+            entries.forEach(e => {
+                const p = people.find(x => x.id === e.personId);
+                csv += `"${p?.name||'Unknown'}","${p?.phone||''}","${p?.group||''}","${e.type==='give'?'Given':'Taken'}",${e.amount},"${e.date}","${e.note||''}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `KhataPro_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+            URL.revokeObjectURL(url);
+            showToast('✅ CSV डाउनलोड हुआ!');
+        }
+
+        function clearAllData() {
+            if (confirm('क्या आप सच में सारा डेटा मिटाना चाहते हैं?')) {
+                localStorage.removeItem('khataPeople');
+                localStorage.removeItem('khataEntries');
+                people = []; entries = [];
+                updateUI();
+                showToast('✅ सारा डेटा मिटा!');
+            }
+        }
+
+        // Helpers
+        function saveData() {
+            localStorage.setItem('khataPeople', JSON.stringify(people));
+            localStorage.setItem('khataEntries', JSON.stringify(entries));
+        }
+        function saveSettings() { localStorage.setItem('khataSettings', JSON.stringify(settings)); }
+        function formatDate(d) {
+            const date = new Date(d);
+            return date.toLocaleDateString('hi-IN', { day:'numeric', month:'short', year:'numeric' });
+        }
+        function updateUI() { updateHome(); updatePeopleList(); updateReports(); updateHistory(); }
+
+        // Avatar selection in add modal
+        document.getElementById('avatarGrid').addEventListener('click', e => {
+            const opt = e.target.closest('.avatar-option');
+            if (!opt) return;
+            document.querySelectorAll('#avatarGrid .avatar-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            selectedAvatar = opt.dataset.avatar;
+        });
+
+        // Init
+        document.body.classList.add('font-' + settings.fontSize);
+        updateUI();
+        updatePinDisplay();
+        updateSettingsUI();
+    </script>
 </body>
 </html>
