@@ -637,6 +637,16 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
         <span>›</span>
       </div>
+      <div class="setting-item" onclick="openChangeOwnerCodeModal()" style="cursor: pointer;">
+        <div class="setting-info">
+          <div class="setting-icon">🔐</div>
+          <div>
+            <div class="setting-label">Owner Edit Lock</div>
+            <div class="setting-desc">Edit/Delete se pehle owner code maangega</div>
+          </div>
+        </div>
+        <span>›</span>
+      </div>
       <div class="setting-item">
         <div class="setting-info">
           <div class="setting-icon">👆</div>
@@ -698,14 +708,22 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
         <span>›</span>
       </div>
-      <div class="setting-item" style="flex-direction: column; align-items: stretch; gap: 10px;">
-        <div class="setting-info" onclick="openSupport()" style="cursor: pointer;">
-          <div class="setting-icon">📧</div>
+      <div class="setting-item" onclick="openSupport()" style="cursor: pointer;">
+        <div class="setting-info">
+          <div class="setting-icon" style="background:#fff; display:flex; align-items:center; justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#EA4335" d="M12 13.2 3 6.6V18a1.5 1.5 0 0 0 1.5 1.5h1V8.6l6.5 4.8 6.5-4.8v10.9h1A1.5 1.5 0 0 0 21 18V6.6l-9 6.6Z"/>
+              <path fill="#34A853" d="M4.5 19.5h1V8.6l-2-1.47V18a1.5 1.5 0 0 0 1 1.5Z"/>
+              <path fill="#4285F4" d="M18.5 19.5h1a1.5 1.5 0 0 0 1-1.5V7.13l-2 1.47Z"/>
+              <path fill="#FBBC05" d="M3 6.6l1.5 1.13 2-1.47L12 10 3 6.6Z" opacity="0"/>
+              <path fill="#C5221F" d="M3 6.6a1.5 1.5 0 0 1 2.3-1.26L12 9.8l6.7-4.46A1.5 1.5 0 0 1 21 6.6l-9 6.6-9-6.6Z"/>
+            </svg>
+          </div>
           <div>
-            <div class="setting-label">Problem Report / Support</div>
+            <div class="setting-label">Gmail</div>
           </div>
         </div>
-        <button class="btn btn-ghost btn-sm" style="width: 100%;" onclick="openSupport()">📩 Mail Bhejo</button>
+        <span>›</span>
       </div>
       <div class="setting-item">
         <div class="setting-info">
@@ -726,21 +744,27 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
         <span>›</span>
       </div>
-      <div class="setting-item" style="flex-direction: column; align-items: stretch; gap: 10px;">
-        <div class="setting-info" onclick="openSupport()" style="cursor: pointer;">
-          <div class="setting-icon">💬</div>
+      <div class="setting-item" onclick="openSupport()" style="cursor: pointer;">
+        <div class="setting-info">
+          <div class="setting-icon" style="background:#fff; display:flex; align-items:center; justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#EA4335" d="M12 13.2 3 6.6V18a1.5 1.5 0 0 0 1.5 1.5h1V8.6l6.5 4.8 6.5-4.8v10.9h1A1.5 1.5 0 0 0 21 18V6.6l-9 6.6Z"/>
+              <path fill="#34A853" d="M4.5 19.5h1V8.6l-2-1.47V18a1.5 1.5 0 0 0 1 1.5Z"/>
+              <path fill="#4285F4" d="M18.5 19.5h1a1.5 1.5 0 0 0 1-1.5V7.13l-2 1.47Z"/>
+              <path fill="#C5221F" d="M3 6.6a1.5 1.5 0 0 1 2.3-1.26L12 9.8l6.7-4.46A1.5 1.5 0 0 1 21 6.6l-9 6.6-9-6.6Z"/>
+            </svg>
+          </div>
           <div>
-            <div class="setting-label">Contact Support</div>
-            <div class="setting-desc">ayushk92355@gmail.com</div>
+            <div class="setting-label">Gmail</div>
           </div>
         </div>
-        <button class="btn btn-ghost btn-sm" style="width: 100%;" onclick="openSupport()">📩 Mail Bhejo</button>
+        <span>›</span>
       </div>
     </div>
 
     <div class="card" style="border: 2px solid var(--danger);">
       <div class="card-title" style="color: var(--danger);">⚠️ Danger Zone</div>
-      <button class="btn btn-danger btn-block" onclick="clearAllData()">🗑️ सारा डेटा मिटाएं</button>
+      <button class="btn btn-danger btn-block" onclick="requireOwnerAuth(clearAllData)">🗑️ सारा डेटा मिटाएं</button>
     </div>
   </div>
 </div>
@@ -780,7 +804,7 @@ input:checked + .slider:before { transform: translateX(22px); }
       <button class="menu-btn" onclick="togglePersonMenu(event)">⋮</button>
     </div>
     <div class="dropdown-menu" id="personMenu">
-      <div class="dropdown-item" onclick="editPerson()">✏️ व्यक्ति एडिट करें</div>
+      <div class="dropdown-item" onclick="requireOwnerAuth(editPerson)">✏️ व्यक्ति एडिट करें</div>
       <div class="dropdown-item" onclick="changePersonEmoji()">🎭 इमोजी/अवतार बदलें</div>
       <div class="dropdown-item" onclick="setCreditLimit()">💳 क्रेडिट लिमिट सेट करें</div>
       <div class="dropdown-item" onclick="toggleFavorite()">⭐ फेवरेट में जोड़ें</div>
@@ -791,7 +815,7 @@ input:checked + .slider:before { transform: translateX(22px); }
       <div class="dropdown-item" onclick="archivePerson()">📦 आर्काइव करें</div>
       <div class="dropdown-item" onclick="printStatement()">🖨️ स्टेटमेंट प्रिंट</div>
       <div class="dropdown-item" onclick="addNoteToPerson()">📝 नोट जोड़ें</div>
-      <div class="dropdown-item danger" onclick="deletePerson()">🗑️ व्यक्ति हटाएं</div>
+      <div class="dropdown-item danger" onclick="requireOwnerAuth(deletePerson)">🗑️ व्यक्ति हटाएं</div>
     </div>
     <div class="person-info">
       <div class="person-avatar" id="pAvatar">R</div>
@@ -940,6 +964,50 @@ input:checked + .slider:before { transform: translateX(22px); }
       <input type="password" id="confirmPin" maxlength="4" placeholder="••••">
     </div>
     <button class="btn btn-primary btn-block" onclick="saveNewPin()">✓ PIN बदलें</button>
+  </div>
+</div>
+
+<div id="modalOwnerAuth" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>🔐 Owner Verification</h3>
+      <button class="close-btn" onclick="cancelOwnerAuth()">×</button>
+    </div>
+    <p style="font-size: 0.85rem; color: var(--sub); margin-bottom: 14px;">
+      Ye edit/delete sirf owner kar sakta hai. Apna 4-digit owner code daalo.
+    </p>
+    <div class="input-group">
+      <label>Owner Code</label>
+      <input type="password" id="ownerAuthInput" maxlength="4" inputmode="numeric" placeholder="••••" style="text-align:center; font-size:1.4rem; letter-spacing:8px;">
+    </div>
+    <div id="ownerAuthError" style="color: var(--danger); font-size: 0.8rem; margin-bottom: 10px; min-height: 16px;"></div>
+    <button class="btn btn-primary btn-block" onclick="submitOwnerAuth()">✓ Verify karo</button>
+  </div>
+</div>
+
+<div id="modalOwnerCode" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>🔐 Owner Code Badlo</h3>
+      <button class="close-btn" onclick="closeModal('modalOwnerCode')">×</button>
+    </div>
+    <p style="font-size: 0.8rem; color: var(--sub); margin-bottom: 14px;">
+      Naya code khali chhod ke save karoge to owner-lock poori tarah hat jayega (koi bhi edit kar sakega).
+    </p>
+    <div class="input-group">
+      <label>Purana Owner Code</label>
+      <input type="password" id="ownerOldCode" maxlength="4" inputmode="numeric" placeholder="••••">
+    </div>
+    <div class="input-group">
+      <label>Naya Owner Code (4 digit, ya khali)</label>
+      <input type="password" id="ownerNewCode" maxlength="4" inputmode="numeric" placeholder="••••">
+    </div>
+    <div class="input-group">
+      <label>Naya Code Dobara</label>
+      <input type="password" id="ownerNewCode2" maxlength="4" inputmode="numeric" placeholder="••••">
+    </div>
+    <div id="ownerCodeError" style="color: var(--danger); font-size: 0.8rem; margin-bottom: 10px; min-height: 16px;"></div>
+    <button class="btn btn-primary btn-block" onclick="saveOwnerCode()">✓ Save karo</button>
   </div>
 </div>
 
@@ -1329,7 +1397,7 @@ function renderPersonTx() {
         </strong>
         <small class="text-sub">${formatDate(t.date)} ${t.note ? '• ' + t.note : ''}</small>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="deleteTx('${t.id}')">🗑</button>
+      <button class="btn btn-ghost btn-sm" onclick="requireOwnerAuth(() => deleteTx('${t.id}'))">🗑</button>
     </div>
   `).join('');
 }
@@ -1777,6 +1845,63 @@ function openSupport() {
 
 // ============ MODALS ============
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// ============ OWNER EDIT-LOCK ============
+// Any edit/delete action must pass through requireOwnerAuth(). Once verified in this
+// session, further edits don't ask again until the app is closed/reloaded.
+let _pendingOwnerAction = null;
+function getOwnerCode() {
+  const c = localStorage.getItem('owner_edit_code');
+  return (c === null) ? '7793' : c; // '' means owner-lock removed entirely
+}
+function requireOwnerAuth(action) {
+  const code = getOwnerCode();
+  if (code === '') { action(); return; } // owner removed the lock
+  if (sessionStorage.getItem('ownerVerified') === '1') { action(); return; }
+  _pendingOwnerAction = action;
+  document.getElementById('ownerAuthInput').value = '';
+  document.getElementById('ownerAuthError').innerText = '';
+  document.getElementById('modalOwnerAuth').classList.add('active');
+  setTimeout(() => document.getElementById('ownerAuthInput').focus(), 250);
+}
+function submitOwnerAuth() {
+  const entered = document.getElementById('ownerAuthInput').value.trim();
+  if (entered === getOwnerCode()) {
+    sessionStorage.setItem('ownerVerified', '1');
+    document.getElementById('modalOwnerAuth').classList.remove('active');
+    const action = _pendingOwnerAction;
+    _pendingOwnerAction = null;
+    if (action) action();
+  } else {
+    document.getElementById('ownerAuthError').innerText = '❌ Galat code, phir try karo';
+    document.getElementById('ownerAuthInput').value = '';
+  }
+}
+function cancelOwnerAuth() {
+  _pendingOwnerAction = null;
+  document.getElementById('modalOwnerAuth').classList.remove('active');
+}
+function openChangeOwnerCodeModal() {
+  requireOwnerAuth(() => {
+    document.getElementById('ownerOldCode').value = '';
+    document.getElementById('ownerNewCode').value = '';
+    document.getElementById('ownerNewCode2').value = '';
+    document.getElementById('ownerCodeError').innerText = '';
+    document.getElementById('modalOwnerCode').classList.add('active');
+  });
+}
+function saveOwnerCode() {
+  const oldC = document.getElementById('ownerOldCode').value.trim();
+  const newC = document.getElementById('ownerNewCode').value.trim();
+  const newC2 = document.getElementById('ownerNewCode2').value.trim();
+  const err = document.getElementById('ownerCodeError');
+  if (oldC !== getOwnerCode()) { err.innerText = '❌ Purana code galat hai'; return; }
+  if (newC !== newC2) { err.innerText = '❌ Naya code match nahi ho raha'; return; }
+  if (newC !== '' && !/^\d{4}$/.test(newC)) { err.innerText = '❌ Code exactly 4 digit ka hona chahiye'; return; }
+  localStorage.setItem('owner_edit_code', newC);
+  closeModal('modalOwnerCode');
+  showToast(newC === '' ? '✓ Owner lock hata diya gaya' : '✓ Owner code badal gaya');
+}
 
 // ============ INIT ============
 function renderAll() {
