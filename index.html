@@ -812,8 +812,8 @@ input:checked + .slider:before { transform: translateX(22px); }
       <div class="dropdown-item" onclick="shareSMS()">💬 SMS भेजें</div>
       <div class="dropdown-item" onclick="callPerson()">📞 कॉल करें</div>
       <div class="dropdown-item" onclick="exportPersonCSV()">📄 इसका डेटा एक्सपोर्ट</div>
-      <div class="dropdown-item" onclick="archivePerson()">📦 आर्काइव करें</div>
-      <div class="dropdown-item" onclick="printStatement()">🖨️ स्टेटमेंट प्रिंट</div>
+      <div class="dropdown-item" onclick="requireOwnerAuth(archivePerson)">📦 आर्काइव करें</div>
+      <div class="dropdown-item" onclick="printStatement()">📄 स्टेटमेंट डाउनलोड (PDF)</div>
       <div class="dropdown-item" onclick="addNoteToPerson()">📝 नोट जोड़ें</div>
       <div class="dropdown-item danger" onclick="requireOwnerAuth(deletePerson)">🗑️ व्यक्ति हटाएं</div>
     </div>
@@ -1513,22 +1513,119 @@ function archivePerson() {
   closePersonPage();
   showToast('✓ आर्काइव हो गया');
 }
-function printStatement() {
+// Lazy-load jsPDF + html2canvas only when a statement is actually generated
+let _pdfLibsLoaded = false;
+function _loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Failed to load ' + src));
+    document.head.appendChild(s);
+  });
+}
+async function _ensurePdfLibs() {
+  if (_pdfLibsLoaded && window.jspdf && window.html2canvas) return;
+  await _loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  await _loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+  _pdfLibsLoaded = true;
+}
+
+async function printStatement() {
+  document.getElementById('personMenu').classList.remove('active');
   const p = state.persons.find(x => x.id === currentPersonId);
   const bal = getBalance(currentPersonId);
-  const txs = state.transactions.filter(t => t.personId === currentPersonId);
-  let html = `<h2>${p.name} - Statement</h2><p>Phone: ${p.phone || 'N/A'}</p><hr><table border="1" cellpadding="8">
-    <tr><th>Date</th><th>Type</th><th>Amount</th><th>Note</th></tr>`;
-  txs.forEach(t => {
-    html += `<tr><td>${formatDate(t.date)}</td><td>${t.type === 'give' ? 'Udhar' : 'Jama'}</td>
-      <td>${fmt(t.amount)}</td><td>${t.note || '-'}</td></tr>`;
-  });
-  html += `</table><hr><h3>Balance: ${fmt(Math.abs(bal))} (${bal >= 0 ? 'Lena' : 'Dena'})</h3>`;
-  const w = window.open('', '_blank');
-  w.document.write(html);
-  w.document.close();
-  w.print();
-  document.getElementById('personMenu').classList.remove('active');
+  const txs = state.transactions.filter(t => t.personId === currentPersonId)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  const totalGive = txs.filter(t => t.type === 'give').reduce((a, t) => a + t.amount, 0);
+  const totalGet = txs.filter(t => t.type === 'get').reduce((a, t) => a + t.amount, 0);
+
+  // Build an off-screen styled statement (kept off-screen, never shown to the user directly)
+  const wrap = document.createElement('div');
+  wrap.id = 'statementRender';
+  wrap.style.cssText = 'position:fixed; left:-9999px; top:0; width:380px; background:#ffffff; color:#1a1d29; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; padding:22px;';
+  wrap.innerHTML = `
+    <div style="text-align:center; margin-bottom:16px;">
+      <div style="font-size:22px; font-weight:800; color:#4f46e5;">Khata Pro</div>
+      <div style="font-size:12px; color:#6b7280;">स्टेटमेंट / Statement</div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; border-bottom:1px solid #e5e7eb; padding-bottom:14px;">
+      <div>
+        <div style="font-size:16px; font-weight:700;">${p.name}</div>
+        <div style="font-size:12px; color:#6b7280; margin-top:2px;">${p.phone || ''}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px; color:#6b7280;">${bal >= 0 ? 'आपको लेना है' : 'आपको देना है'}</div>
+        <div style="font-size:18px; font-weight:800; color:${bal >= 0 ? '#10b981' : '#ef4444'};">${fmt(Math.abs(bal))}</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; margin-bottom:16px;">
+      <div style="flex:1; background:#fef2f2; border-radius:10px; padding:10px;">
+        <div style="font-size:10px; color:#6b7280;">कुल उधार दिया</div>
+        <div style="font-size:14px; font-weight:700; color:#ef4444;">${fmt(totalGive)}</div>
+      </div>
+      <div style="flex:1; background:#ecfdf5; border-radius:10px; padding:10px;">
+        <div style="font-size:10px; color:#6b7280;">कुल जमा लिया</div>
+        <div style="font-size:14px; font-weight:700; color:#10b981;">${fmt(totalGet)}</div>
+      </div>
+    </div>
+    <table style="width:100%; border-collapse:collapse; font-size:11.5px;">
+      <thead>
+        <tr style="background:#f5f7fb;">
+          <th style="text-align:left; padding:6px; font-weight:600;">तारीख</th>
+          <th style="text-align:left; padding:6px; font-weight:600;">विवरण</th>
+          <th style="text-align:right; padding:6px; font-weight:600;">रकम</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${txs.length ? txs.map(t => `
+          <tr style="border-bottom:1px solid #e5e7eb;">
+            <td style="padding:6px; white-space:nowrap;">${formatDate(t.date)}</td>
+            <td style="padding:6px;">${t.type === 'give' ? 'उधार दिया' : 'जमा लिया'}${t.note ? ' • ' + t.note : ''}</td>
+            <td style="padding:6px; text-align:right; white-space:nowrap; color:${t.type === 'give' ? '#ef4444' : '#10b981'}; font-weight:600;">
+              ${t.type === 'give' ? '-' : '+'}${fmt(t.amount)}
+            </td>
+          </tr>`).join('') : '<tr><td colspan="3" style="padding:14px; text-align:center; color:#9ca3af;">कोई एंट्री नहीं</td></tr>'}
+      </tbody>
+    </table>
+    <div style="margin-top:16px; font-size:10px; color:#9ca3af; text-align:center;">Khata Pro • ${formatDate(new Date().toISOString())}</div>
+  `;
+  document.body.appendChild(wrap);
+
+  showToast('⏳ स्टेटमेंट तैयार हो रहा है...');
+  try {
+    await _ensurePdfLibs();
+    const canvas = await html2canvas(wrap, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    const safeName = (p.name || 'Statement').replace(/[^a-zA-Z0-9अ-ह]+/g, '_');
+    pdf.save(`Statement_${safeName}_${new Date().toISOString().split('T')[0]}.pdf`);
+    showToast('✓ PDF स्टेटमेंट डाउनलोड हो गया');
+  } catch (err) {
+    // Offline or CDN blocked: fall back to browser print dialog (user can "Save as PDF" there)
+    console.error('PDF generation failed, falling back to print window:', err);
+    let html = `<h2>${p.name} - Statement</h2><p>Phone: ${p.phone || 'N/A'}</p><hr><table border="1" cellpadding="8">
+      <tr><th>Date</th><th>Type</th><th>Amount</th><th>Note</th></tr>`;
+    txs.forEach(t => {
+      html += `<tr><td>${formatDate(t.date)}</td><td>${t.type === 'give' ? 'Udhar' : 'Jama'}</td>
+        <td>${fmt(t.amount)}</td><td>${t.note || '-'}</td></tr>`;
+    });
+    html += `</table><hr><h3>Balance: ${fmt(Math.abs(bal))} (${bal >= 0 ? 'Lena' : 'Dena'})</h3>`;
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+      w.print();
+      showToast('⚠️ ऑफलाइन: प्रिंट विंडो से "Save as PDF" चुनें');
+    } else {
+      showToast('❌ स्टेटमेंट नहीं बन पाया, इंटरनेट चेक करें');
+    }
+  } finally {
+    wrap.remove();
+  }
 }
 function addNoteToPerson() {
   const p = state.persons.find(x => x.id === currentPersonId);
@@ -1575,20 +1672,28 @@ function setTxType(type) {
 function saveTx() {
   const amount = parseFloat(document.getElementById('txAmount').value);
   if (!amount || amount <= 0) return showToast('⚠️ सही रकम डालें!');
-  state.transactions.push({
-    id: uid(),
-    personId: document.getElementById('txPersonId').value,
-    type: currentTxType,
-    amount: amount,
-    date: document.getElementById('txDate').value,
-    note: document.getElementById('txNote').value.trim(),
-    createdAt: Date.now()
-  });
-  saveState();
-  closeModal('modalTx');
-  updatePersonBalance();
-  renderPersonTx();
-  showToast('✓ एंट्री सेव हो गई!');
+  const doSave = () => {
+    state.transactions.push({
+      id: uid(),
+      personId: document.getElementById('txPersonId').value,
+      type: currentTxType,
+      amount: amount,
+      date: document.getElementById('txDate').value,
+      note: document.getElementById('txNote').value.trim(),
+      createdAt: Date.now()
+    });
+    saveState();
+    closeModal('modalTx');
+    updatePersonBalance();
+    renderPersonTx();
+    showToast('✓ एंट्री सेव हो गई!');
+  };
+  // "जमा लिया" (get) entries need owner verification; "उधार दिया" (give) stays open for anyone.
+  if (currentTxType === 'get') {
+    requireOwnerAuth(doSave);
+  } else {
+    doSave();
+  }
 }
 function deleteTx(tid) {
   if (!confirm('यह एंट्री हटा दें?')) return;
@@ -1921,4 +2026,3 @@ if (state.settings.lock) {
 </script>
 </body>
 </html>
-
