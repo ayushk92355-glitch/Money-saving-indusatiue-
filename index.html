@@ -6,33 +6,21 @@
 <title>Khata Pro - Ultimate Ledger</title>
 <style>
 :root {
-  --bg: #2b0a02; --card: rgba(255,255,255,0.07); --text: #fff8ef; --sub: rgba(255,232,204,0.68); --primary: #ff7a1a;
-  --primary-light: rgba(255,204,0,0.16); --danger: #ff3b47; --success: #ffcc00; --warning: #ff9500;
-  --border: rgba(255,214,140,0.22); --shadow: 0 8px 32px rgba(0,0,0,0.45); --radius: 16px;
-  --gradient: linear-gradient(135deg, #ff512f 0%, #ffc300 100%);
-  --glass-sheen: linear-gradient(120deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 35%);
+  --bg: #fff6ef; --card: #ffffff; --card-glass: rgba(255,255,255,0.8); --text: #2b1b12; --sub: #8a7268; --primary: #ff6b4a;
+  --primary-light: #ffe8e0; --danger: #e63950; --success: #ffb300; --warning: #ff9500;
+  --border: #f1e1d4; --shadow: 0 2px 10px rgba(43,27,18,0.08); --radius: 16px;
+  --gradient: linear-gradient(135deg, #ff6b4a 0%, #ffb300 100%);
 }
 [data-theme="dark"] {
-  --bg: #0d0301; --card: rgba(255,255,255,0.05); --text: #fff3e6; --sub: rgba(255,225,195,0.6);
-  --primary-light: rgba(255,204,0,0.12); --border: rgba(255,190,110,0.16); --shadow: 0 8px 36px rgba(0,0,0,0.6);
-}
-body {
-  background: radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,140,0,0.35), transparent 60%),
-              radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,45,60,0.28), transparent 55%),
-              linear-gradient(180deg, #2b0a02 0%, #1a0500 55%, #100300 100%);
-  background-attachment: fixed;
-}
-[data-theme="dark"] body {
-  background: radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,110,0,0.22), transparent 60%),
-              radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,30,50,0.18), transparent 55%),
-              linear-gradient(180deg, #0d0301 0%, #0a0200 55%, #060100 100%);
-  background-attachment: fixed;
+  --bg: #1b1410; --card: #241b15; --card-glass: rgba(36,27,21,0.82); --text: #fff3ea; --sub: #c9b3a3;
+  --primary-light: #3a241a; --border: #3a2b21; --shadow: 0 2px 10px rgba(0,0,0,0.35);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
+  background: var(--bg);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--text); min-height: 100vh;
-  padding-bottom: 80px; transition: background .3s, color .3s;
+  padding-bottom: 80px; transition: background .25s, color .25s;
   font-size: 15px;
 }
 .container { max-width: 600px; margin: 0 auto; padding: 16px; }
@@ -50,39 +38,27 @@ body {
   width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border);
   background: var(--card); color: var(--text); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow); font-size: 1.2rem;
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow); font-size: 1.2rem; touch-action: manipulation;
+  transition: transform .12s ease;
 }
 .icon-btn:active { transform: scale(0.92); }
 
 /* Cards */
 .card {
   background: var(--card); border-radius: var(--radius); padding: 18px;
-  margin-bottom: 14px; box-shadow: var(--shadow);
-  backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
-  border: 1px solid var(--border); position: relative; overflow: hidden;
+  margin-bottom: 14px; box-shadow: var(--shadow); border: 1px solid var(--border);
 }
-.card::before {
-  content: ""; position: absolute; inset: 0; background: var(--glass-sheen);
-  pointer-events: none;
-}
-.card-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
-.card > *:not(.card-title) { position: relative; z-index: 1; }
+.card-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
 /* Stats Grid */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
 .stat-card {
   padding: 18px; border-radius: var(--radius); color: white;
-  position: relative; overflow: hidden; backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,0.18);
+  position: relative; overflow: hidden;
 }
-.stat-card::before {
-  content: ""; position: absolute; inset: 0; background: var(--glass-sheen); pointer-events: none;
-}
-.stat-card > * { position: relative; z-index: 1; }
-.stat-card.get { background: linear-gradient(135deg, #ffcc00, #ff8c00); box-shadow: 0 8px 24px rgba(255,180,0,0.35); }
-.stat-card.give { background: linear-gradient(135deg, #ff3b47, #b8102a); box-shadow: 0 8px 24px rgba(255,40,60,0.35); }
-.stat-card.net { background: var(--gradient); grid-column: span 2; box-shadow: 0 8px 24px rgba(255,90,30,0.35); }
+.stat-card.get { background: linear-gradient(135deg, #ffb300, #ff8a00); }
+.stat-card.give { background: linear-gradient(135deg, #ff5064, #e63950); }
+.stat-card.net { background: var(--gradient); grid-column: span 2; }
 .stat-card .emoji { position: absolute; right: 10px; top: 10px; font-size: 1.8rem; opacity: 0.3; }
 .stat-card h3 { font-size: 0.75rem; opacity: 0.9; margin-bottom: 6px; font-weight: 500; }
 .stat-card p { font-size: 1.5rem; font-weight: 800; }
@@ -91,14 +67,14 @@ body {
 /* Buttons */
 .btn {
   padding: 12px 16px; border: none; border-radius: 12px; font-weight: 600;
-  cursor: pointer; transition: all .2s; display: inline-flex; align-items: center;
-  justify-content: center; gap: 8px; font-size: 0.95rem;
+  cursor: pointer; transition: transform .12s ease, opacity .12s ease; display: inline-flex; align-items: center;
+  justify-content: center; gap: 8px; font-size: 0.95rem; touch-action: manipulation;
 }
 .btn:active { transform: scale(0.96); }
-.btn-primary { background: var(--gradient); color: white; box-shadow: 0 4px 16px rgba(255,90,30,0.4); }
-.btn-danger { background: linear-gradient(135deg, #ff3b47, #b8102a); color: white; box-shadow: 0 4px 16px rgba(255,40,60,0.35); }
-.btn-success { background: linear-gradient(135deg, #ffcc00, #ff8c00); color: #2b0a02; box-shadow: 0 4px 16px rgba(255,180,0,0.35); }
-.btn-ghost { background: var(--primary-light); color: var(--text); border: 1px solid var(--border); backdrop-filter: blur(10px); }
+.btn-primary { background: var(--gradient); color: white; }
+.btn-danger { background: linear-gradient(135deg, #ff5064, #e63950); color: white; }
+.btn-success { background: linear-gradient(135deg, #ffb300, #ff8a00); color: #2b1b12; }
+.btn-ghost { background: var(--primary-light); color: var(--text); border: 1px solid var(--border); }
 .btn-block { width: 100%; padding: 14px; }
 .btn-sm { padding: 8px 12px; font-size: 0.85rem; }
 
@@ -108,7 +84,7 @@ body {
 input, select, textarea {
   width: 100%; padding: 13px 14px; border: 1.5px solid var(--border);
   border-radius: 12px; background: var(--bg); color: var(--text);
-  outline: none; font-size: 1rem; transition: border .2s;
+  outline: none; font-size: 1rem; transition: border .15s;
   font-family: inherit;
 }
 input:focus, select:focus, textarea:focus { border-color: var(--primary); }
@@ -117,7 +93,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 .list-item {
   display: flex; justify-content: space-between; align-items: center;
   padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer;
-  transition: background .15s;
+  transition: background .12s;
 }
 .list-item:hover { background: var(--primary-light); border-radius: 10px; }
 .list-item:last-child { border-bottom: none; }
@@ -137,23 +113,22 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 /* Bottom Nav */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0;
-  background: color-mix(in srgb, var(--card) 85%, transparent);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  background: var(--card);
   border-top: 1px solid var(--border);
   display: flex; justify-content: space-around; padding: 8px 4px;
-  z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  z-index: 100; box-shadow: 0 -2px 10px rgba(43,27,18,0.06);
 }
 .nav-item {
   display: flex; flex-direction: column; align-items: center;
   font-size: 0.7rem; color: var(--sub); cursor: pointer;
-  padding: 6px 10px; border-radius: 10px; transition: all .2s;
-  min-width: 50px;
+  padding: 6px 10px; border-radius: 10px; transition: color .12s;
+  min-width: 50px; touch-action: manipulation;
 }
 .nav-item.active { color: var(--primary); }
 .nav-item.active .nav-icon { background: var(--primary-light); }
 .nav-icon {
   font-size: 1.4rem; margin-bottom: 2px; padding: 6px;
-  border-radius: 10px; transition: all .2s;
+  border-radius: 10px; transition: background .12s;
 }
 .nav-item span { font-weight: 500; }
 
@@ -161,28 +136,30 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 .fab {
   position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px;
   border-radius: 50%; background: var(--gradient); color: white;
-  border: 1px solid rgba(255,255,255,0.3); font-size: 28px; cursor: pointer; z-index: 90;
-  box-shadow: 0 6px 24px rgba(255,90,30,0.5);
+  border: none; font-size: 28px; cursor: pointer; z-index: 90;
+  box-shadow: 0 4px 16px rgba(255,107,74,0.45);
   display: flex; align-items: center; justify-content: center;
+  touch-action: manipulation; transition: transform .12s ease;
 }
 .fab:active { transform: scale(0.9); }
 
 /* Modal */
 .modal {
-  display: none; position: fixed; inset: 0; background: rgba(20,4,0,0.55);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: none; position: fixed; inset: 0; background: rgba(43,27,18,0.45);
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
   z-index: 200; align-items: flex-end; justify-content: center;
 }
-.modal.active { display: flex; animation: fadeIn .2s; }
+.modal.active { display: flex; animation: fadeIn .15s; }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 .modal-content {
-  background: linear-gradient(180deg, rgba(60,15,5,0.85), rgba(30,6,2,0.92));
-  backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%);
+  background: var(--card-glass);
+  backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid var(--border); border-bottom: none;
   padding: 24px; border-radius: 24px 24px 0 0;
   width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto;
-  animation: slideUp .3s cubic-bezier(.2,.8,.2,1);
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+  animation: slideUp .22s cubic-bezier(.2,.8,.2,1);
+  box-shadow: 0 -8px 30px rgba(43,27,18,0.15);
+  will-change: transform;
 }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
@@ -193,16 +170,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 }
 
 /* Pages */
-.page { display: none; animation: fadeIn .3s; }
+.page { display: none; }
 .page.active { display: block; }
 
 /* Person Detail Page (Full Screen) */
 .person-page {
-  position: fixed; inset: 0; z-index: 150;
-  background: radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,140,0,0.35), transparent 60%),
-              radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,45,60,0.28), transparent 55%),
-              linear-gradient(180deg, #2b0a02 0%, #1a0500 55%, #100300 100%);
-  overflow-y: auto; display: none; animation: slideRight .3s;
+  position: fixed; inset: 0; z-index: 150; background: var(--bg);
+  overflow-y: auto; display: none; animation: slideRight .22s;
 }
 .person-page.active { display: block; }
 @keyframes slideRight { from{transform:translateX(100%)} to{transform:translateX(0)} }
@@ -212,14 +186,16 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 }
 .person-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .back-btn {
-  background: rgba(255,255,255,0.2); border: none; color: white;
+  background: rgba(255,255,255,0.22); border: none; color: white;
   width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+  touch-action: manipulation;
 }
 .menu-btn {
-  background: rgba(255,255,255,0.2); border: none; color: white;
+  background: rgba(255,255,255,0.22); border: none; color: white;
   width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+  touch-action: manipulation;
 }
 .person-info { display: flex; align-items: center; gap: 14px; }
 .person-avatar {
@@ -231,8 +207,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 .person-name { font-size: 1.3rem; font-weight: 700; }
 .person-phone { font-size: 0.85rem; opacity: 0.9; margin-top: 2px; }
 .person-balance {
-  background: rgba(255,255,255,0.15); padding: 14px; border-radius: 14px;
-  margin-top: 16px; backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.18); padding: 14px; border-radius: 14px;
+  margin-top: 16px;
 }
 .person-balance small { font-size: 0.8rem; opacity: 0.9; }
 .person-balance p { font-size: 1.6rem; font-weight: 800; margin-top: 4px; }
@@ -240,18 +216,20 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 /* Dropdown Menu */
 .dropdown-menu {
   position: absolute; top: 60px; right: 20px;
-  background: linear-gradient(180deg, rgba(60,15,5,0.9), rgba(25,5,2,0.95));
-  border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  background: var(--card-glass);
+  backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-radius: 14px; box-shadow: 0 8px 24px rgba(43,27,18,0.18);
   min-width: 220px; z-index: 20; display: none; overflow: hidden;
   border: 1px solid var(--border); color: var(--text);
-  backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
   transform: scale(0.92) translateY(-6px); opacity: 0;
-  transition: transform .18s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
+  transition: transform .15s cubic-bezier(.2,.8,.2,1), opacity .15s ease;
+  will-change: transform;
 }
 .dropdown-menu.active { display: block; transform: scale(1) translateY(0); opacity: 1; }
 .dropdown-item {
   padding: 13px 16px; cursor: pointer; display: flex; align-items: center;
-  gap: 10px; font-size: 0.9rem; transition: background .15s; color: var(--text) !important;
+  gap: 10px; font-size: 0.9rem; transition: background .12s; color: var(--text) !important;
+  touch-action: manipulation;
 }
 .dropdown-item:hover { background: var(--primary-light); }
 .dropdown-item.danger { color: var(--danger) !important; }
@@ -259,9 +237,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 /* Toast */
 .toast {
   position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%);
-  background: #1a1d29; color: white; padding: 12px 22px; border-radius: 24px;
+  background: #2b1b12; color: white; padding: 12px 22px; border-radius: 24px;
   z-index: 500; display: none; font-size: 0.9rem;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3); max-width: 90%;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25); max-width: 90%;
 }
 
 /* Empty State */
@@ -283,17 +261,45 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 }
 .setting-label { font-weight: 500; }
 .setting-desc { font-size: 0.75rem; color: var(--sub); margin-top: 2px; }
+.picker-trigger {
+  display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+  border-radius: 10px; border: 1.5px solid var(--border); background: var(--bg);
+  color: var(--text); font-weight: 600; font-size: 0.9rem; white-space: nowrap;
+  touch-action: manipulation; transition: border-color .12s, transform .1s ease;
+}
+.picker-trigger:active { transform: scale(0.96); }
+.picker-trigger span { color: var(--sub); font-size: 0.75rem; }
+.picker-option {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px; cursor: pointer; font-size: 1.02rem; font-weight: 500;
+  border-bottom: 1px solid var(--border); transition: background .12s;
+  touch-action: manipulation; animation: optionIn .22s ease backwards;
+}
+.picker-option:last-child { border-bottom: none; }
+.picker-option:active { background: var(--primary-light); }
+.picker-radio {
+  width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: border-color .15s;
+}
+.picker-radio.checked { border-color: var(--primary); }
+.picker-radio.checked::after {
+  content: ""; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--gradient); animation: radioPop .18s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes radioPop { from{ transform: scale(0); } to{ transform: scale(1); } }
+@keyframes optionIn { from{ opacity:0; transform: translateY(6px); } to{ opacity:1; transform: translateY(0); } }
 
 /* Toggle Switch */
 .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {
   position: absolute; cursor: pointer; inset: 0;
-  background: #ccc; transition: .3s; border-radius: 26px;
+  background: #e2d3c6; transition: background .2s; border-radius: 26px;
 }
 .slider:before {
   position: absolute; content: ""; height: 20px; width: 20px;
-  left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%;
+  left: 3px; bottom: 3px; background: white; transition: transform .2s; border-radius: 50%;
 }
 input:checked + .slider { background: var(--primary); }
 input:checked + .slider:before { transform: translateX(22px); }
@@ -303,7 +309,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 .type-toggle button {
   flex: 1; padding: 14px; border: 2px solid var(--border);
   background: var(--bg); color: var(--text); border-radius: 12px;
-  font-weight: 600; cursor: pointer; transition: all .2s; font-size: 0.95rem;
+  font-weight: 600; cursor: pointer; transition: background .12s, color .12s, border-color .12s; font-size: 0.95rem;
+  touch-action: manipulation;
 }
 .type-toggle button.active-give { background: var(--danger); color: white; border-color: var(--danger); }
 .type-toggle button.active-get { background: var(--success); color: white; border-color: var(--success); }
@@ -319,10 +326,10 @@ input:checked + .slider:before { transform: translateX(22px); }
   display: flex; align-items: center; justify-content: center;
   font-size: 1.3rem; margin-right: 12px; flex-shrink: 0;
 }
-.tx-icon.give { background: rgba(255,59,71,0.18); color: var(--danger); }
-.tx-icon.get { background: rgba(255,204,0,0.18); color: var(--success); }
-[data-theme="dark"] .tx-icon.give { background: rgba(255,59,71,0.15); }
-[data-theme="dark"] .tx-icon.get { background: rgba(255,204,0,0.15); }
+.tx-icon.give { background: #ffe1e5; color: var(--danger); }
+.tx-icon.get { background: #fff1cc; color: var(--success); }
+[data-theme="dark"] .tx-icon.give { background: rgba(230,57,80,0.18); }
+[data-theme="dark"] .tx-icon.get { background: rgba(255,179,0,0.18); }
 
 /* Search Bar */
 .search-bar {
@@ -339,8 +346,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 .chip {
   padding: 8px 14px; border-radius: 20px; background: var(--card);
   border: 1.5px solid var(--border); cursor: pointer; font-size: 0.85rem;
-  white-space: nowrap; font-weight: 500; transition: all .2s;
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  white-space: nowrap; font-weight: 500; transition: background .12s, color .12s;
+  touch-action: manipulation;
 }
 .chip.active { background: var(--gradient); color: white; border-color: transparent; }
 
@@ -348,7 +355,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .chart-bar { display: flex; align-items: flex-end; height: 140px; gap: 6px; padding: 10px 4px; }
 .bar {
   flex: 1; background: var(--gradient); border-radius: 6px 6px 0 0;
-  position: relative; min-height: 4px; transition: height .5s;
+  position: relative; min-height: 4px; transition: height .3s;
 }
 .bar-label {
   position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
@@ -371,8 +378,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 .quick-action {
   background: var(--card); padding: 14px 8px; border-radius: 14px;
   text-align: center; cursor: pointer; box-shadow: var(--shadow);
-  transition: transform .2s; border: 1px solid var(--border);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  transition: transform .12s ease; border: 1px solid var(--border);
+  touch-action: manipulation;
 }
 .quick-action:active { transform: scale(0.95); }
 .quick-action .qa-icon { font-size: 1.6rem; margin-bottom: 4px; }
@@ -394,16 +401,13 @@ input:checked + .slider:before { transform: translateX(22px); }
   aspect-ratio: 1; border-radius: 12px; background: var(--bg);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem; cursor: pointer; border: 2px solid transparent;
-  transition: all .2s;
+  transition: border-color .12s, background .12s; touch-action: manipulation;
 }
 .emoji-option.selected { border-color: var(--primary); background: var(--primary-light); }
 
 /* PIN Screen */
 .pin-screen {
-  position: fixed; inset: 0; z-index: 1000;
-  background: radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,140,0,0.35), transparent 60%),
-              radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,45,60,0.28), transparent 55%),
-              linear-gradient(180deg, #2b0a02 0%, #1a0500 55%, #100300 100%);
+  position: fixed; inset: 0; z-index: 1000; background: var(--bg);
   display: none; align-items: center; justify-content: center;
   flex-direction: column; padding: 20px;
 }
@@ -411,17 +415,18 @@ input:checked + .slider:before { transform: translateX(22px); }
 .pin-dots { display: flex; gap: 14px; margin: 30px 0; }
 .pin-dot {
   width: 16px; height: 16px; border-radius: 50%;
-  border: 2px solid var(--primary); transition: all .2s;
+  border: 2px solid var(--primary); transition: background .12s;
 }
 .pin-dot.filled { background: var(--gradient); border-color: transparent; }
 .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 320px; width: 100%; }
 .pin-key {
   aspect-ratio: 1.3; border-radius: 16px; background: var(--card);
   border: 1px solid var(--border); font-size: 1.5rem; font-weight: 600; cursor: pointer;
-  color: var(--text); box-shadow: var(--shadow);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  color: var(--text); box-shadow: var(--shadow); touch-action: manipulation;
+  transition: transform .1s ease, background .12s;
 }
 .pin-key:active { transform: scale(0.95); background: var(--primary-light); }
+
 </style>
 </head>
 <body>
@@ -615,7 +620,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
         <label class="switch"><input type="checkbox" id="setDark" onchange="toggleTheme()"><span class="slider"></span></label>
       </div>
-      <div class="setting-item">
+      <div class="setting-item" onclick="openPicker('lang')" style="cursor:pointer;">
         <div class="setting-info">
           <div class="setting-icon">🌐</div>
           <div>
@@ -623,11 +628,9 @@ input:checked + .slider:before { transform: translateX(22px); }
             <div class="setting-desc">भाषा चुनें</div>
           </div>
         </div>
-        <select id="setLang" onchange="saveSetting('lang', this.value)" style="width: auto; margin: 0;">
-          <option value="hi">हिंदी</option><option value="en">English</option>
-        </select>
+        <div class="picker-trigger" id="setLangDisplay">हिंदी <span>▾</span></div>
       </div>
-      <div class="setting-item">
+      <div class="setting-item" onclick="openPicker('currency')" style="cursor:pointer;">
         <div class="setting-info">
           <div class="setting-icon">💱</div>
           <div>
@@ -635,12 +638,9 @@ input:checked + .slider:before { transform: translateX(22px); }
             <div class="setting-desc">मुद्रा चिन्ह</div>
           </div>
         </div>
-        <select id="setCurrency" onchange="saveSetting('currency', this.value)" style="width: auto; margin: 0;">
-          <option value="₹">₹ INR</option><option value="$">$ USD</option>
-          <option value="€">€ EUR</option><option value="£">£ GBP</option>
-        </select>
+        <div class="picker-trigger" id="setCurrencyDisplay">₹ INR <span>▾</span></div>
       </div>
-      <div class="setting-item">
+      <div class="setting-item" onclick="openPicker('fontSize')" style="cursor:pointer;">
         <div class="setting-info">
           <div class="setting-icon">🔤</div>
           <div>
@@ -648,9 +648,7 @@ input:checked + .slider:before { transform: translateX(22px); }
             <div class="setting-desc">अक्षरों का आकार</div>
           </div>
         </div>
-        <select id="setFontSize" onchange="saveSetting('fontSize', this.value)" style="width: auto; margin: 0;">
-          <option value="14px">छोटा</option><option value="15px">मध्यम</option><option value="17px">बड़ा</option>
-        </select>
+        <div class="picker-trigger" id="setFontSizeDisplay">मध्यम <span>▾</span></div>
       </div>
     </div>
 
@@ -1095,6 +1093,16 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
 </div>
 
+<div id="modalPicker" class="modal">
+  <div class="modal-content" style="padding: 8px 0 24px;">
+    <div class="modal-header" style="padding: 0 20px; margin-bottom: 6px;">
+      <h3 id="pickerTitle">चुनें</h3>
+      <button class="close-btn" onclick="closeModal('modalPicker')">×</button>
+    </div>
+    <div id="pickerOptions"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1172,13 +1180,42 @@ function toggleTheme() {
   state.settings.theme = state.settings.theme === 'light' ? 'dark' : 'light';
   saveState(); applySettings();
 }
+const PICKER_OPTIONS = {
+  lang: { title: '🌐 भाषा चुनें', options: [['hi','हिंदी'],['en','English']] },
+  currency: { title: '💱 मुद्रा चुनें', options: [['₹','₹ INR'],['$','$ USD'],['€','€ EUR'],['£','£ GBP']] },
+  fontSize: { title: '🔤 फॉन्ट साइज़', options: [['14px','छोटा'],['15px','मध्यम'],['17px','बड़ा']] }
+};
+function pickerLabel(type, value) {
+  const found = PICKER_OPTIONS[type].options.find(o => o[0] === value);
+  return found ? found[1] : value;
+}
+function syncPickerDisplays() {
+  document.getElementById('setLangDisplay').innerHTML = pickerLabel('lang', state.settings.lang) + ' <span>▾</span>';
+  document.getElementById('setCurrencyDisplay').innerHTML = pickerLabel('currency', state.settings.currency) + ' <span>▾</span>';
+  document.getElementById('setFontSizeDisplay').innerHTML = pickerLabel('fontSize', state.settings.fontSize) + ' <span>▾</span>';
+}
+function openPicker(type) {
+  const cfg = PICKER_OPTIONS[type];
+  const current = state.settings[type];
+  document.getElementById('pickerTitle').textContent = cfg.title;
+  document.getElementById('pickerOptions').innerHTML = cfg.options.map(([val, label], i) => `
+    <div class="picker-option" style="animation-delay:${i * 0.03}s" onclick="selectPickerOption('${type}','${val}')">
+      <span>${label}</span>
+      <div class="picker-radio ${val === current ? 'checked' : ''}"></div>
+    </div>`).join('');
+  document.getElementById('modalPicker').classList.add('active');
+}
+function selectPickerOption(type, value) {
+  saveSetting(type, value);
+  syncPickerDisplays();
+  setTimeout(() => closeModal('modalPicker'), 140);
+}
+
 function applySettings() {
   document.documentElement.setAttribute('data-theme', state.settings.theme);
   document.documentElement.style.fontSize = state.settings.fontSize;
   document.getElementById('setDark').checked = state.settings.theme === 'dark';
-  document.getElementById('setLang').value = state.settings.lang;
-  document.getElementById('setCurrency').value = state.settings.currency;
-  document.getElementById('setFontSize').value = state.settings.fontSize;
+  syncPickerDisplays();
   document.getElementById('setLock').checked = state.settings.lock;
   document.getElementById('setBio').checked = state.settings.bio;
   document.getElementById('setReminder').checked = state.settings.reminder;
