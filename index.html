@@ -1052,6 +1052,19 @@ input:checked + .slider:before { transform: translateX(22px); }
   </div>
 </div>
 
+<!-- MODAL: Custom Confirm (themed replacement for browser confirm()) -->
+<div id="modalConfirm" class="modal">
+  <div class="modal-content" style="text-align:center;">
+    <div id="confirmIcon" style="font-size: 2.6rem; margin-bottom: 6px;">⚠️</div>
+    <h3 id="confirmTitle" style="margin-bottom: 10px;">पक्का?</h3>
+    <p id="confirmMessage" style="color: var(--sub); font-size: 0.92rem; margin-bottom: 22px; white-space: pre-line; line-height: 1.5;"></p>
+    <div style="display:flex; gap: 10px;">
+      <button class="btn btn-ghost btn-block" onclick="confirmNo()">रद्द करें</button>
+      <button class="btn btn-danger btn-block" id="confirmOkBtn" onclick="confirmYes()">हाँ, पक्का</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: Emoji Change -->
 <div id="modalEmoji" class="modal">
   <div class="modal-content">
@@ -1133,7 +1146,7 @@ function loadState() {
   if (s) state = JSON.parse(s);
 }
 function saveState() { localStorage.setItem('khataProV3', JSON.stringify(state)); }
-function saveSetting(k, v) { state.settings[k] = v; saveState(); applySettings(); showToast('✓ सेव हो गया'); }
+function saveSetting(k, v) { state.settings[k] = v; saveState(); applySettings(); if (typeof syncOverdueToApp === 'function') syncOverdueToApp(); showToast('✓ सेव हो गया'); }
 
 // ============ UTILS ============
 function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
@@ -1340,6 +1353,7 @@ function savePerson() {
   saveState();
   closeModal('modalPerson');
   renderAll();
+  syncOverdueToApp();
   showToast('✓ व्यक्ति सेव हो गया!');
 }
 
@@ -1597,13 +1611,15 @@ function exportPersonCSV() {
   showToast('✓ एक्सपोर्ट हो गया');
 }
 function archivePerson() {
-  if (!confirm('इस व्यक्ति को आर्काइव करें? (होम पेज पर नहीं दिखेगा)')) return;
-  const p = state.persons.find(x => x.id === currentPersonId);
-  p.archived = true;
-  saveState();
-  document.getElementById('personMenu').classList.remove('active');
-  closePersonPage();
-  showToast('✓ आर्काइव हो गया');
+  showConfirm('इस व्यक्ति को आर्काइव करें? (होम पेज पर नहीं दिखेगा)', () => {
+    const p = state.persons.find(x => x.id === currentPersonId);
+    p.archived = true;
+    saveState();
+    document.getElementById('personMenu').classList.remove('active');
+    closePersonPage();
+    syncOverdueToApp();
+    showToast('✓ आर्काइव हो गया');
+  }, { icon: '📦', title: 'आर्काइव करें?', okText: 'हाँ, आर्काइव करो', danger: false });
 }
 // Lazy-load jsPDF + html2canvas only when a statement is actually generated
 let _pdfLibsLoaded = false;
@@ -1734,14 +1750,16 @@ function savePersonNote() {
   showToast('✓ नोट सेव हो गया');
 }
 function deletePerson() {
-  if (!confirm('⚠️ यह व्यक्ति और इसकी सारी एंट्रीज़ हमेशा के लिए हट जाएंगी। पक्का?')) return;
-  state.persons = state.persons.filter(p => p.id !== currentPersonId);
-  state.transactions = state.transactions.filter(t => t.personId !== currentPersonId);
-  saveState();
-  document.getElementById('personMenu').classList.remove('active');
-  closePersonPage();
-  renderAll();
-  showToast('✓ हटा दिया गया');
+  showConfirm('यह व्यक्ति और इसकी सारी एंट्रीज़ हमेशा के लिए हट जाएंगी। पक्का?', () => {
+    state.persons = state.persons.filter(p => p.id !== currentPersonId);
+    state.transactions = state.transactions.filter(t => t.personId !== currentPersonId);
+    saveState();
+    document.getElementById('personMenu').classList.remove('active');
+    closePersonPage();
+    renderAll();
+    syncOverdueToApp();
+    showToast('✓ हटा दिया गया');
+  }, { icon: '🗑️', title: 'व्यक्ति हटाएं?', okText: 'हाँ, हटा दो' });
 }
 
 // ============ TRANSACTIONS ============
@@ -1778,6 +1796,7 @@ function saveTx() {
     closeModal('modalTx');
     updatePersonBalance();
     renderPersonTx();
+    syncOverdueToApp();
     showToast('✓ एंट्री सेव हो गई!');
   };
   // "जमा लिया" (get) entries need owner verification; "उधार दिया" (give) stays open for anyone.
@@ -1788,12 +1807,14 @@ function saveTx() {
   }
 }
 function deleteTx(tid) {
-  if (!confirm('यह एंट्री हटा दें?')) return;
-  state.transactions = state.transactions.filter(t => t.id !== tid);
-  saveState();
-  updatePersonBalance();
-  renderPersonTx();
-  showToast('✓ हटा दी गई');
+  showConfirm('यह एंट्री हटा दें?', () => {
+    state.transactions = state.transactions.filter(t => t.id !== tid);
+    saveState();
+    updatePersonBalance();
+    renderPersonTx();
+    syncOverdueToApp();
+    showToast('✓ हटा दी गई');
+  }, { icon: '🗑️', title: 'एंट्री हटाएं?', okText: 'हाँ, हटा दो' });
 }
 
 // ============ HOME ============
@@ -2021,14 +2042,16 @@ function importJSON(e) {
   reader.readAsText(file);
 }
 function clearAllData() {
-  if (!confirm('⚠️ Data clear karne se pehle BACKUP lena zaroori hai.\n\nPehle backup download karein?')) return;
-  exportJSON();
-  setTimeout(() => {
-    if (!confirm('Backup ho gaya hai.\n\nAb pakka SAARA data clear karna hai? Ye wapas nahi aayega.')) return;
-    state.persons = []; state.transactions = [];
-    saveState(); renderAll();
-    showToast('✓ सारा डेटा मिटा दिया');
-  }, 800);
+  showConfirm('Data clear karne se pehle BACKUP lena zaroori hai.\n\nPehle backup download karein?', () => {
+    exportJSON();
+    setTimeout(() => {
+      showConfirm('Backup ho gaya hai.\n\nAb pakka SAARA data clear karna hai? Ye wapas nahi aayega.', () => {
+        state.persons = []; state.transactions = [];
+        saveState(); renderAll();
+        showToast('✓ सारा डेटा मिटा दिया');
+      }, { icon: '🗑️', title: 'सारा डेटा मिटाएं?', okText: 'हाँ, मिटा दो' });
+    }, 800);
+  }, { icon: '💾', title: 'पहले बैकअप लें', okText: 'बैकअप लो', danger: false });
 }
 function shareApp() {
   const msg = 'Khata Pro App use karo - best udhar ledger app!';
@@ -2048,6 +2071,29 @@ function openSupport() {
 
 // ============ MODALS ============
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// ============ CUSTOM CONFIRM (themed replacement for browser confirm()) ============
+let _confirmYesCallback = null;
+function showConfirm(message, onYes, opts = {}) {
+  document.getElementById('confirmIcon').innerText = opts.icon || '⚠️';
+  document.getElementById('confirmTitle').innerText = opts.title || 'पक्का?';
+  document.getElementById('confirmMessage').innerText = message;
+  const okBtn = document.getElementById('confirmOkBtn');
+  okBtn.innerText = opts.okText || 'हाँ, पक्का';
+  okBtn.className = 'btn btn-block ' + (opts.danger === false ? 'btn-primary' : 'btn-danger');
+  _confirmYesCallback = onYes;
+  document.getElementById('modalConfirm').classList.add('active');
+}
+function confirmYes() {
+  document.getElementById('modalConfirm').classList.remove('active');
+  const cb = _confirmYesCallback;
+  _confirmYesCallback = null;
+  if (cb) cb();
+}
+function confirmNo() {
+  document.getElementById('modalConfirm').classList.remove('active');
+  _confirmYesCallback = null;
+}
 
 // ============ OWNER EDIT-LOCK ============
 // Any edit/delete action must pass through requireOwnerAuth(). Non-destructive edits
@@ -2120,9 +2166,53 @@ function renderAll() {
   renderHistory();
 }
 
+// ============ PAYMENT REMINDER SYNC (for App Inventor Alarm Extension) ============
+// Reminder days settings: kitne din baad pehla reminder chahiye (default 7)
+function getReminderDays() {
+  return state.settings.reminderDays || 7;
+}
+// Har us person ki list jiska udhaar (balance > 0) reminder-ke-din se purana hai.
+// Har entry: { id, name, phone, balance, daysPassed }
+function getOverdueDebtors() {
+  const minDays = getReminderDays();
+  const now = Date.now();
+  const list = [];
+  state.persons.forEach(p => {
+    if (p.archived) return;
+    const bal = getBalance(p.id);
+    if (bal <= 0) return; // isne sab chuka diya ya jama zyada hai
+    const giveTxs = state.transactions.filter(t => t.personId === p.id && t.type === 'give');
+    if (giveTxs.length === 0) return;
+    const oldestGive = Math.min(...giveTxs.map(t => new Date(t.date).getTime()));
+    const daysPassed = Math.floor((now - oldestGive) / (1000 * 60 * 60 * 24));
+    if (daysPassed >= minDays) {
+      list.push({ id: p.id, name: p.name, phone: p.phone || '', balance: bal, daysPassed });
+    }
+  });
+  return list;
+}
+// Jo persons ab overdue nahi hain (settle ho gaye ya balance clear) - inke alarm cancel karne ke liye
+function getSettledPersonIds() {
+  return state.persons.filter(p => getBalance(p.id) <= 0).map(p => p.id);
+}
+// App Inventor WebViewer ko data bhejta hai. App Inventor side "WebViewString" property
+// se yeh JSON padhega aur AlarmExtension se real notification schedule karega.
+function syncOverdueToApp() {
+  try {
+    // Settings > Notifications > "Payment Reminders" toggle off hai to kuch bhi na bhejo
+    const payload = state.settings.reminder
+      ? { remindersOn: true, overdue: getOverdueDebtors(), settled: getSettledPersonIds() }
+      : { remindersOn: false, overdue: [], settled: getSettledPersonIds() }; // OFF karne par sab existing alarms cancel karwane ke liye settled bhej dete hain
+    if (window.AppInventor && window.AppInventor.setWebViewString) {
+      window.AppInventor.setWebViewString(JSON.stringify(payload));
+    }
+  } catch (e) { /* App Inventor bridge available nahi hai (jaise normal browser mein test karte waqt) - ignore */ }
+}
+
 loadState();
 applySettings();
 renderAll();
+syncOverdueToApp();
 
 // Show PIN screen if lock enabled
 if (state.settings.lock) {
