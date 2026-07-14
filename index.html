@@ -6,19 +6,32 @@
 <title>Khata Pro - Ultimate Ledger</title>
 <style>
 :root {
-  --bg: #f5f7fb; --card: #ffffff; --text: #1a1d29; --sub: #6b7280; --primary: #4f46e5;
-  --primary-light: #eef2ff; --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
-  --border: #e5e7eb; --shadow: 0 2px 8px rgba(0,0,0,0.06); --radius: 16px;
-  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --bg: #2b0a02; --card: rgba(255,255,255,0.07); --text: #fff8ef; --sub: rgba(255,232,204,0.68); --primary: #ff7a1a;
+  --primary-light: rgba(255,204,0,0.16); --danger: #ff3b47; --success: #ffcc00; --warning: #ff9500;
+  --border: rgba(255,214,140,0.22); --shadow: 0 8px 32px rgba(0,0,0,0.45); --radius: 16px;
+  --gradient: linear-gradient(135deg, #ff512f 0%, #ffc300 100%);
+  --glass-sheen: linear-gradient(120deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 35%);
 }
 [data-theme="dark"] {
-  --bg: #0f1419; --card: #1a1f2e; --text: #f1f5f9; --sub: #94a3b8;
-  --primary-light: #1e293b; --border: #2d3748; --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --bg: #0d0301; --card: rgba(255,255,255,0.05); --text: #fff3e6; --sub: rgba(255,225,195,0.6);
+  --primary-light: rgba(255,204,0,0.12); --border: rgba(255,190,110,0.16); --shadow: 0 8px 36px rgba(0,0,0,0.6);
+}
+body {
+  background: radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,140,0,0.35), transparent 60%),
+              radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,45,60,0.28), transparent 55%),
+              linear-gradient(180deg, #2b0a02 0%, #1a0500 55%, #100300 100%);
+  background-attachment: fixed;
+}
+[data-theme="dark"] body {
+  background: radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,110,0,0.22), transparent 60%),
+              radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,30,50,0.18), transparent 55%),
+              linear-gradient(180deg, #0d0301 0%, #0a0200 55%, #060100 100%);
+  background-attachment: fixed;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg); color: var(--text); min-height: 100vh;
+  color: var(--text); min-height: 100vh;
   padding-bottom: 80px; transition: background .3s, color .3s;
   font-size: 15px;
 }
@@ -34,10 +47,11 @@ body {
   background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .icon-btn {
-  width: 40px; height: 40px; border-radius: 12px; border: none;
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border);
   background: var(--card); color: var(--text); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   box-shadow: var(--shadow); font-size: 1.2rem;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
 }
 .icon-btn:active { transform: scale(0.92); }
 
@@ -45,18 +59,30 @@ body {
 .card {
   background: var(--card); border-radius: var(--radius); padding: 18px;
   margin-bottom: 14px; box-shadow: var(--shadow);
+  backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid var(--border); position: relative; overflow: hidden;
 }
-.card-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.card::before {
+  content: ""; position: absolute; inset: 0; background: var(--glass-sheen);
+  pointer-events: none;
+}
+.card-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
+.card > *:not(.card-title) { position: relative; z-index: 1; }
 
 /* Stats Grid */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
 .stat-card {
   padding: 18px; border-radius: var(--radius); color: white;
-  position: relative; overflow: hidden;
+  position: relative; overflow: hidden; backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.18);
 }
-.stat-card.get { background: linear-gradient(135deg, #10b981, #059669); }
-.stat-card.give { background: linear-gradient(135deg, #ef4444, #dc2626); }
-.stat-card.net { background: var(--gradient); grid-column: span 2; }
+.stat-card::before {
+  content: ""; position: absolute; inset: 0; background: var(--glass-sheen); pointer-events: none;
+}
+.stat-card > * { position: relative; z-index: 1; }
+.stat-card.get { background: linear-gradient(135deg, #ffcc00, #ff8c00); box-shadow: 0 8px 24px rgba(255,180,0,0.35); }
+.stat-card.give { background: linear-gradient(135deg, #ff3b47, #b8102a); box-shadow: 0 8px 24px rgba(255,40,60,0.35); }
+.stat-card.net { background: var(--gradient); grid-column: span 2; box-shadow: 0 8px 24px rgba(255,90,30,0.35); }
 .stat-card .emoji { position: absolute; right: 10px; top: 10px; font-size: 1.8rem; opacity: 0.3; }
 .stat-card h3 { font-size: 0.75rem; opacity: 0.9; margin-bottom: 6px; font-weight: 500; }
 .stat-card p { font-size: 1.5rem; font-weight: 800; }
@@ -69,10 +95,10 @@ body {
   justify-content: center; gap: 8px; font-size: 0.95rem;
 }
 .btn:active { transform: scale(0.96); }
-.btn-primary { background: var(--primary); color: white; }
-.btn-danger { background: var(--danger); color: white; }
-.btn-success { background: var(--success); color: white; }
-.btn-ghost { background: var(--primary-light); color: var(--primary); }
+.btn-primary { background: var(--gradient); color: white; box-shadow: 0 4px 16px rgba(255,90,30,0.4); }
+.btn-danger { background: linear-gradient(135deg, #ff3b47, #b8102a); color: white; box-shadow: 0 4px 16px rgba(255,40,60,0.35); }
+.btn-success { background: linear-gradient(135deg, #ffcc00, #ff8c00); color: #2b0a02; box-shadow: 0 4px 16px rgba(255,180,0,0.35); }
+.btn-ghost { background: var(--primary-light); color: var(--text); border: 1px solid var(--border); backdrop-filter: blur(10px); }
 .btn-block { width: 100%; padding: 14px; }
 .btn-sm { padding: 8px 12px; font-size: 0.85rem; }
 
@@ -135,25 +161,28 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 .fab {
   position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px;
   border-radius: 50%; background: var(--gradient); color: white;
-  border: none; font-size: 28px; cursor: pointer; z-index: 90;
-  box-shadow: 0 6px 20px rgba(79,70,229,0.4);
+  border: 1px solid rgba(255,255,255,0.3); font-size: 28px; cursor: pointer; z-index: 90;
+  box-shadow: 0 6px 24px rgba(255,90,30,0.5);
   display: flex; align-items: center; justify-content: center;
 }
 .fab:active { transform: scale(0.9); }
 
 /* Modal */
 .modal {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; position: fixed; inset: 0; background: rgba(20,4,0,0.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   z-index: 200; align-items: flex-end; justify-content: center;
 }
 .modal.active { display: flex; animation: fadeIn .2s; }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 .modal-content {
-  background: var(--card); padding: 24px; border-radius: 24px 24px 0 0;
+  background: linear-gradient(180deg, rgba(60,15,5,0.85), rgba(30,6,2,0.92));
+  backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--border); border-bottom: none;
+  padding: 24px; border-radius: 24px 24px 0 0;
   width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto;
   animation: slideUp .3s cubic-bezier(.2,.8,.2,1);
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
 }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
@@ -169,7 +198,10 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 
 /* Person Detail Page (Full Screen) */
 .person-page {
-  position: fixed; inset: 0; background: var(--bg); z-index: 150;
+  position: fixed; inset: 0; z-index: 150;
+  background: radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,140,0,0.35), transparent 60%),
+              radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,45,60,0.28), transparent 55%),
+              linear-gradient(180deg, #2b0a02 0%, #1a0500 55%, #100300 100%);
   overflow-y: auto; display: none; animation: slideRight .3s;
 }
 .person-page.active { display: block; }
@@ -207,12 +239,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 
 /* Dropdown Menu */
 .dropdown-menu {
-  position: absolute; top: 60px; right: 20px; background: var(--card);
-  border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  position: absolute; top: 60px; right: 20px;
+  background: linear-gradient(180deg, rgba(60,15,5,0.9), rgba(25,5,2,0.95));
+  border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
   min-width: 220px; z-index: 20; display: none; overflow: hidden;
   border: 1px solid var(--border); color: var(--text);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
   transform: scale(0.92) translateY(-6px); opacity: 0;
   transition: transform .18s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
 }
@@ -287,10 +319,10 @@ input:checked + .slider:before { transform: translateX(22px); }
   display: flex; align-items: center; justify-content: center;
   font-size: 1.3rem; margin-right: 12px; flex-shrink: 0;
 }
-.tx-icon.give { background: #fee2e2; color: var(--danger); }
-.tx-icon.get { background: #d1fae5; color: var(--success); }
-[data-theme="dark"] .tx-icon.give { background: rgba(239,68,68,0.15); }
-[data-theme="dark"] .tx-icon.get { background: rgba(16,185,129,0.15); }
+.tx-icon.give { background: rgba(255,59,71,0.18); color: var(--danger); }
+.tx-icon.get { background: rgba(255,204,0,0.18); color: var(--success); }
+[data-theme="dark"] .tx-icon.give { background: rgba(255,59,71,0.15); }
+[data-theme="dark"] .tx-icon.get { background: rgba(255,204,0,0.15); }
 
 /* Search Bar */
 .search-bar {
@@ -308,8 +340,9 @@ input:checked + .slider:before { transform: translateX(22px); }
   padding: 8px 14px; border-radius: 20px; background: var(--card);
   border: 1.5px solid var(--border); cursor: pointer; font-size: 0.85rem;
   white-space: nowrap; font-weight: 500; transition: all .2s;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
 }
-.chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+.chip.active { background: var(--gradient); color: white; border-color: transparent; }
 
 /* Chart */
 .chart-bar { display: flex; align-items: flex-end; height: 140px; gap: 6px; padding: 10px 4px; }
@@ -338,7 +371,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 .quick-action {
   background: var(--card); padding: 14px 8px; border-radius: 14px;
   text-align: center; cursor: pointer; box-shadow: var(--shadow);
-  transition: transform .2s;
+  transition: transform .2s; border: 1px solid var(--border);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
 }
 .quick-action:active { transform: scale(0.95); }
 .quick-action .qa-icon { font-size: 1.6rem; margin-bottom: 4px; }
@@ -366,7 +400,10 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 /* PIN Screen */
 .pin-screen {
-  position: fixed; inset: 0; background: var(--bg); z-index: 1000;
+  position: fixed; inset: 0; z-index: 1000;
+  background: radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,140,0,0.35), transparent 60%),
+              radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,45,60,0.28), transparent 55%),
+              linear-gradient(180deg, #2b0a02 0%, #1a0500 55%, #100300 100%);
   display: none; align-items: center; justify-content: center;
   flex-direction: column; padding: 20px;
 }
@@ -376,17 +413,19 @@ input:checked + .slider:before { transform: translateX(22px); }
   width: 16px; height: 16px; border-radius: 50%;
   border: 2px solid var(--primary); transition: all .2s;
 }
-.pin-dot.filled { background: var(--primary); }
+.pin-dot.filled { background: var(--gradient); border-color: transparent; }
 .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 320px; width: 100%; }
 .pin-key {
   aspect-ratio: 1.3; border-radius: 16px; background: var(--card);
-  border: none; font-size: 1.5rem; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border); font-size: 1.5rem; font-weight: 600; cursor: pointer;
   color: var(--text); box-shadow: var(--shadow);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
 }
 .pin-key:active { transform: scale(0.95); background: var(--primary-light); }
 </style>
 </head>
 <body>
+
 
 <!-- PIN LOCK SCREEN -->
 <div class="pin-screen" id="pinScreen">
@@ -764,7 +803,11 @@ input:checked + .slider:before { transform: translateX(22px); }
 
     <div class="card" style="border: 2px solid var(--danger);">
       <div class="card-title" style="color: var(--danger);">⚠️ Danger Zone</div>
-      <button class="btn btn-danger btn-block" onclick="requireOwnerAuth(clearAllData)">🗑️ सारा डेटा मिटाएं</button>
+      <button class="btn btn-danger btn-block" onclick="requireOwnerAuth(clearAllData, true)">🗑️ सारा डेटा मिटाएं</button>
+    </div>
+
+    <div style="text-align:center; padding: 24px 0 8px; font-size: 11px; color: var(--sub);">
+      © 2026 Made by Ayush Singh
     </div>
   </div>
 </div>
@@ -812,10 +855,10 @@ input:checked + .slider:before { transform: translateX(22px); }
       <div class="dropdown-item" onclick="shareSMS()">💬 SMS भेजें</div>
       <div class="dropdown-item" onclick="callPerson()">📞 कॉल करें</div>
       <div class="dropdown-item" onclick="exportPersonCSV()">📄 इसका डेटा एक्सपोर्ट</div>
-      <div class="dropdown-item" onclick="requireOwnerAuth(archivePerson)">📦 आर्काइव करें</div>
+      <div class="dropdown-item" onclick="requireOwnerAuth(archivePerson, true)">📦 आर्काइव करें</div>
       <div class="dropdown-item" onclick="printStatement()">📄 स्टेटमेंट डाउनलोड (PDF)</div>
       <div class="dropdown-item" onclick="addNoteToPerson()">📝 नोट जोड़ें</div>
-      <div class="dropdown-item danger" onclick="requireOwnerAuth(deletePerson)">🗑️ व्यक्ति हटाएं</div>
+      <div class="dropdown-item danger" onclick="requireOwnerAuth(deletePerson, true)">🗑️ व्यक्ति हटाएं</div>
     </div>
     <div class="person-info">
       <div class="person-avatar" id="pAvatar">R</div>
@@ -1086,6 +1129,18 @@ function saveSetting(k, v) { state.settings[k] = v; saveState(); applySettings()
 
 // ============ UTILS ============
 function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
+function esc(s) {
+  // Escapes user-supplied text before it's inserted into innerHTML, to prevent XSS
+  // (e.g. someone naming a contact "<img src=x onerror=...>").
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+function safeFileName(s) {
+  // Strips path separators / HTML-unsafe characters so a contact name can never
+  // escape the intended filename (e.g. "../../evil" or embedded quotes/tags).
+  return String(s || 'khata').replace(/[^a-zA-Z0-9अ-ह]+/g, '_').replace(/^_+|_+$/g, '') || 'khata';
+}
 function fmt(n) { return state.settings.currency + Number(n).toLocaleString('en-IN'); }
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -1295,8 +1350,8 @@ function renderContacts() {
       <div class="flex">
         <div class="avatar" style="background:${color}; font-size: 1.5rem;">${p.emoji || p.name.charAt(0).toUpperCase()}</div>
         <div class="flex-col">
-          <strong>${fav}${p.name}</strong>
-          <small class="text-sub">${p.phone || 'नंबर नहीं'} • ${p.group}</small>
+          <strong>${fav}${esc(p.name)}</strong>
+          <small class="text-sub">${esc(p.phone) || 'नंबर नहीं'} • ${esc(p.group)}</small>
         </div>
       </div>
       <div class="text-right ${balClass}">
@@ -1395,9 +1450,9 @@ function renderPersonTx() {
         <strong class="${t.type === 'give' ? 'text-danger' : 'text-success'}">
           ${t.type === 'give' ? 'उधार दिया' : 'जमा लिया'} ${fmt(t.amount)}
         </strong>
-        <small class="text-sub">${formatDate(t.date)} ${t.note ? '• ' + t.note : ''}</small>
+        <small class="text-sub">${formatDate(t.date)} ${t.note ? '• ' + esc(t.note) : ''}</small>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="requireOwnerAuth(() => deleteTx('${t.id}'))">🗑</button>
+      <button class="btn btn-ghost btn-sm" onclick="requireOwnerAuth(() => deleteTx('${t.id}'), true)">🗑</button>
     </div>
   `).join('');
 }
@@ -1496,11 +1551,11 @@ function callPerson() {
 function exportPersonCSV() {
   const p = state.persons.find(x => x.id === currentPersonId);
   const txs = state.transactions.filter(t => t.personId === currentPersonId);
-  let csv = `Name,${p.name}\nPhone,${p.phone || ''}\n\nDate,Type,Amount,Note\n`;
+  let csv = `Name,${csvSafe(p.name)}\nPhone,${p.phone || ''}\n\nDate,Type,Amount,Note\n`;
   txs.forEach(t => {
-    csv += `${t.date},${t.type === 'give' ? 'Udhar' : 'Jama'},${t.amount},"${t.note || ''}"\n`;
+    csv += `${t.date},${t.type === 'give' ? 'Udhar' : 'Jama'},${t.amount},"${csvSafe(t.note || '')}"\n`;
   });
-  downloadFile(csv, `${p.name}_khata.csv`, 'text/csv');
+  downloadFile(csv, `${safeFileName(p.name)}_khata.csv`, 'text/csv');
   document.getElementById('personMenu').classList.remove('active');
   showToast('✓ एक्सपोर्ट हो गया');
 }
@@ -1552,7 +1607,7 @@ async function printStatement() {
     </div>
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; border-bottom:1px solid #e5e7eb; padding-bottom:14px;">
       <div>
-        <div style="font-size:16px; font-weight:700;">${p.name}</div>
+        <div style="font-size:16px; font-weight:700;">${esc(p.name)}</div>
         <div style="font-size:12px; color:#6b7280; margin-top:2px;">${p.phone || ''}</div>
       </div>
       <div style="text-align:right;">
@@ -1582,7 +1637,7 @@ async function printStatement() {
         ${txs.length ? txs.map(t => `
           <tr style="border-bottom:1px solid #e5e7eb;">
             <td style="padding:6px; white-space:nowrap;">${formatDate(t.date)}</td>
-            <td style="padding:6px;">${t.type === 'give' ? 'उधार दिया' : 'जमा लिया'}${t.note ? ' • ' + t.note : ''}</td>
+            <td style="padding:6px;">${t.type === 'give' ? 'उधार दिया' : 'जमा लिया'}${t.note ? ' • ' + esc(t.note) : ''}</td>
             <td style="padding:6px; text-align:right; white-space:nowrap; color:${t.type === 'give' ? '#ef4444' : '#10b981'}; font-weight:600;">
               ${t.type === 'give' ? '-' : '+'}${fmt(t.amount)}
             </td>
@@ -1601,17 +1656,17 @@ async function printStatement() {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-    const safeName = (p.name || 'Statement').replace(/[^a-zA-Z0-9अ-ह]+/g, '_');
+    const safeName = safeFileName(p.name);
     pdf.save(`Statement_${safeName}_${new Date().toISOString().split('T')[0]}.pdf`);
     showToast('✓ PDF स्टेटमेंट डाउनलोड हो गया');
   } catch (err) {
     // Offline or CDN blocked: fall back to browser print dialog (user can "Save as PDF" there)
     console.error('PDF generation failed, falling back to print window:', err);
-    let html = `<h2>${p.name} - Statement</h2><p>Phone: ${p.phone || 'N/A'}</p><hr><table border="1" cellpadding="8">
+    let html = `<h2>${esc(p.name)} - Statement</h2><p>Phone: ${esc(p.phone) || 'N/A'}</p><hr><table border="1" cellpadding="8">
       <tr><th>Date</th><th>Type</th><th>Amount</th><th>Note</th></tr>`;
     txs.forEach(t => {
       html += `<tr><td>${formatDate(t.date)}</td><td>${t.type === 'give' ? 'Udhar' : 'Jama'}</td>
-        <td>${fmt(t.amount)}</td><td>${t.note || '-'}</td></tr>`;
+        <td>${fmt(t.amount)}</td><td>${esc(t.note) || '-'}</td></tr>`;
     });
     html += `</table><hr><h3>Balance: ${fmt(Math.abs(bal))} (${bal >= 0 ? 'Lena' : 'Dena'})</h3>`;
     const w = window.open('', '_blank');
@@ -1742,7 +1797,7 @@ function renderHome() {
       <div class="list-item" onclick="openPersonPage('${x.id}')">
         <div class="flex">
           <div class="avatar" style="background:${getColor(x.name)}; font-size: 1.3rem;">${x.emoji || x.name.charAt(0)}</div>
-          <strong>${x.name}</strong>
+          <strong>${esc(x.name)}</strong>
         </div>
         <strong class="text-success">${fmt(x.bal)}</strong>
       </div>
@@ -1822,7 +1877,7 @@ function renderReports() {
       <div class="list-item" onclick="openPersonPage('${x.id}')">
         <div class="flex">
           <div class="avatar" style="background:${getColor(x.name)}; font-size: 1.3rem;">${x.emoji || x.name.charAt(0)}</div>
-          <strong>${x.name}</strong>
+          <strong>${esc(x.name)}</strong>
         </div>
         <strong class="text-success">${fmt(x.bal)}</strong>
       </div>
@@ -1834,7 +1889,7 @@ function renderReports() {
       <div class="list-item" onclick="openPersonPage('${x.id}')">
         <div class="flex">
           <div class="avatar" style="background:${getColor(x.name)}; font-size: 1.3rem;">${x.emoji || x.name.charAt(0)}</div>
-          <strong>${x.name}</strong>
+          <strong>${esc(x.name)}</strong>
         </div>
         <strong class="text-danger">${fmt(Math.abs(x.bal))}</strong>
       </div>
@@ -1877,8 +1932,8 @@ function renderHistory() {
       <div class="tx-item" onclick="openPersonPage('${p.id}')">
         <div class="tx-icon ${t.type}">${t.type === 'give' ? '↑' : '↓'}</div>
         <div class="flex-col" style="flex: 1;">
-          <strong>${p.name}</strong>
-          <small class="text-sub">${formatDate(t.date)} ${t.note ? '• ' + t.note : ''}</small>
+          <strong>${esc(p.name)}</strong>
+          <small class="text-sub">${formatDate(t.date)} ${t.note ? '• ' + esc(t.note) : ''}</small>
         </div>
         <strong class="${t.type === 'give' ? 'text-danger' : 'text-success'}">
           ${t.type === 'give' ? '-' : '+'}${fmt(t.amount)}
@@ -1896,11 +1951,17 @@ function downloadFile(content, filename, type) {
   a.download = filename;
   a.click();
 }
+function csvSafe(s) {
+  // Prevents CSV/Excel formula injection: a name/note starting with =, +, -, @, or
+  // tab/CR could otherwise execute as a formula when the file is opened in Excel.
+  s = String(s ?? '');
+  return /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+}
 function exportCSV() {
   let csv = 'Date,Person,Type,Amount,Note\n';
   state.transactions.forEach(t => {
     const p = state.persons.find(x => x.id === t.personId);
-    csv += `${t.date},"${p ? p.name : 'Unknown'}",${t.type === 'give' ? 'Udhar' : 'Jama'},${t.amount},"${t.note || ''}"\n`;
+    csv += `${t.date},"${csvSafe(p ? p.name : 'Unknown')}",${t.type === 'give' ? 'Udhar' : 'Jama'},${t.amount},"${csvSafe(t.note || '')}"\n`;
   });
   downloadFile(csv, 'khata_report.csv', 'text/csv');
   showToast('✓ CSV डाउनलोड हो गया');
@@ -1952,18 +2013,22 @@ function openSupport() {
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
 // ============ OWNER EDIT-LOCK ============
-// Any edit/delete action must pass through requireOwnerAuth(). Once verified in this
-// session, further edits don't ask again until the app is closed/reloaded.
+// Any edit/delete action must pass through requireOwnerAuth(). Non-destructive edits
+// (editPerson, emoji, etc.) may skip re-asking once verified in a session for convenience.
+// Destructive actions (delete person, delete transaction, archive, factory reset) ALWAYS
+// ask again every single time, regardless of any earlier verification in the session.
 let _pendingOwnerAction = null;
+let _pendingAlwaysAsk = false;
 function getOwnerCode() {
   const c = localStorage.getItem('owner_edit_code');
   return (c === null) ? '7793' : c; // '' means owner-lock removed entirely
 }
-function requireOwnerAuth(action) {
+function requireOwnerAuth(action, alwaysAsk = false) {
   const code = getOwnerCode();
   if (code === '') { action(); return; } // owner removed the lock
-  if (sessionStorage.getItem('ownerVerified') === '1') { action(); return; }
+  if (!alwaysAsk && sessionStorage.getItem('ownerVerified') === '1') { action(); return; }
   _pendingOwnerAction = action;
+  _pendingAlwaysAsk = alwaysAsk;
   document.getElementById('ownerAuthInput').value = '';
   document.getElementById('ownerAuthError').innerText = '';
   document.getElementById('modalOwnerAuth').classList.add('active');
@@ -1972,10 +2037,13 @@ function requireOwnerAuth(action) {
 function submitOwnerAuth() {
   const entered = document.getElementById('ownerAuthInput').value.trim();
   if (entered === getOwnerCode()) {
-    sessionStorage.setItem('ownerVerified', '1');
+    // Destructive (alwaysAsk) actions never grant a session pass, so the next
+    // delete/reset always prompts again too.
+    if (!_pendingAlwaysAsk) sessionStorage.setItem('ownerVerified', '1');
     document.getElementById('modalOwnerAuth').classList.remove('active');
     const action = _pendingOwnerAction;
     _pendingOwnerAction = null;
+    _pendingAlwaysAsk = false;
     if (action) action();
   } else {
     document.getElementById('ownerAuthError').innerText = '❌ Galat code, phir try karo';
